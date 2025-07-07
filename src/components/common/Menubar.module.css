@@ -1,0 +1,186 @@
+/* src/components/common/Menubar.module.css */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: 'Noto Sans KR', sans-serif;
+  position: relative;
+  z-index: 1000;
+}
+
+/* 로고 섹션 */
+.logoSection {
+  display: flex;
+  align-items: center;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo {
+  height: 40px;
+  margin-right: 20px;
+}
+
+/* 메인 네비게이션 (드롭다운 메뉴) */
+.mainNav {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.menuList {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menuItem {
+  position: relative;
+  margin: 0 15px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333333;
+  padding: 5px 0;
+  transition: color 0.3s ease;
+}
+
+.menuItem:hover .menuTitle {
+  color: #007bff;
+}
+
+.menuTitle {
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+/* 서브메뉴 기본 숨김 */
+.submenu {
+  position: absolute;
+  top: 100%; /* 부모 메뉴 바로 아래에 위치 */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px 0;
+  min-width: 160px;
+  list-style: none;
+  margin-top: 0; /* !!! 이 부분을 0으로 변경하여 부모와의 간격을 없앱니다. !!! */
+  z-index: 100;
+
+  /* 초기 상태: 숨김 */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease; /* 부드러운 전환 효과 */
+}
+
+/* menuItem에 호버 시 서브메뉴 표시 */
+.menuItem:hover .submenu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.submenuItem {
+  padding: 10px 20px;
+  white-space: nowrap;
+}
+
+.submenuItem a {
+  text-decoration: none;
+  color: #555555;
+  display: block;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.submenuItem a:hover {
+  background-color: #f0f8ff;
+  color: #007bff;
+}
+
+/* 오른쪽 섹션 (로그인/회원가입/알림) */
+.rightSection {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  font-size: 15px;
+  color: #555555;
+  margin-right: 15px;
+  white-space: nowrap;
+}
+
+.authButton {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.authButton:hover {
+  background-color: #0056b3;
+}
+
+.separator {
+  margin: 0 10px;
+  color: #cccccc;
+}
+
+/* 알림 아이콘 */
+.notificationIcon {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-color: #f0f2f5;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  color: #555555;
+  cursor: pointer;
+  margin-left: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.notificationIcon:hover {
+  background-color: #e0e2e5;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4d4f;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: bold;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #ffffff;
+}
