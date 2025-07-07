@@ -1,3 +1,7 @@
+# DuoPet_frontend
+
+한국 ICT 인재개발원 강남지사 클라우드 기반 AI 대화형 서비스 웹개발자 양성과정 파이널 프로젝트 프론트엔드 리포지토리
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
