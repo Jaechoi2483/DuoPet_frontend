@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 // src/components/common/Modal.js
 
 import React, { startTransition } from 'react';
 import styles from './Modal.module.css';
 
 
+=======
+import React from 'react';
+import styles from './Modal.module.css';
+
+>>>>>>> bba0ac55e35799ffcfd9a6eb684a926f518bd4c0
 const Modal = ({ isOpen, onClose, children }) => {
   if (!isOpen) {
     return null;
@@ -21,4 +27,8 @@ const Modal = ({ isOpen, onClose, children }) => {
   );
 };
 
+<<<<<<< HEAD
 export default Modal;
+=======
+export default Modal;
+>>>>>>> bba0ac55e35799ffcfd9a6eb684a926f518bd4c0

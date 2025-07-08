@@ -1,0 +1,154 @@
+
+.container {
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.addButton {
+    padding: 8px 16px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.vaccinationList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.vaxItem {
+    display: flex;
+    align-items: center;
+    background-color: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.vaxStatus {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.vaxStatus.예정 {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.vaxStatus.지연 {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.vaxInfo {
+    flex-grow: 1;
+}
+
+.vaxName {
+    font-weight: bold;
+}
+
+.vaxDate {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 4px 0;
+}
+
+.vaxDesc {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.actionButton {
+    padding: 8px 12px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Modal styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalContainer {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modalTitle {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.modalContent .formGroup {
+    margin-bottom: 15px;
+}
+
+.modalContent .formLabel {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.modalContent .formInput, .modalContent .formTextarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modalFooter {
+    text-align: right;
+}
+
+.saveButton {
+    padding: 10px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
