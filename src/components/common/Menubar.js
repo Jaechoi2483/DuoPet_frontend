@@ -1,17 +1,10 @@
-// src/components/common/Menubar.js
-
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import apiClient from '../../utils/axios';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
 
 import logo from '../../assets/images/logo3.png';
-import styles from './Menubar.module.css'; // 파일명 변경: Header.module.css -> Menubar.module.css
+import styles from './Menubar.module.css';
 
-import Modal from './Modal';
-// import Login from '../../pages/member/Login';
-
-// 메뉴 데이터 정의 (이전과 동일)
 const menuData = [
   {
     title: '인사말',
@@ -29,7 +22,6 @@ const menuData = [
       { name: '질문게시판', path: '/board/qna' },
     ],
   },
-
   {
     title: '정보광장',
     submenus: [
@@ -58,19 +50,13 @@ const menuData = [
 ];
 
 function Menubar({
-  // 함수 컴포넌트 이름 변경: Header -> Menubar
   updateNoticeResults,
   updateBoardResults,
   updateMemberResults,
   resetSearchInput,
 }) {
   const { isLoggedIn, username, logoutAndRedirect } = useContext(AuthContext);
-
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  // activeMenuIndex 상태는 이제 필요 없습니다.
-
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     logoutAndRedirect();
@@ -80,49 +66,35 @@ function Menubar({
     navigate('/signup');
   };
 
-  const handleLoginClick = () => {
-    setShowLoginModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowLoginModal(false);
+  const handleLogin = () => {
+    navigate('/login');
   };
 
   return (
     <header className={styles.header}>
-      {/* 로고 */}
       <div className={styles.logoSection}>
         <Link to="/" className={styles.logoLink}>
           <img src={logo} alt="Site Logo" className={styles.logo} />
         </Link>
       </div>
 
-      {/* 메인 네비게이션 (드롭다운 메뉴) */}
       <nav className={styles.mainNav}>
         <ul className={styles.menuList}>
           {menuData.map((menu, index) => (
-            <li
-              key={index}
-              className={styles.menuItem}
-              // onMouseEnter와 onMouseLeave 이벤트는 이제 제거합니다.
-            >
+            <li key={index} className={styles.menuItem}>
               <span className={styles.menuTitle}>{menu.title}</span>
-              {/* 서브메뉴는 항상 렌더링되도록 합니다. CSS로 숨김/표시를 제어합니다. */}
-              {menu.submenus && (
-                <ul className={styles.submenu}>
-                  {menu.submenus.map((submenu, subIndex) => (
-                    <li key={subIndex} className={styles.submenuItem}>
-                      <Link to={submenu.path}>{submenu.name}</Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul className={styles.submenu}>
+                {menu.submenus.map((submenu, subIndex) => (
+                  <li key={subIndex} className={styles.submenuItem}>
+                    <Link to={submenu.path}>{submenu.name}</Link>
+                  </li>
+                ))}
+              </ul>
             </li>
           ))}
         </ul>
       </nav>
 
-      {/* 로그인 / 로그아웃 버튼, 회원가입 버튼, 알림 아이콘 */}
       <div className={styles.rightSection}>
         {isLoggedIn ? (
           <>
@@ -133,7 +105,7 @@ function Menubar({
           </>
         ) : (
           <>
-            <button className={styles.authButton} onClick={handleLoginClick}>
+            <button className={styles.authButton} onClick={handleLogin}>
               로그인
             </button>
             <span className={styles.separator}>|</span>
@@ -142,21 +114,13 @@ function Menubar({
             </button>
           </>
         )}
-        {/* 알림 아이콘 */}
         <div className={styles.notificationIcon}>
           <span className={styles.badge}>1</span>
           🔔
         </div>
       </div>
-
-      {/* 로그인 모달 랜더링 */}
-      {/* {showLoginModal && (
-        <Modal onClose={handleCloseModal}>
-          <Login onLoginSuccess={handleCloseModal} />
-        </Modal>
-      )} */}
     </header>
   );
 }
 
-export default Menubar; // 내보내는 컴포넌트 이름 변경: Header -> Menubar
+export default Menubar;
