@@ -41,7 +41,7 @@ const menuData = [
   {
     title: '건강 관리',
     submenus: [
-      { name: '건강 관리', path: '/health' },
+      { name: '건강 기록', path: '/health' },
       { name: 'AI 진단', path: '/health/ai-diagnosis' },
       { name: 'AI 행동분석', path: '/health/ai-behavior' },
       { name: '전문가 상담', path: '/health/expert-consult' },
@@ -106,7 +106,13 @@ function Menubar({
               className={styles.menuItem}
               // onMouseEnter와 onMouseLeave 이벤트는 이제 제거합니다.
             >
-              <span className={styles.menuTitle}>{menu.title}</span>
+              {menu.title === '건강 관리' ? (
+                <Link to="/health" className={styles.menuTitle} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  {menu.title}
+                </Link>
+              ) : (
+                <span className={styles.menuTitle}>{menu.title}</span>
+              )}
               {/* 서브메뉴는 항상 렌더링되도록 합니다. CSS로 숨김/표시를 제어합니다. */}
               {menu.submenus && (
                 <ul className={styles.submenu}>

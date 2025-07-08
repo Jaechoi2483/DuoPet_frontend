@@ -18,8 +18,8 @@ function Footer() {
           <div>
             <h3 className={styles.footerSectionTitle}>회사 정보</h3>
             <ul className={styles.footerList}>
-              <li className={styles.footerText}>상호명: (주)듀오펫</li>
-              <li className={styles.footerText}>대표자: 홍길동</li>
+              <li className={styles.footerText}>상호명: (주)Petlogue</li>
+              <li className={styles.footerText}>대표자: 김준용</li>
               <li className={styles.footerText}>
                 사업자등록번호: 123-45-67890
               </li>
@@ -34,7 +34,7 @@ function Footer() {
             <ul className={styles.footerList}>
               <li className={styles.footerText}>고객센터: 1588-1234</li>
               <li className={styles.footerText}>
-                이메일: support@duopet.co.kr
+                이메일: support@petlogue.co.kr
               </li>
               <li className={styles.footerText}>
                 운영시간: 평일 09:00 - 18:00
