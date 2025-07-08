@@ -1,0 +1,348 @@
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.expertsSection {
+  margin-bottom: 50px;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.expertsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.expertCard {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.expertCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.expertImage {
+  font-size: 4rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.expertInfo {
+  text-align: center;
+}
+
+.expertName {
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.expertSpecialty {
+  color: #FF9800;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.expertHospital {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.expertStats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+}
+
+.statItem {
+  text-align: center;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: #999;
+  margin-bottom: 5px;
+}
+
+.statValue {
+  font-weight: bold;
+  color: #333;
+}
+
+.expertIntroduction {
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.selectButton {
+  width: 100%;
+  padding: 12px;
+  background: #FF9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.selectButton:hover {
+  background: #F57C00;
+}
+
+.bookingSection {
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+.bookingHeader {
+  margin-bottom: 30px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 15px;
+}
+
+.backButton:hover {
+  color: #333;
+}
+
+.bookingTitle {
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.selectedExpertInfo {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+}
+
+.expertDetails {
+  margin-left: 20px;
+}
+
+.bookingForm {}
+
+.formSection {
+  margin-bottom: 30px;
+}
+
+.formTitle {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.consultationTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.typeCard {
+  padding: 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.typeCard.selected {
+  border-color: #FF9800;
+  background: #fff3e0;
+}
+
+.typeCard:hover {
+  border-color: #FF9800;
+}
+
+.typeLabel {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.typePrice {
+  color: #FF9800;
+  font-weight: bold;
+}
+
+.dateTimeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dateInput label, .timeSelect label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: bold;
+}
+
+.dateInput input, .timeSelect select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.dateInput input:focus, .timeSelect select:focus {
+  outline: none;
+  border-color: #FF9800;
+}
+
+.textArea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.textArea:focus {
+  outline: none;
+  border-color: #FF9800;
+}
+
+.bookingButton {
+  width: 100%;
+  padding: 18px;
+  background: #FF9800;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.bookingButton:hover {
+  background: #F57C00;
+}
+
+.infoSection {
+  margin-bottom: 50px;
+}
+
+.infoTitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.infoCard {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.infoIcon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+.infoCardTitle {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.infoCardText {
+  color: #666;
+  line-height: 1.6;
+}
+
+.faqSection {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.faqTitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.faqList {}
+
+.faqItem {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.faqItem:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.faqQuestion {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.faqAnswer {
+  color: #666;
+  line-height: 1.6;
+}
