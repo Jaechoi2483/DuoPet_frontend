@@ -66,9 +66,6 @@ function Menubar({
 }) {
   const { isLoggedIn, username, logoutAndRedirect } = useContext(AuthContext);
 
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  // activeMenuIndex 상태는 이제 필요 없습니다.
-
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -80,13 +77,13 @@ function Menubar({
     navigate('/signup');
   };
 
-  const handleLoginClick = () => {
-    setShowLoginModal(true);
-  };
+  // const handleLoginClick = () => {
+  //   setShowLoginModal(true);
+  // };
 
-  const handleCloseModal = () => {
-    setShowLoginModal(false);
-  };
+  // const handleCloseModal = () => {
+  //   setShowLoginModal(false);
+  // };
 
   return (
     <header className={styles.header}>
@@ -133,7 +130,10 @@ function Menubar({
           </>
         ) : (
           <>
-            <button className={styles.authButton} onClick={handleLoginClick}>
+            <button
+              className={styles.authButton}
+              onClick={() => navigate('/login')}
+            >
               로그인
             </button>
             <span className={styles.separator}>|</span>
@@ -148,13 +148,6 @@ function Menubar({
           🔔
         </div>
       </div>
-
-      {/* 로그인 모달 랜더링 */}
-      {/* {showLoginModal && (
-        <Modal onClose={handleCloseModal}>
-          <Login onLoginSuccess={handleCloseModal} />
-        </Modal>
-      )} */}
     </header>
   );
 }
