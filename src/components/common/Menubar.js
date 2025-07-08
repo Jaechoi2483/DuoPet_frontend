@@ -23,7 +23,7 @@ const menuData = [
   {
     title: '커뮤니티',
     submenus: [
-      { name: '자유게시판', path: '/board/free' },
+      { name: '자유게시판', path: '/community/freeBoard' },
       { name: '후기게시판', path: '/board/review' },
       { name: '팁게시판', path: '/board/tip' },
       { name: '질문게시판', path: '/board/qna' },
