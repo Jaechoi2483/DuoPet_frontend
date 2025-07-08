@@ -2,9 +2,12 @@
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import DuoPetGreeting from '../components/common/DuoPetGreeting';
 
 const AppRouter = () => {
-  return <Routes></Routes>;
+  return <Routes>
+  <Route path="/greeting" element={<DuoPetGreeting />} />
+  </Routes>;
 };
 
 export default AppRouter;

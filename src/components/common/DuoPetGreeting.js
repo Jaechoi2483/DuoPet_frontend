@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const GreetingPage = () => {
+const DuoPetGreeting = () => {
   return (
     <div style={{ padding: '2rem' }}>
       <h1>듀오펫에 오신걸 환영합니다.</h1>
@@ -12,4 +12,4 @@ const GreetingPage = () => {
   );
 };
 
-export default GreetingPage;
+export default DuoPetGreeting;
