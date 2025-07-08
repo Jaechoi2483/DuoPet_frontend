@@ -36,13 +36,8 @@ function App() {
   return (
     <Router>
       <AppWrapper />
-      <Menubar />
-      <AppRouter />
-      <Footer />
     </Router>
   );
 }
 
 export default App;
-
-
