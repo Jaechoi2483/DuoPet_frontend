@@ -11,6 +11,8 @@ function NoticeList() {
   const [pageInfo, setPageInfo] = useState({ totalPages: 1, number: 0 }); // 페이징 정보
   const [currentPage, setCurrentPage] = useState(0); // 현재 페이지 (0부터 시작)
   const [loading, setLoading] = useState(true); // 로딩 상태
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
   const navigate = useNavigate();
 
@@ -19,14 +21,16 @@ function NoticeList() {
     const fetchNotices = async () => {
       setLoading(true); // 데이터 요청 시작 시 로딩 상태로 변경
       try {
+        const params = {
+          page: currentPage,
+          size: 10,
+          sort: 'createdAt,desc',
+        };
+        if (search) {
+          params.keyword = search;
+        }
         // 백엔드에 현재 페이지, 페이지 크기, 정렬 방식을 파라미터로 전달
-        const response = await apiClient.get('/notices', {
-          params: {
-            page: currentPage,
-            size: 10, // 한 페이지에 10개씩
-            sort: 'createdAt,desc', // 최신 작성일 순으로 정렬
-          },
-        });
+        const response = await apiClient.get('/notice', { params });
 
         // 응답 받은 데이터로 state 업데이트
         setNotices(response.data.content); // 실제 목록 데이터
@@ -46,14 +50,40 @@ function NoticeList() {
     };
 
     fetchNotices();
-  }, [currentPage]); // currentPage가 변경될 때마다 API를 다시 호출
+  }, [currentPage, search]); // currentPage가 변경될 때마다 API를 다시 호출
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearch(searchInput.trim());
+    setCurrentPage(0);
+  };
+  const handleClearSearch = () => {
+    setSearch('');
+    setSearchInput('');
+    setCurrentPage(0);
+  };
 
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>공지사항</h2>
 
-      {/* 검색창 (기능은 비활성화 상태) */}
-      <div className={styles.searchSection}>{/* ... */}</div>
+      <div className={styles.topBar}>
+        <div className={styles.searchSection}>
+          <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="제목 또는 내용 검색"
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+            />
+            <button className={styles.searchButton} type="submit">검색</button>
+          </form>
+        </div>
+        <button className={styles.writeButton} onClick={() => navigate('/notice/write')}>
+          글쓰기
+        </button>
+      </div>
 
       {/* 공지사항 테이블 */}
       <table className={styles.noticeTable}>
@@ -63,19 +93,20 @@ function NoticeList() {
             <th>제목</th>
             <th>작성자</th>
             <th>작성일</th>
+            <th>조회수</th>
           </tr>
         </thead>
         <tbody className={styles.tableBody}>
           {/* 3. 받아온 데이터를 화면에 렌더링하는 로직 */}
           {loading ? (
             <tr>
-              <td colSpan={4} className={styles.noData}>
+              <td colSpan={5} className={styles.noData}>
                 로딩 중...
               </td>
             </tr>
           ) : notices.length === 0 ? (
             <tr>
-              <td colSpan={4} className={styles.noData}>
+              <td colSpan={5} className={styles.noData}>
                 공지사항이 없습니다.
               </td>
             </tr>
@@ -89,8 +120,9 @@ function NoticeList() {
                 >
                   {notice.title}
                 </td>
-                <td>{notice.userId}</td>{' '}
+                <td>{notice.userId}</td>
                 <td>{new Date(notice.createdAt).toLocaleDateString()}</td>
+                <td>{notice.viewCount !== undefined ? notice.viewCount : '-'}</td>
               </tr>
             ))
           )}
