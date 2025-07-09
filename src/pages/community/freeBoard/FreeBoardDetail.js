@@ -72,7 +72,7 @@ const postList = [
     content: '처음엔 실패했지만 지금은 잘해요!',
     views: 189,
     likes: 32,
-    comments: 7,
+    commentCount: 7,
     comments: [
       {
         id: 1,
@@ -171,7 +171,7 @@ function FreeBoardDetail() {
 
       {/* 제목 + 작성자 + 날짜 */}
       <div className={styles.titleWrapper}>
-        <div ccalssName={styles.titleRow}>
+        <div className={styles.titleRow}>
           <h2 className={styles.title}>{post.title}</h2>
           <div className={styles.editArea}>
             <button>✏ 수정</button>

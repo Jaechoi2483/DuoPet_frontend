@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from './NoticeDetail.module.css';
 
 function NoticeDetail() {
+  // eslint-disable-next-line no-unused-vars
   const { noticeId } = useParams();
   const navigate = useNavigate();
 
