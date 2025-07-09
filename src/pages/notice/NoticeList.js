@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../../utils/axios';
+import { AuthContext } from '../../AuthProvider';
+
 import styles from './NoticeList.module.css';
 
 function NoticeList() {
@@ -10,11 +13,6 @@ function NoticeList() {
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
-
-  const [notices] = useState(dummyNotices); // 실제로는 API로 받아옴
-  const [pageInfo] = useState({ totalPages: 1, number: 0 });
-  const [currentPage, setCurrentPage] = useState(0);
-  const [loading] = useState(false);
   const navigate = useNavigate();
 
   // 2. API를 호출하여 데이터를 가져오는 로직
@@ -76,12 +74,17 @@ function NoticeList() {
               type="text"
               placeholder="제목 또는 내용 검색"
               value={searchInput}
-              onChange={e => setSearchInput(e.target.value)}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className={styles.searchButton} type="submit">검색</button>
+            <button className={styles.searchButton} type="submit">
+              검색
+            </button>
           </form>
         </div>
-        <button className={styles.writeButton} onClick={() => navigate('/notice/write')}>
+        <button
+          className={styles.writeButton}
+          onClick={() => navigate('/notice/write')}
+        >
           글쓰기
         </button>
       </div>
@@ -123,7 +126,9 @@ function NoticeList() {
                 </td>
                 <td>{notice.userId}</td>
                 <td>{new Date(notice.createdAt).toLocaleDateString()}</td>
-                <td>{notice.viewCount !== undefined ? notice.viewCount : '-'}</td>
+                <td>
+                  {notice.viewCount !== undefined ? notice.viewCount : '-'}
+                </td>
               </tr>
             ))
           )}
