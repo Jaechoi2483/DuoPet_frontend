@@ -3,8 +3,10 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
+import AboutPage from '../pages/AboutPage';
 import HomePage from '../pages/HomePage';
 import DuoPetGreeting from '../components/common/DuoPetGreeting';
+
 import noticeRoutes from './noticeRoutes';
 import userRoutes from './userRoutes';
 import freeBoardRoutes from './freeBoardRoutes';
@@ -18,6 +20,7 @@ import qnaRoutes from './qnaRoutes';
 const AppRouter = () => {
   return (
     <Routes>
+      <Route path="/about" element={<AboutPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/greeting" element={<DuoPetGreeting />} />
       {userRoutes}

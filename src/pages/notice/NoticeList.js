@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../utils/axios';
-import { AuthContext } from '../../AuthProvider';
-
 import styles from './NoticeList.module.css';
 
 function NoticeList() {
@@ -14,6 +11,10 @@ function NoticeList() {
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
+  const [notices] = useState(dummyNotices); // 실제로는 API로 받아옴
+  const [pageInfo] = useState({ totalPages: 1, number: 0 });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading] = useState(false);
   const navigate = useNavigate();
 
   // 2. API를 호출하여 데이터를 가져오는 로직
@@ -86,6 +87,7 @@ function NoticeList() {
       </div>
 
       {/* 공지사항 테이블 */}
+
       <table className={styles.noticeTable}>
         <thead className={styles.tableHeader}>
           <tr>
@@ -97,7 +99,6 @@ function NoticeList() {
           </tr>
         </thead>
         <tbody className={styles.tableBody}>
-          {/* 3. 받아온 데이터를 화면에 렌더링하는 로직 */}
           {loading ? (
             <tr>
               <td colSpan={5} className={styles.noData}>
@@ -116,7 +117,7 @@ function NoticeList() {
                 <td>{notice.contentId}</td>
                 <td
                   className={styles.noticeTitle}
-                  onClick={() => navigate(`/notice/${notice.contentId}`)} // 제목 클릭 시 상세 페이지로 이동
+                  onClick={() => navigate(`/notice/${notice.contentId}`)}
                 >
                   {notice.title}
                 </td>
@@ -128,13 +129,11 @@ function NoticeList() {
           )}
         </tbody>
       </table>
-
-      {/* 4. 페이지네이션 기능 구현 */}
       <div className={styles.pagination}>
         <button
           className={styles.pageButton}
           onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 0} // 첫 페이지일 때 '이전' 비활성화
+          disabled={currentPage === 0}
         >
           이전
         </button>
@@ -144,7 +143,7 @@ function NoticeList() {
         <button
           className={styles.pageButton}
           onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage >= pageInfo.totalPages - 1} // 마지막 페이지일 때 '다음' 비활성화
+          disabled={currentPage >= pageInfo.totalPages - 1}
         >
           다음
         </button>

@@ -12,18 +12,6 @@ const apiClient = axios.create({
 
 // 요청 인터셉터 (토큰 처리)
 apiClient.interceptors.request.use(
-  (response) => {
-    // 요청이 성공해서, ok 가 전송왔을 때 공통 처리 내용 작성함
-    // await 사용으로 .then((response) => { 성공시 처리내용 }) 생략됨 => 이 부분을 담당함
-    console.log('Axios 요청 성공 : ', response);
-    return response;
-  },
-  (error) => {
-    // 요청이 실패해서, fail 코드가 전송왔을 때 공통 처리 내용 작성함
-    // await 사용으로 .catch((error) => { 실패시 처리내용 }) 생략됨 => 이 부분을 담당함
-    console.error('Axios 응답 에러 : ', error);
-    return Promise.reject(error);
-  },
   (config) => {
     // axios 로 요청시 같이 전송보낼 토큰 지정 처리
     // 로그인 성공시 저장해 놓은 localStorage 에서 토큰을 꺼냄
@@ -38,6 +26,22 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// 응답 인터셉터
+apiClient.interceptors.response.use(
+  (response) => {
+    // 요청이 성공해서, ok 가 전송왔을 때 공통 처리 내용 작성함
+    // await 사용으로 .then((response) => { 성공시 처리내용 }) 생략됨 => 이 부분을 담당함
+    console.log('Axios 요청 성공 : ', response);
+    return response;
+  },
+  (error) => {
+    // 요청이 실패해서, fail 코드가 전송왔을 때 공통 처리 내용 작성함
+    // await 사용으로 .catch((error) => { 실패시 처리내용 }) 생략됨 => 이 부분을 담당함
+    console.error('Axios 응답 에러 : ', error);
+    return Promise.reject(error);
+  }
 );
 
 export default apiClient;

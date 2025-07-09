@@ -81,8 +81,6 @@ export const AuthProvider = ({ children }) => {
 
   // 로그아웃 함수
   const logoutAndRedirect = () => {
-    if (!authInfo.isLoggedIn) return;
-
     localStorage.clear();
     setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
     window.location.href = '/';

@@ -4,6 +4,8 @@ import styles from './NoticeDetail.module.css';
 import apiClient from '../../utils/axios';
 
 function NoticeDetail() {
+  // eslint-disable-next-line no-unused-vars
+  const { noticeId } = useParams();
   const { contentId } = useParams();
   const navigate = useNavigate();
 
