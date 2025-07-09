@@ -10,6 +10,7 @@ import userRoutes from './userRoutes';
 import freeBoardRoutes from './freeBoardRoutes';
 import healthRoutes from './healthRoutes';
 import adminRoutes from './adminRoutes';
+import qnaRoutes from './qnaRoutes';
 
 const AppRouter = () => {
   return (
@@ -21,6 +22,7 @@ const AppRouter = () => {
       {freeBoardRoutes}
       {healthRoutes}
       {adminRoutes}
+      {qnaRoutes}
     </Routes>
   );
 };
