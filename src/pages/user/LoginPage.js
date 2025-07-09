@@ -1,15 +1,49 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 
 function LoginPage() {
   const [loginId, setLoginId] = useState('');
-  const [password, setPassword] = useState('');
+  const [userPwd, setUserPwd] = useState('');
   const [rememberId, setRememberId] = useState(false);
   const [autoLogin, setAutoLogin] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('로그인 시도:', { loginId, password, rememberId, autoLogin });
+    console.log('로그인 시도:', { loginId, userPwd, rememberId, autoLogin });
+
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          loginId: loginId,
+          userPwd: userPwd,
+        }),
+        credentials: 'include', // CORS 설정 시 allowCredentials(true) 필요
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || '로그인 실패');
+        return;
+      }
+
+      // JWT 토큰 저장
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
+      // 로그인 성공 안내
+      alert(`${data.nickname}님 환영합니다!`);
+      window.location.href = '/mypage';
+    } catch (error) {
+      console.error('로그인 에러:', error);
+      alert('서버와의 연결에 실패했습니다.');
+    }
   };
 
   return (
@@ -28,8 +62,8 @@ function LoginPage() {
         <input
           type="password"
           placeholder="비밀번호를 입력하세요"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={userPwd}
+          onChange={(e) => setUserPwd(e.target.value)}
         />
         <div className={styles.checkboxGroup}>
           <label>
@@ -63,8 +97,18 @@ function LoginPage() {
         </div>
 
         <div className={styles.loginLinks}>
-          <a href="/signup">회원가입</a>
-          <a href="/find-password">비밀번호 찾기</a>
+          <span
+            onClick={() => navigate('/signup/step1')}
+            className={styles.link}
+          >
+            회원가입
+          </span>
+          <span
+            onClick={() => navigate('/find-password')}
+            className={styles.link}
+          >
+            비밀번호 찾기
+          </span>
         </div>
       </form>
     </div>

@@ -290,3 +290,33 @@
     transform: scale(1.1);
   }
 }
+
+/* 로그인한 사용자 섹션 */
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 역할 뱃지 (admin, vet, shelter 전용) */
+.roleBadge {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #dbeafe; /* 연한 파란색 배경 */
+  color: #2563eb; /* 파란 글자 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+/* 마이페이지 텍스트 */
+.myPage {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  white-space: nowrap;
+}

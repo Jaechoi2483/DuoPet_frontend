@@ -1,0 +1,127 @@
+/* src/pages/signup/SignupStep2.module.css */
+
+.wrapper {
+  max-width: 460px;
+  margin: 60px auto;
+  padding: 40px 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  font-family: 'Arial', sans-serif;
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.stepHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+}
+
+.stepItem,
+.stepItemActive {
+  flex: 1;
+  text-align: center;
+  padding-bottom: 6px;
+  border-bottom: 3px solid #ddd;
+}
+
+.stepItemActive {
+  color: #2196f3;
+  border-bottom: 3px solid #2196f3;
+  font-weight: 600;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.genderGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.genderCard {
+  flex: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px 0;
+  border-radius: 6px;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.genderCard input {
+  display: none;
+}
+
+.selected {
+  border: 2px solid #2196f3;
+  background-color: #e3f2fd;
+  color: #2196f3;
+  font-weight: 600;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.prevButton,
+.nextButton {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.prevButton {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.prevButton:hover {
+  background-color: #5a6268;
+}
+
+.nextButton {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.nextButton:hover {
+  background-color: #0056b3;
+}
