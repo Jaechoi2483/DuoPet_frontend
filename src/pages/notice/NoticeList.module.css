@@ -53,6 +53,37 @@
   cursor: not-allowed;
 }
 
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.searchSection {
+  display: flex;
+  align-items: center;
+}
+.searchForm {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.writeButton {
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.writeButton:hover {
+  background: #1251a3;
+}
+
 .noticeTable {
   width: 100%;
   border-collapse: collapse;

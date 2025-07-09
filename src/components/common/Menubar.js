@@ -1,15 +1,11 @@
 // src/components/common/Menubar.js
 
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import apiClient from '../../utils/axios';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
 
 import logo from '../../assets/images/logo3.png';
 import styles from './Menubar.module.css'; // 파일명 변경: Header.module.css -> Menubar.module.css
-
-import Modal from './Modal';
-// import Login from '../../pages/member/Login';
 
 // 메뉴 데이터 정의 (이전과 동일)
 const menuData = [
@@ -57,6 +53,19 @@ const menuData = [
   },
 ];
 
+const getRoleBadge = (role) => {
+  switch (role) {
+    case 'admin':
+      return '관';
+    case 'vet':
+      return '전';
+    case 'shelter':
+      return '보';
+    default:
+      return null;
+  }
+};
+
 function Menubar({
   // 함수 컴포넌트 이름 변경: Header -> Menubar
   updateNoticeResults,
@@ -64,17 +73,17 @@ function Menubar({
   updateMemberResults,
   resetSearchInput,
 }) {
-  const { isLoggedIn, username, logoutAndRedirect } = useContext(AuthContext);
+  const { isLoggedIn, username, role, logoutAndRedirect } =
+    useContext(AuthContext);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     logoutAndRedirect();
   };
 
   const handleSignup = () => {
-    navigate('/signup');
+    navigate('/signup/step1');
   };
 
   // const handleLoginClick = () => {
@@ -104,7 +113,11 @@ function Menubar({
               // onMouseEnter와 onMouseLeave 이벤트는 이제 제거합니다.
             >
               {menu.title === '건강 관리' ? (
-                <Link to="/health" className={styles.menuTitle} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link
+                  to="/health"
+                  className={styles.menuTitle}
+                  style={{ textDecoration: 'none', color: 'inherit' }}
+                >
                   {menu.title}
                 </Link>
               ) : (
@@ -128,12 +141,16 @@ function Menubar({
       {/* 로그인 / 로그아웃 버튼, 회원가입 버튼, 알림 아이콘 */}
       <div className={styles.rightSection}>
         {isLoggedIn ? (
-          <>
-            <span className={styles.username}>{username} 님</span>
+          <div className={styles.userSection}>
+            {role !== 'user' && (
+              <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
+            )}
+            <span className={styles.username}>{username}님</span>
+            <span className={styles.myPage}>마이페이지 ▼</span>
             <button className={styles.authButton} onClick={handleLogout}>
               로그아웃
             </button>
-          </>
+          </div>
         ) : (
           <>
             <button

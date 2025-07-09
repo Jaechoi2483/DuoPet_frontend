@@ -89,3 +89,9 @@ input[type='password'] {
   justify-content: space-between;
   font-size: 14px;
 }
+
+.link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}

@@ -1,137 +1,199 @@
+/* src/pages/health/HospitalVisit.module.css */
 
 .container {
-    padding: 20px;
+  padding: 20px;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .title {
-    font-size: 1.25rem;
-    font-weight: 600;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
 }
 
 .addButton {
-    padding: 8px 16px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.addButton:hover {
+  background: #2563eb;
 }
 
+/* --- 상단 요약 정보 --- */
 .summary {
-    display: flex;
-    justify-content: space-around;
-    background-color: #f3f4f6;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryItem span {
+  font-size: 0.875rem;
+  color: #6b7280;
 }
 
 .summaryItem strong {
-    color: #3b82f6;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
+/* --- 방문 기록 카드 리스트 --- */
 .visitList {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .visitItem {
-    background-color: #f9fafb;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
 .visitHeader {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .hospitalName {
-    font-weight: bold;
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #1f2937;
 }
 
 .visitDate {
-    font-size: 0.9rem;
-    color: #6b7280;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.visitBody {
+  font-size: 0.875rem;
+  color: #4b5563;
 }
 
 .visitBody p {
-    margin: 5px 0;
-    font-size: 0.9rem;
+  margin: 0 0 8px 0;
 }
 
-/* Modal styles */
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.visitBody p:last-child {
+  margin-bottom: 0;
 }
 
-.modalContainer {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 500px;
+.visitFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
+.cost {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+/* --- 모달 스타일 (다른 탭과 동일) --- */
 .modalHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
 }
-
 .modalTitle {
-    font-size: 1.2rem;
-    font-weight: bold;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
 }
-
-.closeButton {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
 .modalContent {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  padding: 24px;
 }
 
-.formInput, .formTextarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
 }
 
+.formGroup {
+  margin-bottom: 16px;
+}
+.formLabel {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+}
+.formInput,
+.formTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+.formInput:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+.formTextarea {
+  resize: vertical;
+}
 .modalFooter {
-    margin-top: 20px;
-    text-align: right;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
 }
-
-.saveButton {
-    padding: 10px 20px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.submitButton {
+  padding: 10px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.submitButton:hover {
+  background: #2563eb;
 }

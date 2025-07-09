@@ -58,6 +58,38 @@
   background: #388e3c;
 }
 
+.editButton {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 10px;
+}
+.editButton:hover {
+  background: #1251a3;
+}
+
+.deleteButton {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: #e57373;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 10px;
+}
+.deleteButton:hover {
+  background: #b71c1c;
+}
+
 .attachments {
   margin-bottom: 24px;
   padding: 14px 0 0 0;
