@@ -1,0 +1,358 @@
+/* src/pages/info/FindShelterPage.module.css */
+
+.pageContainer {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+/* 검색 섹션 */
+.searchSection {
+  margin-bottom: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.searchBar {
+  margin-bottom: 15px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filterButtons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+}
+
+.filterButton:hover {
+  background-color: #f3f4f6;
+}
+
+.filterButton.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+/* 콘텐츠 컨테이너 */
+.contentContainer {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 지도 영역 */
+.mapArea {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  overflow: hidden;
+  height: 600px;
+}
+
+.mapHeader {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.mapHeader h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+/* 보호소 목록 */
+.listArea {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  height: 600px;
+  overflow: hidden;
+}
+
+.shelterList {
+  height: 100%;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.shelterCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.shelterCard:hover {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.shelterCard.selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.shelterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.shelterName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shelterName h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1f2937;
+}
+
+.typeBadge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.typeBadge.public {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.typeBadge.private {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.typeBadge.organization {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.shelterMeta {
+  text-align: right;
+}
+
+.occupancy {
+  display: block;
+  background: #f3f4f6;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.distance {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.shelterInfo {
+  space-y: 8px;
+}
+
+.address, .phone, .hours {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* 별점 스타일 */
+.starRating {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 8px 0;
+}
+
+.star {
+  font-size: 14px;
+}
+
+.starFilled {
+  color: #fbbf24;
+}
+
+.starEmpty {
+  color: #d1d5db;
+}
+
+.ratingText {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 시설 태그 */
+.facilities {
+  margin: 12px 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.facilityTag {
+  display: inline-block;
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 2px 6px;
+  border-radius: 8px;
+  margin-right: 4px;
+  font-size: 12px;
+}
+
+/* 설명 */
+.description {
+  margin: 12px 0;
+}
+
+.description p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* 액션 버튼 */
+.shelterActions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.detailButton, .visitButton {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.detailButton {
+  background: white;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+}
+
+.detailButton:hover {
+  background: #f9fafb;
+}
+
+.visitButton {
+  background: #10b981;
+  border: 1px solid #10b981;
+  color: white;
+}
+
+.visitButton:hover {
+  background: #059669;
+}
+
+/* 검색 결과 없음 */
+.noResults {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+}
+
+.noResultsIcon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+
+.noResults h3 {
+  margin: 0 0 8px 0;
+  color: #1f2937;
+}
+
+.noResults p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .contentContainer {
+    grid-template-columns: 1fr;
+  }
+  
+  .mapArea {
+    height: 300px;
+  }
+  
+  .listArea {
+    height: 400px;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .filterButtons {
+    justify-content: center;
+  }
+  
+  .shelterHeader {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .shelterMeta {
+    text-align: left;
+  }
+}
