@@ -1,56 +1,45 @@
 // src/pages/community/freeBoard/FreeBoardList.js
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import apiClient from '../../../utils/axios'; // axios 인스턴스
 import styles from './FreeBoardList.module.css';
 
 function FreeBoardList() {
-  const navigate = useNavigate(); // 초기화
+  const navigate = useNavigate();
+  const [postList, setPostList] = useState([]);
+  const [topLikedPosts, setTopLikedPosts] = useState([]);
+  const [topViewedPosts, setTopViewedPosts] = useState([]);
 
-  // 더미 게시글 데이터 (id 포함)
-  const topLikedPosts = [
-    { id: 1, title: '우리 고양이가 너무 귀여워요', likes: 63 },
-    { id: 2, title: '강아지 산책 꿀팁', likes: 52 },
-    { id: 3, title: '냥이 화장실 훈련 성공기', likes: 41 },
-  ];
+  useEffect(() => {
+    // 전체 게시글
+    apiClient
+      .get('/board/free')
+      .then((res) => {
+        console.log('📌 전체 게시글 응답:', res.data);
+        setPostList(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch((err) => console.error('자유게시판 전체 조회 실패:', err));
 
-  const topViewedPosts = [
-    { id: 4, title: '반려동물 건강검진 주기?', views: 189 },
-    { id: 5, title: '강아지 예방접종 순서', views: 171 },
-    { id: 6, title: '우리집 냥이 관절 관리법', views: 158 },
-  ];
+    // 좋아요 TOP3
+    apiClient
+      .get('/board/top-liked')
+      .then((res) => {
+        console.log('🔥 좋아요 TOP3 응답:', res.data);
+        setTopLikedPosts(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch((err) => console.error('TOP 좋아요 게시글 조회 실패:', err));
 
-  const postList = [
-    {
-      id: 7,
-      title: ' 우리 강아지 배변훈련 성공 스토리',
-      writer: '홍길동',
-      date: '2025.5.28',
-      views: 189,
-      likes: 32,
-      comments: 7,
-    },
-    {
-      id: 8,
-      title: ' 고양이 츄르 종류 추천해주세요',
-      writer: '이슬기',
-      date: '2025.5.27',
-      views: 95,
-      likes: 12,
-      comments: 3,
-    },
-    {
-      id: 9,
-      title: ' 초보 집사들을 위한 준비물 리스트',
-      writer: '김철수',
-      date: '2025.5.25',
-      views: 210,
-      likes: 41,
-      comments: 10,
-    },
-  ];
+    // 조회수 TOP3
+    apiClient
+      .get('/board/top-viewed')
+      .then((res) => {
+        console.log('👀 조회수 TOP3 응답:', res.data);
+        setTopViewedPosts(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch((err) => console.error('TOP 조회수 게시글 조회 실패:', err));
+  }, []);
 
-  // 상세페이지 이동 함수
   const handleClick = (id) => {
     navigate(`/community/freeBoard/${id}`);
   };
@@ -77,30 +66,30 @@ function FreeBoardList() {
           <div className={styles.cardList}>
             {topLikedPosts.map((post) => (
               <div
-                key={post.id}
+                key={post.contentId}
                 className={styles.card}
-                onClick={() => handleClick(post.id)}
+                onClick={() => handleClick(post.contentId)}
               >
                 <span className={styles.badge}>자유게시판</span>
                 <p className={styles.cardTitle}>{post.title}</p>
-                <p className={styles.cardStats}>❤ {post.likes}</p>
+                <p className={styles.cardStats}>❤ {post.likeCount}</p>
               </div>
             ))}
           </div>
         </div>
 
         <div className={styles.topBox}>
-          <h3>👀 조회수 많은 글</h3>
+          <h3>👁️ 조회수 많은 글</h3>
           <div className={styles.cardList}>
             {topViewedPosts.map((post) => (
               <div
-                key={post.id}
+                key={post.contentId}
                 className={styles.card}
-                onClick={() => handleClick(post.id)}
+                onClick={() => handleClick(post.contentId)}
               >
                 <span className={styles.badge}>자유게시판</span>
                 <p className={styles.cardTitle}>{post.title}</p>
-                <p className={styles.cardStats}>👁‍🗨 {post.views}</p>
+                <p className={styles.cardStats}>👁 {post.viewCount}</p>
               </div>
             ))}
           </div>
@@ -111,18 +100,19 @@ function FreeBoardList() {
       <div className={styles.postList}>
         {postList.map((post) => (
           <div
-            key={post.id}
+            key={post.contentId}
             className={styles.postItem}
-            onClick={() => handleClick(post.id)}
+            onClick={() => handleClick(post.contentId)}
           >
             <div className={styles.postTitle}>
               <span className={styles.badge}>자유게시판</span>
               <span>{post.title}</span>
             </div>
             <div className={styles.postMeta}>
-              <span>{post.writer}</span> | <span>{post.date}</span> |
-              <span>👁 {post.views}</span> <span>❤ {post.likes}</span>{' '}
-              <span>💬 {post.comments}</span>
+              <span>작성자ID: {post.userId}</span> |
+              <span>{new Date(post.createdAt).toLocaleDateString()}</span> |
+              <span>👁 {post.viewCount}</span>
+              <span>❤ {post.likeCount}</span>
             </div>
           </div>
         ))}
