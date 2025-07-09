@@ -1,15 +1,11 @@
 // src/components/common/Menubar.js
 
-import React, { useState, useContext } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import apiClient from '../../utils/axios';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
 
 import logo from '../../assets/images/logo3.png';
 import styles from './Menubar.module.css'; // 파일명 변경: Header.module.css -> Menubar.module.css
-
-import Modal from './Modal';
-// import Login from '../../pages/member/Login';
 
 // 메뉴 데이터 정의 (이전과 동일)
 const menuData = [
@@ -81,7 +77,6 @@ function Menubar({
     useContext(AuthContext);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleLogout = () => {
     logoutAndRedirect();

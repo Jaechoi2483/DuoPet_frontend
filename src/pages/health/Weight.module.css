@@ -1,152 +1,208 @@
+/* src/pages/health/Weight.module.css */
 
 .container {
-    padding: 20px;
+  padding: 20px;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
 }
 
-.title {
-    font-size: 1.25rem;
-    font-weight: 600;
+/* --- 상단 섹션 (그래프, 정보) --- */
+.topSection {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
-.addButton {
-    padding: 8px 16px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.chartSection .chartPlaceholder {
+  height: 250px;
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  color: #9ca3af;
+  font-size: 1.5rem;
 }
-
-.contentGrid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.chartSection .placeholder {
-    height: 200px;
-    background-color: #f3f4f6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    color: #9ca3af;
+.chartPlaceholder p {
+  font-size: 0.875rem;
+  margin-top: 8px;
 }
 
 .infoSection {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .infoCard {
-    background-color: #f9fafb;
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.infoCard span:last-child {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f2937;
 }
 
 .currentWeight {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #3b82f6;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #3b82f6 !important;
 }
 
-.status {
-    color: #10b981;
-    font-weight: bold;
+.statusNormal {
+  color: #10b981 !important;
 }
 
-.historySection h4 {
-    margin-bottom: 10px;
+/* --- 하단 섹션 (히스토리) --- */
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addButton {
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.addButton:hover {
+  background: #2563eb;
 }
 
 .historyList {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .historyItem {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background-color: #f9fafb;
-    border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
 }
 
-/* Modal styles */
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.weightInfo {
+  display: flex;
+  flex-direction: column;
 }
 
-.modalContainer {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
+.weightValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
 }
 
+.weightDate {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+.weightChange {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.weightChange.increase {
+  color: #ef4444; /* 빨간색 (증가) */
+}
+.weightChange.decrease {
+  color: #3b82f6; /* 파란색 (감소) */
+}
+
+/* --- 모달 스타일 (다른 탭과 동일) --- */
 .modalHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
 }
-
 .modalTitle {
-    font-size: 1.2rem;
-    font-weight: bold;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
 }
-
-.closeButton {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
+.modalContent {
+  padding: 24px;
 }
-
-.modalContent .formGroup {
-    margin-bottom: 15px;
+.modalSubtitle {
+  color: #6b7280;
+  margin-bottom: 24px;
+  font-size: 0.875rem;
 }
-
-.modalContent .formLabel {
-    display: block;
-    margin-bottom: 5px;
+.formGroup {
+  margin-bottom: 20px;
 }
-
-.modalContent .formInput {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.formLabel {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
 }
-
+.formInput,
+.formSelect,
+.formTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
 .modalFooter {
-    text-align: right;
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
 }
-
-.saveButton {
-    padding: 10px 20px;
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+.submitButton {
+  padding: 10px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.submitButton:hover {
+  background: #2563eb;
 }
