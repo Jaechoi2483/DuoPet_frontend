@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }) => {
         setAuthInfo({
           isLoggedIn: true,
           role: parsedToken.role,
-          username: parsedToken.name,
+          username: parsedToken.nickname,
           userid: parsedToken.sub,
         });
       } else {
@@ -80,9 +80,27 @@ export const AuthProvider = ({ children }) => {
   }, []); //useEffect
 
   // 로그아웃 함수
-  const logoutAndRedirect = () => {
+  const logoutAndRedirect = async () => {
     if (!authInfo.isLoggedIn) return;
 
+    const accessToken = localStorage.getItem('accessToken');
+
+    try {
+      await apiClient.post(
+        '/logout',
+        {}, // POST지만 body는 없음
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      console.log('서버에 로그아웃 요청 성공');
+    } catch (error) {
+      console.error('서버 로그아웃 요청 실패:', error.response?.data);
+    }
+
+    // 클라이언트 토큰 삭제
     localStorage.clear();
     setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
     window.location.href = '/';
