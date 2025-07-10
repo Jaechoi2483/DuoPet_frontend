@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
         setAuthInfo({
           isLoggedIn: true,
           role: parsedToken.role,
-          username: parsedToken.name,
+          username: parsedToken.nickname,
           userid: parsedToken.sub,
         });
         console.log('updateTokens:authInfo : ', authInfo);

@@ -1,4 +1,4 @@
-/* src/pages/signup/Signup.module.css */
+/* src/pages/signup/SignupStep1.module.css */
 
 .wrapper {
   width: 400px;
@@ -26,29 +26,32 @@
 /* 단계 진행 바 */
 .stepHeader {
   display: flex;
-  justify-content: center;
-  margin-bottom: 25px;
-  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 0;
+  gap: 0; /* stepItem의 flex로 균등 분배함 */
+}
+
+.stepItem,
+.stepItemActive {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  padding-bottom: 8px;
+  font-weight: 500;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .stepItem {
-  padding-bottom: 6px;
-  border-bottom: 4px solid #ddd;
   color: #888;
-  font-weight: 500;
-  font-size: 14px;
-  width: 100px;
-  text-align: center;
+  border-color: #ddd;
 }
 
 .stepItemActive {
-  padding-bottom: 6px;
-  border-bottom: 4px solid #2196f3;
   color: #2196f3;
+  border-color: #2196f3;
   font-weight: 600;
-  font-size: 14px;
-  width: 100px;
-  text-align: center;
 }
 
 /* 입력폼 */
@@ -106,6 +109,7 @@
 }
 
 /* 버튼 */
+.prevButton,
 .nextButton {
   width: 100%;
   padding: 12px;
@@ -117,7 +121,23 @@
   cursor: pointer;
 }
 
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.prevButton,
+.nextButton {
+  flex: 1;
+}
+
 .nextButton:hover {
+  background-color: #0056b3;
+}
+
+.prevButton:hover {
   background-color: #0056b3;
 }
 
@@ -159,4 +179,151 @@
   font-size: 14px;
   margin: 10px 0 0 2px;
   font-weight: 500;
+}
+
+/* 성별 카드형 라디오 버튼 */
+.genderGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.genderCard {
+  flex: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 10px 0;
+  border-radius: 6px;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.genderCard input {
+  display: none;
+}
+
+.selected {
+  border: 2px solid #2196f3;
+  background-color: #e3f2fd;
+  color: #2196f3;
+  font-weight: 600;
+}
+
+.imagePreview {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.imagePreview img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  background-color: #f8f8f8;
+}
+
+/* 3단계 - 가입 유형 카드 */
+.roleBox {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.radioCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #f6f9ff;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #c2d9ff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.radioCard:hover {
+  background-color: #eaf2ff;
+}
+
+.radioCard input[type='radio'] {
+  margin-top: 6px;
+}
+
+.radioContent {
+  flex: 1;
+}
+
+.radioContent strong {
+  font-size: 15px;
+}
+
+.radioContent p {
+  font-size: 13px;
+  margin-top: 4px;
+  color: #555;
+}
+
+/* 3단계 - 추가 정보 박스 */
+.additionalBox {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #f1f5ff;
+  border-radius: 10px;
+  border: 1px solid #c2d9ff;
+}
+
+.additionalBox h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #1a237e;
+}
+
+.additionalBox input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.notice {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #555;
+  background-color: #e3f2fd;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #90caf9;
+}
+
+.formGroup input[type='file'] {
+  margin-top: 10px;
+}
+
+.formGroup select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #fff;
+  box-sizing: border-box;
+  appearance: none; /* 브라우저 기본 화살표 제거 */
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M0%200l5%206%205-6z%22/%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px 6px;
+}
+
+.formGroup select:focus {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 3px rgba(33, 150, 243, 0.5);
 }

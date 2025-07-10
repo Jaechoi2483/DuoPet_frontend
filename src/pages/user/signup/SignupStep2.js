@@ -1,22 +1,72 @@
-// src/pages/signup/SignupStep2.js
-
-import React, { useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './SignupStep2.module.css';
+import styles from './SignupStep1.module.css'; // 공통 CSS
 import { SignupContext } from '../../../components/context/SignupContext';
+import apiClient from '../../../utils/axios';
 
 function SignupStep2() {
   const navigate = useNavigate();
   const { signupData, setSignupData } = useContext(SignupContext);
+  const [nicknameAvailable, setNicknameAvailable] = useState(null);
+  const [emailAvailable, setEmailAvailable] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    console.log('[DEBUG] 1단계 입력값:', signupData);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSignupData({ ...signupData, [name]: value });
   };
 
-  const handleNext = () => {
-    const { userName, nickname, phone, age, gender, address, userEmail } =
-      signupData;
+  const checkNickname = async () => {
+    if (!signupData.nickname || signupData.nickname.trim() === '') {
+      setError('닉네임을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const res = await apiClient.get(
+        `/users/check-nickname?nickname=${signupData.nickname}`
+      );
+      setNicknameAvailable(!res.data);
+    } catch (err) {
+      console.error('[닉네임 중복 확인 오류]', err);
+      setError('닉네임 확인 중 오류 발생');
+    }
+  };
+
+  const checkEmail = async () => {
+    if (!signupData.userEmail) {
+      setError('이메일을 입력해주세요.');
+      return;
+    }
+    try {
+      const res = await apiClient.get(
+        `/users/check-email?userEmail=${signupData.userEmail}`
+      );
+      setEmailAvailable(!res.data); // true = 중복 → 사용 불가
+    } catch (err) {
+      console.error('[이메일 중복 확인 오류]', err);
+      alert('이메일 확인 중 오류 발생');
+    }
+  };
+
+  const handleNext = async () => {
+    const {
+      userName,
+      nickname,
+      phone,
+      age,
+      gender,
+      address,
+      userEmail,
+      profileFile,
+    } = signupData;
+
+    setError('');
+
     if (
       !userName ||
       !nickname ||
@@ -26,10 +76,35 @@ function SignupStep2() {
       !address ||
       !userEmail
     ) {
-      alert('모든 항목을 입력해주세요.');
+      setError('모든 항목을 입력해주세요.');
       return;
     }
-    navigate('/signup/step3');
+
+    try {
+      const formData = new FormData();
+      formData.append(
+        'data',
+        new Blob([JSON.stringify(signupData)], { type: 'application/json' })
+      );
+      if (profileFile) formData.append('file', profileFile);
+
+      const response = await fetch('/users/signup/step2', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        setSignupData({ ...signupData, ...result });
+        navigate('/signup/step3');
+      } else {
+        const errorText = await response.text();
+        setError(errorText);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('서버와 통신 중 오류가 발생했습니다.');
+    }
   };
 
   const handlePrev = () => {
@@ -47,6 +122,7 @@ function SignupStep2() {
         <div className={styles.stepItem}>기본 정보</div>
         <div className={styles.stepItemActive}>개인 정보</div>
         <div className={styles.stepItem}>가입 유형</div>
+        <div className={styles.stepItem}>약관 동의</div>
       </div>
 
       <div className={styles.formGroup}>
@@ -67,8 +143,32 @@ function SignupStep2() {
           name="nickname"
           placeholder="닉네임을 입력하세요"
           value={signupData.nickname}
-          onChange={handleChange}
+          onChange={(e) => {
+            setSignupData({ ...signupData, nickname: e.target.value });
+            setNicknameAvailable(null);
+            setError('');
+          }}
         />
+
+        {signupData.nickname === '' && error === '닉네임을 입력해주세요.' && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>
+            ❗ {error}
+          </div>
+        )}
+        {signupData.nickname && nicknameAvailable === false && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>
+            ❌ 이미 사용 중인 닉네임입니다.
+          </div>
+        )}
+        {signupData.nickname && nicknameAvailable === true && (
+          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>
+            ✅ 사용 가능한 닉네임입니다.
+          </div>
+        )}
+
+        <button type="button" onClick={checkNickname}>
+          중복 확인
+        </button>
       </div>
 
       <div className={styles.formGroup}>
@@ -96,7 +196,7 @@ function SignupStep2() {
       <div className={styles.formGroup}>
         <label>성별 *</label>
         <div className={styles.genderGroup}>
-          {['남성', '여성', '기타'].map((label) => (
+          {['남성', '여성'].map((label) => (
             <label
               key={label}
               className={`${styles.genderCard} ${
@@ -134,9 +234,65 @@ function SignupStep2() {
           name="userEmail"
           placeholder="이메일을 입력하세요"
           value={signupData.userEmail}
-          onChange={handleChange}
+          onChange={(e) => {
+            setSignupData({ ...signupData, userEmail: e.target.value });
+            setEmailAvailable(null);
+            setError('');
+          }}
+        />
+
+        {signupData.userEmail === '' && error === '이메일을 입력해주세요.' && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>
+            ❗ {error}
+          </div>
+        )}
+        {signupData.userEmail && emailAvailable === false && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>
+            ❌ 이미 사용 중인 이메일입니다.
+          </div>
+        )}
+        {signupData.userEmail && emailAvailable === true && (
+          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>
+            ✅ 사용 가능한 이메일입니다.
+          </div>
+        )}
+
+        <button type="button" onClick={checkEmail}>
+          중복 확인
+        </button>
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>프로필 이미지</label>
+        {signupData.profilePreview && (
+          <div className={styles.imagePreview}>
+            <img src={signupData.profilePreview} alt="미리보기" />
+          </div>
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (file) {
+              const previewUrl = URL.createObjectURL(file);
+              setSignupData({
+                ...signupData,
+                profilePreview: previewUrl,
+                originalFilename: file.name,
+                renameFilename: '',
+                profileFile: file,
+              });
+            }
+          }}
         />
       </div>
+
+      {error &&
+        error !== '닉네임을 입력해주세요.' &&
+        error !== '이메일을 입력해주세요.' && ( // 이메일 에러도 전역 출력에서 제외
+          <p className={styles.globalError}>{error}</p>
+        )}
 
       <div className={styles.buttonGroup}>
         <button

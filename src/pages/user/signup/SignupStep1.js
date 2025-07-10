@@ -84,6 +84,7 @@ function SignupStep1() {
         <div className={styles.stepItemActive}>기본 정보</div>
         <div className={styles.stepItem}>개인 정보</div>
         <div className={styles.stepItem}>가입 유형</div>
+        <div className={styles.stepItem}>약관 동의</div>
       </div>
 
       <div className={styles.formGroup}>
@@ -98,9 +99,6 @@ function SignupStep1() {
             setError('');
           }}
         />
-        <button type="button" onClick={checkLoginId}>
-          중복 확인
-        </button>
 
         {/* 메시지 영역 - 깔끔하게 아래로 분리 */}
         {loginId === '' && error === '아이디를 입력해주세요.' && (
@@ -118,6 +116,10 @@ function SignupStep1() {
             ✅ 사용 가능한 아이디입니다.
           </div>
         )}
+
+        <button type="button" onClick={checkLoginId}>
+          중복 확인
+        </button>
       </div>
 
       <div className={styles.formGroup}>

@@ -1,49 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './LoginPage.module.css';
+import apiClient from '../../utils/axios';
+import { AuthContext } from '../../AuthProvider';
 
 function LoginPage() {
+  const navigate = useNavigate();
+  const { updateTokens } = useContext(AuthContext);
+
   const [loginId, setLoginId] = useState('');
   const [userPwd, setUserPwd] = useState('');
   const [rememberId, setRememberId] = useState(false);
   const [autoLogin, setAutoLogin] = useState(false);
-  const navigate = useNavigate();
+  const [error, setError] = useState('');
+
+  // 저장된 ID 및 자동 로그인 여부 불러오기
+  useEffect(() => {
+    const savedId = localStorage.getItem('rememberId');
+    const auto = localStorage.getItem('autoLogin');
+    if (savedId) {
+      setLoginId(savedId);
+      setRememberId(true);
+    }
+    if (auto === 'true') {
+      setAutoLogin(true);
+    }
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('로그인 시도:', { loginId, userPwd, rememberId, autoLogin });
+    setError('');
 
     try {
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          loginId: loginId,
-          userPwd: userPwd,
-        }),
-        credentials: 'include', // CORS 설정 시 allowCredentials(true) 필요
+      const response = await apiClient.post('/login', {
+        loginId,
+        userPwd,
       });
 
-      const data = await response.json();
+      const data = response.data;
 
-      if (!response.ok) {
-        alert(data.error || '로그인 실패');
-        return;
+      // 토큰 저장 및 전역 상태 업데이트
+      updateTokens(data.accessToken, data.refreshToken);
+
+      // ID 저장/삭제
+      if (rememberId) {
+        localStorage.setItem('rememberId', loginId);
+      } else {
+        localStorage.removeItem('rememberId');
       }
 
-      // JWT 토큰 저장
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
+      // 자동 로그인 저장
+      if (autoLogin) {
+        localStorage.setItem('autoLogin', 'true');
+      } else {
+        localStorage.removeItem('autoLogin');
+      }
 
-      // 로그인 성공 안내
       alert(`${data.nickname}님 환영합니다!`);
-      window.location.href = '/mypage';
-    } catch (error) {
-      console.error('로그인 에러:', error);
-      alert('서버와의 연결에 실패했습니다.');
+      navigate('/mypage');
+    } catch (err) {
+      console.error('로그인 에러:', err);
+      if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError('서버와의 연결에 실패했습니다.');
+      }
     }
+  };
+
+  const handleSocialLogin = () => {
+    alert('SNS 로그인은 현재 준비 중입니다.');
+  };
+
+  const handleFaceLogin = () => {
+    alert('얼굴 인식 로그인은 현재 준비 중입니다.');
   };
 
   return (
@@ -65,6 +95,8 @@ function LoginPage() {
           value={userPwd}
           onChange={(e) => setUserPwd(e.target.value)}
         />
+        {error && <div className={styles.error}>{error}</div>}
+
         <div className={styles.checkboxGroup}>
           <label>
             <input
@@ -88,12 +120,36 @@ function LoginPage() {
         </button>
 
         <div className={styles.divider}>또는</div>
-        <button className={styles.faceBtn}>📷 얼굴인식 로그인</button>
+        <button
+          type="button"
+          onClick={handleFaceLogin}
+          className={styles.faceBtn}
+        >
+          📷 얼굴인식 로그인
+        </button>
 
         <div className={styles.snsLogin}>
-          <button className={`${styles.sns} ${styles.kakao}`}>카카오</button>
-          <button className={`${styles.sns} ${styles.naver}`}>네이버</button>
-          <button className={`${styles.sns} ${styles.google}`}>구글</button>
+          <button
+            type="button"
+            className={`${styles.sns} ${styles.kakao}`}
+            onClick={handleSocialLogin}
+          >
+            카카오
+          </button>
+          <button
+            type="button"
+            className={`${styles.sns} ${styles.naver}`}
+            onClick={handleSocialLogin}
+          >
+            네이버
+          </button>
+          <button
+            type="button"
+            className={`${styles.sns} ${styles.google}`}
+            onClick={handleSocialLogin}
+          >
+            구글
+          </button>
         </div>
 
         <div className={styles.loginLinks}>
