@@ -1,0 +1,162 @@
+/* src/pages/signup/Signup.module.css */
+
+.wrapper {
+  width: 400px;
+  margin: 60px auto;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+}
+
+.title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* 단계 진행 바 */
+.stepHeader {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+  gap: 20px;
+}
+
+.stepItem {
+  padding-bottom: 6px;
+  border-bottom: 4px solid #ddd;
+  color: #888;
+  font-weight: 500;
+  font-size: 14px;
+  width: 100px;
+  text-align: center;
+}
+
+.stepItemActive {
+  padding-bottom: 6px;
+  border-bottom: 4px solid #2196f3;
+  color: #2196f3;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100px;
+  text-align: center;
+}
+
+/* 입력폼 */
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.formGroup button {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.formGroup button:hover {
+  background-color: #0056b3;
+}
+
+/* 비밀번호 체크리스트 */
+.pwdChecklist {
+  list-style: none;
+  padding-left: 0;
+  font-size: 13px;
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.pwdChecklist li {
+  margin-bottom: 3px;
+}
+
+.pass {
+  color: green;
+}
+
+.fail {
+  color: red;
+}
+
+/* 버튼 */
+.nextButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.nextButton:hover {
+  background-color: #0056b3;
+}
+
+/* 하단 로그인 링크 */
+.loginLink {
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+  margin-top: 10px;
+}
+
+.linkText {
+  color: #2196f3;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.statusMessage {
+  font-size: 13px;
+  margin-top: 6px;
+  margin-left: 2px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusSuccess {
+  color: #2e7d32; /* 초록 */
+  font-weight: 500;
+}
+
+.statusError {
+  color: #d32f2f; /* 빨강 */
+  font-weight: 500;
+}
+
+.globalError {
+  color: #d32f2f; /* 빨간색 (Material 스타일) */
+  font-size: 14px;
+  margin: 10px 0 0 2px;
+  font-weight: 500;
+}
