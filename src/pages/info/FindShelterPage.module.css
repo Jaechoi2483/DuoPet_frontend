@@ -29,7 +29,7 @@
   background: white;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .searchBar {
@@ -90,7 +90,7 @@
 .mapArea {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   height: 600px;
 }
@@ -111,7 +111,7 @@
 .listArea {
   background: white;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 600px;
   overflow: hidden;
 }
@@ -133,7 +133,7 @@
 }
 
 .shelterCard:hover {
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -206,7 +206,9 @@
   space-y: 8px;
 }
 
-.address, .phone, .hours {
+.address,
+.phone,
+.hours {
   margin: 8px 0;
   font-size: 14px;
   color: #6b7280;
@@ -274,7 +276,8 @@
   margin-top: 12px;
 }
 
-.detailButton, .visitButton {
+.detailButton,
+.visitButton {
   flex: 1;
   padding: 8px 16px;
   border-radius: 6px;
@@ -330,28 +333,28 @@
   .contentContainer {
     grid-template-columns: 1fr;
   }
-  
+
   .mapArea {
     height: 300px;
   }
-  
+
   .listArea {
     height: 400px;
   }
-  
+
   .title {
     font-size: 2rem;
   }
-  
+
   .filterButtons {
     justify-content: center;
   }
-  
+
   .shelterHeader {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .shelterMeta {
     text-align: left;
   }

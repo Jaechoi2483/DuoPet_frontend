@@ -4,12 +4,19 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../../utils/axios'; // axios 인스턴스
 import styles from './FreeBoardList.module.css';
+import PagingView from '../../../components/common/pagingView';
 
 function FreeBoardList() {
   const navigate = useNavigate();
   const [postList, setPostList] = useState([]);
   const [topLikedPosts, setTopLikedPosts] = useState([]);
   const [topViewedPosts, setTopViewedPosts] = useState([]);
+  const [pagingInfo, setPagingInfo] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   useEffect(() => {
     // 전체 게시글
@@ -43,6 +50,17 @@ function FreeBoardList() {
   const handleClick = (id) => {
     navigate(`/community/freeBoard/${id}`);
   };
+
+  // 자유게시판 목록을 페이징 API로 불러옴
+  useEffect(() => {
+    apiClient
+      .get(`/board/freeList?page=${currentPage}&limit=2`)
+      .then((res) => {
+        setPostList(res.data.list);
+        setPagingInfo(res.data.paging);
+      })
+      .catch((err) => console.error('자유게시판 목록 조회 실패:', err));
+  }, [currentPage]);
 
   return (
     <div className={styles.container}>
@@ -119,12 +137,13 @@ function FreeBoardList() {
       </div>
 
       {/* 페이징 */}
-      <div className={styles.pagination}>
-        <span className={styles.page}>〈</span>
-        <span className={`${styles.page} ${styles.active}`}>1</span>
-        <span className={styles.page}>2</span>
-        <span className={styles.page}>〉</span>
-      </div>
+      <PagingView
+        currentPage={pagingInfo.currentPage || 1}
+        totalPage={pagingInfo.totalPage || 1}
+        startPage={pagingInfo.startPage || 1}
+        endPage={pagingInfo.endPage || 1}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 }
