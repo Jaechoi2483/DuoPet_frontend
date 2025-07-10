@@ -153,9 +153,15 @@ const MapContainer = ({
                 ${location.name}
               </h4>
               <p style="margin: 0; font-size: 12px; color: #666;">
-                ${location.specialization || location.type === 'public' ? '공공보호소' : 
-                  location.type === 'private' ? '민간보호소' : 
-                  location.type === 'organization' ? '단체보호소' : ''}
+                ${
+                  location.specialization || location.type === 'public'
+                    ? '공공보호소'
+                    : location.type === 'private'
+                      ? '민간보호소'
+                      : location.type === 'organization'
+                        ? '단체보호소'
+                        : ''
+                }
               </p>
               <p style="margin: 0; font-size: 12px; color: #666;">
                 평점: ${location.rating.toFixed(1)}⭐
@@ -212,13 +218,41 @@ const MapContainer = ({
   // 선택된 위치 중심으로 지도 이동
   useEffect(() => {
     if (map && selectedHospital) {
-      const location = locations.find((l) => l.id === selectedHospital);
+      console.log('🎯 지도 이동 시도:', {
+        selectedHospital,
+        selectedHospitalType: typeof selectedHospital,
+        locationsCount: locations.length,
+        locationIds: locations.map(l => ({ id: l.id, idType: typeof l.id, name: l.name }))
+      });
+      
+      // ID 타입을 맞춰서 검색 (문자열과 숫자 모두 대응)
+      const location = locations.find((l) => l.id == selectedHospital || l.id === selectedHospital);
+      
       if (location) {
+        console.log('✅ 병원 찾음, 지도 이동:', {
+          name: location.name,
+          position: location.position,
+          selectedId: selectedHospital
+        });
+        
         const moveLatLon = new window.kakao.maps.LatLng(
           location.position.lat,
           location.position.lng
         );
         map.setCenter(moveLatLon);
+        
+        // 약간의 줌 인으로 더 명확하게 표시
+        map.setLevel(6);
+        
+        // 1초 후 원래 줌 레벨로 복원
+        setTimeout(() => {
+          map.setLevel(8);
+        }, 1000);
+      } else {
+        console.warn('❌ 선택된 병원을 찾을 수 없음:', {
+          selectedHospital,
+          availableIds: locations.map(l => l.id)
+        });
       }
     }
   }, [map, selectedHospital, locations]);

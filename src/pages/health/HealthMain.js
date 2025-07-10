@@ -1,5 +1,6 @@
 // src/pages/health/HealthMain.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './HealthMain.module.css';
 import HealthRecords from './HealthRecords';
 import AiDiagnosis from './AiDiagnosis';
@@ -7,8 +8,46 @@ import AiBehavior from './AiBehavior';
 import ExpertConsult from './ExpertConsult';
 
 const HealthMain = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [selectedPet, setSelectedPet] = useState(1);
   const [activeMainTab, setActiveMainTab] = useState('health-records');
+
+  // URL 기반으로 활성 탭 결정
+  useEffect(() => {
+    const path = location.pathname;
+    if (path === '/health/ai-diagnosis') {
+      setActiveMainTab('ai-diagnosis');
+    } else if (path === '/health/ai-behavior') {
+      setActiveMainTab('ai-behavior');
+    } else if (path === '/health/expert-consult') {
+      setActiveMainTab('expert-consult');
+    } else {
+      setActiveMainTab('health-records');
+    }
+  }, [location.pathname]);
+
+  // 탭 변경 시 URL도 변경
+  const handleTabChange = (tabId) => {
+    setActiveMainTab(tabId);
+    
+    switch (tabId) {
+      case 'health-records':
+        navigate('/health');
+        break;
+      case 'ai-diagnosis':
+        navigate('/health/ai-diagnosis');
+        break;
+      case 'ai-behavior':
+        navigate('/health/ai-behavior');
+        break;
+      case 'expert-consult':
+        navigate('/health/expert-consult');
+        break;
+      default:
+        navigate('/health');
+    }
+  };
 
   const pets = [
     {
@@ -73,7 +112,7 @@ const HealthMain = () => {
             <div key={tab.id} className={styles.mainTabItem}>
               <button
                 className={`${styles.mainTabButton} ${activeMainTab === tab.id ? styles.active : ''}`}
-                onClick={() => setActiveMainTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
               >
                 {tab.label}
               </button>
