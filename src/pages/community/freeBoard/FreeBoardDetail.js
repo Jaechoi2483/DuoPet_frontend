@@ -1,8 +1,9 @@
 // src/pages/community/freeBoard/FreeBoardDetail.js
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/axios';
+import { AuthContext } from '../../../AuthProvider';
 import styles from './FreeBoardDetail.module.css';
 
 const dummyVideos = [
@@ -27,8 +28,36 @@ const dummyVideos = [
 ];
 
 function FreeBoardDetail() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [post, setPost] = useState(null);
+  const { secureApiRequest } = useContext(AuthContext);
+  const { isLoggedIn, userNo } = useContext(AuthContext);
+
+  const handleEdit = () => {
+    navigate(`/community/freeBoard/edit/${id}`);
+  };
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm('정말로 이 게시글을 삭제하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      const response = await secureApiRequest(`/board/free/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.status === 200) {
+        alert('게시글이 삭제되었습니다.');
+        navigate('/community/freeBoard');
+      } else {
+        alert('삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('삭제 요청 실패', error);
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -64,10 +93,18 @@ function FreeBoardDetail() {
       <div className={styles.titleWrapper}>
         <div className={styles.titleRow}>
           <h2 className={styles.title}>{post.title}</h2>
-          <div className={styles.editArea}>
-            <button>✏ 수정</button>
-            <button>🗑 삭제</button>
-          </div>
+          {isLoggedIn && post.userId === userNo && (
+            <div className={styles.editArea}>
+              <button className={styles.editBtn} onClick={handleEdit}>
+                {' '}
+                ✏ 수정
+              </button>
+              <button className={styles.DeleteBtn} onClick={handleDelete}>
+                {' '}
+                🗑 삭제
+              </button>
+            </div>
+          )}
         </div>
         <div className={styles.meta}>
           <span>작성자ID: {post.userId}</span> |{' '}
