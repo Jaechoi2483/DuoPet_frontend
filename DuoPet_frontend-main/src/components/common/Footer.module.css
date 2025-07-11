@@ -1,0 +1,75 @@
+/* src/components/common/Footer.module.css */
+
+.footer {
+  background-color: #1f2937; /* bg-gray-800 */
+  color: #ffffff; /* text-white */
+  margin-top: 2rem; /* mt-8 (1rem = 16px, 8 = 2rem) */
+  font-family: Arial, sans-serif; /* 기본 폰트 설정, 필요에 따라 변경 */
+}
+
+.footerContainer {
+  max-width: 1280px; /* container */
+  margin-left: auto; /* mx-auto */
+  margin-right: auto; /* mx-auto */
+  padding-top: 2rem; /* py-8 */
+  padding-bottom: 2rem; /* py-8 */
+  padding-left: 1rem; /* px-4 */
+  padding-right: 1rem; /* px-4 */
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1fr; /* grid-cols-1 */
+  gap: 2rem; /* gap-8 */
+}
+
+/* md:grid-cols-4 에 해당하는 미디어 쿼리 */
+@media (min-width: 768px) {
+  .footerGrid {
+    grid-template-columns: repeat(4, 1fr); /* md:grid-cols-4 */
+  }
+}
+
+.footerSectionTitle {
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 700; /* font-bold */
+  margin-bottom: 1rem; /* mb-4 */
+}
+
+.footerText {
+  color: #d1d5db; /* text-gray-300 */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.5; /* 가독성을 위한 줄 간격 */
+}
+
+.footerList {
+  list-style: none; /* ul의 기본 점 제거 */
+  padding: 0;
+  margin: 0;
+}
+
+/* space-y-2 에 해당하는 목록 아이템 간격 */
+.footerList > li:not(:first-child) {
+  margin-top: 0.5rem;
+}
+
+.footerListLink {
+  color: #d1d5db; /* text-gray-300 */
+  text-decoration: none; /* 기본 밑줄 제거 */
+  font-size: 0.875rem; /* text-sm */
+  display: block; /* 링크 영역 확장 */
+  transition: color 0.3s ease; /* 호버 시 부드러운 전환 */
+}
+
+.footerListLink:hover {
+  color: #3b82f6; /* hover:text-primary (예시로 파란색 계열 지정) */
+}
+
+.footerDivider {
+  border-top: 1px solid #4b5563; /* border-t border-gray-700 */
+  margin-top: 2rem; /* mt-8 */
+  padding-top: 1rem; /* pt-4 */
+  font-size: 0.875rem; /* text-sm */
+  color: #9ca3af; /* text-gray-400 */
+  text-align: center; /* text-center */
+}

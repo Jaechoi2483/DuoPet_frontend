@@ -215,6 +215,7 @@ const FindShelterPage = () => {
     fetchShelters();
   }, []);
 
+
   // 사용자 위치 가져오기
   useEffect(() => {
     if (navigator.geolocation) {
@@ -222,7 +223,7 @@ const FindShelterPage = () => {
         (position) => {
           setUserLocation({
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           });
         },
         (error) => {
@@ -235,13 +236,15 @@ const FindShelterPage = () => {
   // 거리 계산 함수
   const calculateDistance = (lat1, lng1, lat2, lng2) => {
     const R = 6371; // 지구 반지름 (km)
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   };
 
@@ -254,9 +257,14 @@ const FindShelterPage = () => {
     )
     .map(shelter => ({
       ...shelter,
-      distance: userLocation ? 
-        calculateDistance(userLocation.lat, userLocation.lng, shelter.position.lat, shelter.position.lng) : 
-        undefined
+      distance: userLocation
+        ? calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            shelter.position.lat,
+            shelter.position.lng
+          )
+        : undefined,
     }))
     .sort((a, b) => (a.distance || 0) - (b.distance || 0));
 
@@ -274,9 +282,7 @@ const FindShelterPage = () => {
             ★
           </span>
         ))}
-        <span className={styles.ratingText}>
-          {rating.toFixed(1)}
-        </span>
+        <span className={styles.ratingText}>{rating.toFixed(1)}</span>
       </div>
     );
   };
@@ -284,10 +290,14 @@ const FindShelterPage = () => {
   // 보호소 타입 한글 변환
   const getTypeLabel = (type) => {
     switch (type) {
-      case 'public': return '공공';
-      case 'private': return '민간';
-      case 'organization': return '단체';
-      default: return '기타';
+      case 'public':
+        return '공공';
+      case 'private':
+        return '민간';
+      case 'organization':
+        return '단체';
+      default:
+        return '기타';
     }
   };
 
@@ -295,7 +305,9 @@ const FindShelterPage = () => {
     <div className={styles.pageContainer}>
       <div className={styles.header}>
         <h1 className={styles.title}>보호소 찾기</h1>
-        <p className={styles.subtitle}>사랑이 필요한 동물들을 만나 새로운 가족이 되어주세요</p>
+        <p className={styles.subtitle}>
+          사랑이 필요한 동물들을 만나 새로운 가족이 되어주세요
+        </p>
       </div>
 
       {/* 검색 및 필터 */}
@@ -332,7 +344,7 @@ const FindShelterPage = () => {
           <div className={styles.mapHeader}>
             <h3>📍 보호소 위치</h3>
           </div>
-          <MapContainer 
+          <MapContainer
             hospitals={filteredShelters}
             selectedHospital={selectedShelter}
             onHospitalSelect={setSelectedShelter}
@@ -381,6 +393,7 @@ const FindShelterPage = () => {
             
             {!loading && !error && filteredShelters.map((shelter) => (
               <div 
+
                 key={shelter.id}
                 className={`${styles.shelterCard} ${
                   selectedShelter === shelter.id ? styles.selected : ''
@@ -398,7 +411,9 @@ const FindShelterPage = () => {
                 <div className={styles.shelterHeader}>
                   <div className={styles.shelterName}>
                     <h3>{shelter.name}</h3>
-                    <span className={`${styles.typeBadge} ${styles[shelter.type]}`}>
+                    <span
+                      className={`${styles.typeBadge} ${styles[shelter.type]}`}
+                    >
                       {getTypeLabel(shelter.type)}
                     </span>
                   </div>
@@ -421,7 +436,7 @@ const FindShelterPage = () => {
                   </div>
                   <p className={styles.phone}>📞 {shelter.phone}</p>
                   <p className={styles.hours}>🕐 {shelter.operatingHours}</p>
-                  
+
                   <div className={styles.facilities}>
                     <span>보유시설: </span>
                     {shelter.facilities.map((facility, index) => (

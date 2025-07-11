@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 const FILTER_TABS = [
   { label: '전체', status: null },
-  { label: '답변완료', status: 'answered' },
-  { label: '답변대기', status: 'pending' },
+  { label: '답변완료', status: 'ANSWERED' },
+  { label: '답변대기', status: 'PENDING' },
 ];
 
 function Qna() {
@@ -15,7 +15,10 @@ function Qna() {
   const [currentPage, setCurrentPage] = useState(0);
   const qnaPerPage = 10;
   const totalPages = Math.ceil(qnaList.length / qnaPerPage);
-  const pagedQnaList = qnaList.slice(currentPage * qnaPerPage, (currentPage + 1) * qnaPerPage);
+  const pagedQnaList = qnaList.slice(
+    currentPage * qnaPerPage,
+    (currentPage + 1) * qnaPerPage
+  );
   const [activeFilter, setActiveFilter] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -93,7 +96,11 @@ function Qna() {
             </button>
           ))}
         </div>
-        <button className={styles.writeButton} type="button" onClick={() => navigate('/admin/qna/write')}>
+        <button
+          className={styles.writeButton}
+          type="button"
+          onClick={() => navigate('/admin/qna/write')}
+        >
           문의하기
         </button>
       </div>
@@ -127,7 +134,11 @@ function Qna() {
                 <td>{item.contentId}</td>
                 <td
                   className={styles.qnaTitle}
-                  style={{ cursor: 'pointer', color: '#1976d2', textDecoration: 'underline' }}
+                  style={{
+                    cursor: 'pointer',
+                    color: '#1976d2',
+                    textDecoration: 'underline',
+                  }}
                   onClick={() => navigate(`/admin/qna/${item.contentId}`)}
                 >
                   {item.title}

@@ -21,6 +21,25 @@ input[type='password'] {
   margin-bottom: 12px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+/* 포커스 효과 */
+input[type='text']:focus,
+input[type='password']:focus {
+  outline: none;
+  border-color: #3182f6;
+  box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2);
+}
+
+/* 에러 메시지 */
+.error {
+  color: red;
+  font-size: 13px;
+  text-align: left;
+  margin-bottom: 10px;
 }
 
 .checkboxGroup {
@@ -39,6 +58,18 @@ input[type='password'] {
   font-weight: bold;
   cursor: pointer;
   margin-bottom: 10px;
+  transition: background-color 0.3s;
+}
+
+/* 버튼 hover 효과 */
+.loginBtn:hover {
+  background-color: #2563eb;
+}
+
+/* 로그인 중(disabled)일 때 스타일 */
+.loginBtn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .divider {
@@ -54,6 +85,11 @@ input[type='password'] {
   border-radius: 4px;
   margin-bottom: 15px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.faceBtn:hover {
+  background-color: #dfe3e6;
 }
 
 .snsLogin {
@@ -68,6 +104,12 @@ input[type='password'] {
   border: none;
   border-radius: 4px;
   color: white;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.sns:hover {
+  opacity: 0.9;
 }
 
 .kakao {
@@ -94,4 +136,32 @@ input[type='password'] {
   color: #007bff;
   cursor: pointer;
   text-decoration: underline;
+}
+
+/* 반응형 대응 */
+@media (max-width: 480px) {
+  .loginContainer {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .snsLogin {
+    flex-direction: column;
+  }
+
+  .sns {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .checkboxGroup {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .loginLinks {
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+  }
 }
