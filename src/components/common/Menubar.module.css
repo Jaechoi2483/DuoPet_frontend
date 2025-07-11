@@ -320,3 +320,18 @@
   cursor: pointer;
   white-space: nowrap;
 }
+
+.adminIconButton {
+  background: none;
+  border: none;
+  padding: 0 4px;
+  margin: 0 2px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.adminIconButton:hover {
+  transform: scale(1.15);
+  background: none;
+}
