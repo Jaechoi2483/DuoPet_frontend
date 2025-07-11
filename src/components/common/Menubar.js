@@ -30,7 +30,7 @@ const menuData = [
     title: '정보광장',
     submenus: [
       { name: '보호소 찾기', path: '/info/shelter' },
-      { name: '입양 정보', path: '/info/adoption' },
+      { name: '입양 정보', path: '/adoption' },
       { name: '병원 찾기', path: '/info/hospital' },
     ],
   },

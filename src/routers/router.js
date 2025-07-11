@@ -12,6 +12,7 @@ import userRoutes from './userRoutes';
 import freeBoardRoutes from './freeBoardRoutes';
 import healthRoutes from './healthRoutes';
 import adminRoutes from './adminRoutes';
+import adoptionRoutes from './adoptionRoutes';
 
 import infoRoutes from './infoRoutes';
 import qnaRoutes from './qnaRoutes';
@@ -28,6 +29,7 @@ const AppRouter = () => {
       {freeBoardRoutes}
       {healthRoutes}
       {adminRoutes}
+      {adoptionRoutes}
       {infoRoutes}
       {qnaRoutes}
     </Routes>

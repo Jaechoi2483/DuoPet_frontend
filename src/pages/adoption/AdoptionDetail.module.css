@@ -1,0 +1,263 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4A9FF3;
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.backLink:hover {
+  background-color: #F0F8FF;
+  color: #2E7DDB;
+}
+
+.detailCard {
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.imageSection {
+  padding: 2rem;
+  background-color: #F8F9FA;
+}
+
+.mainImage {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: white;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #FF9776;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.infoSection {
+  padding: 2rem;
+}
+
+.basicInfo {
+  margin-bottom: 2rem;
+}
+
+.breed {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0 0 1rem 0;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  padding: 6px 16px;
+  background-color: #E9ECEF;
+  color: #495057;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #E9ECEF;
+}
+
+.detailInfo,
+.shelterInfo {
+  margin-bottom: 2rem;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.infoItem {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.infoItem dt {
+  font-weight: 600;
+  color: #6C757D;
+  font-size: 0.95rem;
+}
+
+.infoItem dd {
+  color: #212529;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.primaryButton,
+.secondaryButton {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.primaryButton {
+  background-color: #4A9FF3;
+  color: white;
+}
+
+.primaryButton:hover {
+  background-color: #2E7DDB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 159, 243, 0.3);
+}
+
+.secondaryButton {
+  background-color: white;
+  color: #4A9FF3;
+  border: 2px solid #4A9FF3;
+}
+
+.secondaryButton:hover {
+  background-color: #F0F8FF;
+}
+
+.notice {
+  background-color: #FFF9E6;
+  border: 1px solid #FFE4A1;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+.notice p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #856404;
+  line-height: 1.6;
+}
+
+.notice strong {
+  color: #664D03;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.1rem;
+}
+
+.loading {
+  color: #6C757D;
+}
+
+.error {
+  color: #DC3545;
+  background-color: #FFF5F5;
+  border: 1px solid #FFDDDD;
+  border-radius: 0.5rem;
+}
+
+.backButton {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 8px 16px;
+  background-color: #DC3545;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.backButton:hover {
+  background-color: #BD2130;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .detailCard {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  
+  .imageSection {
+    padding: 1rem;
+  }
+  
+  .mainImage {
+    height: 300px;
+  }
+  
+  .infoSection {
+    padding: 1.5rem;
+  }
+  
+  .breed {
+    font-size: 1.5rem;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .infoItem {
+    grid-template-columns: 100px 1fr;
+  }
+}

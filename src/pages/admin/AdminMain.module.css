@@ -243,4 +243,115 @@
     width: 12px;
     height: 12px;
   }
+}
+
+/* 공공 API 동기화 섹션 스타일 */
+.syncSection {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+  margin-bottom: 28px;
+}
+
+.syncSection h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.syncContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.syncDescription {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.syncButton {
+  align-self: flex-start;
+  padding: 12px 24px;
+  background-color: #4A9FF3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.syncButton:hover:not(:disabled) {
+  background-color: #2E7DDB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 159, 243, 0.3);
+}
+
+.syncButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.syncButtonLoading {
+  background-color: #6C757D;
+}
+
+.syncMessage {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  margin-top: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+.syncMessage.success {
+  background-color: #D4EDDA;
+  color: #155724;
+  border: 1px solid #C3E6CB;
+}
+
+.syncMessage.error {
+  background-color: #F8D7DA;
+  color: #721C24;
+  border: 1px solid #F5C6CB;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .syncSection {
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  
+  .syncSection h3 {
+    font-size: 1.1rem;
+  }
+  
+  .syncButton {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+  
+  .syncDescription {
+    font-size: 0.9rem;
+  }
+  
+  .syncMessage {
+    font-size: 0.9rem;
+  }
 } 
