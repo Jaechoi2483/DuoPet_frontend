@@ -18,6 +18,10 @@ function FreeBoardList() {
     setCurrentPage(page);
   };
 
+  const handleWriteClick = () => {
+    navigate('/community/freeBoard/write');
+  };
+
   useEffect(() => {
     // 전체 게시글
     apiClient
@@ -73,7 +77,9 @@ function FreeBoardList() {
             <option>조회순</option>
           </select>
           <input type="text" placeholder="검색어를 입력하세요" />
-          <button className={styles.writeButton}>글쓰기</button>
+          <button className={styles.writeButton} onClick={handleWriteClick}>
+            글쓰기
+          </button>
         </div>
       </div>
 

@@ -1,0 +1,132 @@
+/* 글쓰기 전체 컨테이너 */
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #fafcff;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 123, 255, 0.08);
+}
+
+/* 상단 헤더 영역 (사용 중지 가능) */
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 전체 입력 폼 영역 */
+.form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 각 입력 필드 그룹 */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 항목 라벨(카테고리, 제목 등) 굵게 */
+.formGroup label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* input, select, textarea 공통 스타일 */
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  background-color: #fff;
+  transition: border 0.3s ease;
+}
+
+/* 포커스 시 파란색 강조 */
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* textarea 전용 */
+.textarea {
+  height: 180px;
+  resize: none;
+}
+
+/* 파일 업로드 영역 */
+.fileBox {
+  padding: 20px;
+  border: 2px dashed #aaa;
+  border-radius: 6px;
+  text-align: center;
+  background-color: #f8f9fb;
+}
+
+/* 파일 input */
+.fileInput {
+  margin-bottom: 10px;
+}
+
+/* 파일 안내 문구 */
+.fileGuide {
+  color: #777;
+  font-size: 14px;
+}
+
+/* 버튼 그룹 영역 - 가운데 정렬 */
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+/* 게시글 등록 버튼 */
+.submitBtn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitBtn:hover {
+  background-color: #0056b3;
+}
+
+/* 취소/목록 버튼 공통 스타일 */
+.secondaryBtn {
+  background-color: #e4e6ea;
+  color: #333;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s ease;
+}
+
+.secondaryBtn:hover {
+  background-color: #d2d4d8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.07);
+}
+
+.secondaryBtn:active {
+  transform: scale(0.98);
+}

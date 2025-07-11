@@ -71,6 +71,7 @@ export const AuthProvider = ({ children }) => {
           role: parsedToken.role,
           username: parsedToken.nickname,
           userid: parsedToken.sub,
+          userNo: parsedToken.userNo, // DB 고유번호
         });
       } else {
         // 토큰 파싱이 실패한 경우 로그아웃 처리
@@ -119,6 +120,7 @@ export const AuthProvider = ({ children }) => {
           role: parsedToken.role,
           username: parsedToken.nickname,
           userid: parsedToken.sub,
+          userNo: parsedToken.userNo,
         });
         console.log('updateTokens:authInfo : ', authInfo);
       } else {
