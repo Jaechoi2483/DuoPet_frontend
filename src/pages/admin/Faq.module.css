@@ -21,42 +21,49 @@
 .faqItem {
   border-bottom: 1px solid #e0e0e0;
   padding: 0;
+  background: none;
+  box-shadow: none;
 }
 
 .question {
   width: 100%;
   text-align: left;
-  background: #f8f9fa;
+  background: none;
   border: none;
   outline: none;
-  padding: 18px 20px;
-  font-size: 17px;
+  padding: 16px 0 16px 0;
+  font-size: 16px;
   font-weight: 500;
-  color: #333;
+  color: #222;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: color 0.18s;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .question:hover {
-  background: #e6f4ea;
+  color: #1976d2;
+  background: none;
 }
 
 .arrow {
   font-size: 15px;
   margin-left: 10px;
-  color: #4CAF50;
+  color: #b6c6e3;
 }
 
 .answer {
-  background: #fff;
-  padding: 18px 20px;
+  background: none;
+  padding: 14px 0 18px 0;
   color: #444;
-  font-size: 16px;
-  border-top: 1px solid #e0e0e0;
+  font-size: 15px;
+  border-top: 1px solid #f0f0f0;
   animation: fadeIn 0.3s;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 @keyframes fadeIn {
