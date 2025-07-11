@@ -1,10 +1,17 @@
 import React from 'react';
+import AdoptionSlider from '../components/adoption/AdoptionSlider';
 
 const HomePage = () => {
   return (
     <div style={{ padding: '2rem' }}>
-      <h2>메인 페이지</h2>
-      <p>이곳은 DuoPet의 메인 화면입니다.</p>
+      <h1 style={{ textAlign: 'center', marginBottom: '3rem', color: '#333' }}>
+        DuoPet에 오신 것을 환영합니다
+      </h1>
+      
+      {/* 입양 동물 슬라이더 섹션 */}
+      <AdoptionSlider />
+      
+      {/* 추가 섹션들을 여기에 배치할 수 있습니다 */}
     </div>
   );
 };

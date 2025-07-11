@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styles from './AdminMain.module.css';
+
+import adoptionService from '../../services/adoptionService';
+
 import apiClient from '../../utils/axios';
+
 
 function BarGraph({ data, total, color }) {
   if (!data || data.length === 0)
@@ -110,6 +114,11 @@ function AdminMain() {
   const [ageStat, setAgeStat] = useState([]); // {label, value}
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // 공공 API 동기화 관련 상태
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
+  const [syncStatus, setSyncStatus] = useState(''); // 'success', 'error', ''
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -132,18 +141,45 @@ function AdminMain() {
     fetchDashboardData();
   }, []);
 
+  // 공공 API 동기화 함수
+  const handleSyncPublicData = async () => {
+    setSyncLoading(true);
+    setSyncMessage('');
+    setSyncStatus('');
+    
+    try {
+      const result = await adoptionService.syncPublicData();
+      setSyncStatus('success');
+      setSyncMessage('공공 API 데이터 동기화가 성공적으로 시작되었습니다. 잠시 후 데이터가 업데이트됩니다.');
+    } catch (error) {
+      setSyncStatus('error');
+      setSyncMessage('동기화 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error('동기화 오류:', error);
+    } finally {
+      setSyncLoading(false);
+      // 5초 후 메시지 제거
+      setTimeout(() => {
+        setSyncMessage('');
+        setSyncStatus('');
+      }, 5000);
+    }
+  };
+
   return (
     <div className={styles.container}>
       {loading ? (
         <div className={styles.loadingMsg}>로딩 중...</div>
-      ) : error ? (
-        <div className={styles.errorMsg}>{error}</div>
       ) : (
         <>
+          {/* 에러 메시지 표시 */}
+          {error && (
+            <div className={styles.errorMsg}>{error}</div>
+          )}
+          
           {/* 상단 요약 카드 */}
           <div className={styles.summaryRow}>
             {summary.length === 0 ? (
-              <div className={styles.emptyMsg}>요약 데이터 없음</div>
+              <div className={styles.emptyMsg}>대시보드 데이터를 불러올 수 없습니다.</div>
             ) : (
               summary.map((item) => (
                 <div className={styles.summaryCard} key={item.label}>
@@ -154,6 +190,30 @@ function AdminMain() {
                 </div>
               ))
             )}
+          </div>
+
+          {/* 공공 API 동기화 섹션 */}
+          <div className={styles.syncSection}>
+            <h3>공공 API 데이터 관리</h3>
+            <div className={styles.syncContent}>
+              <p className={styles.syncDescription}>
+                동물보호관리시스템의 공공 API 데이터를 수동으로 동기화할 수 있습니다.
+                <br />
+                보호소 정보와 보호 동물 정보가 업데이트됩니다.
+              </p>
+              <button 
+                className={`${styles.syncButton} ${syncLoading ? styles.syncButtonLoading : ''}`}
+                onClick={handleSyncPublicData}
+                disabled={syncLoading}
+              >
+                {syncLoading ? '동기화 중...' : '데이터 동기화 실행'}
+              </button>
+              {syncMessage && (
+                <div className={`${styles.syncMessage} ${styles[syncStatus]}`}>
+                  {syncMessage}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* 하단 통계 - 그래프 */}

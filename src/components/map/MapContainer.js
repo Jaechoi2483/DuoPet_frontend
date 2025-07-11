@@ -138,13 +138,6 @@ const MapContainer = ({
           clickable: true,
         });
 
-        // 마커 클릭 이벤트
-        window.kakao.maps.event.addListener(marker, 'click', () => {
-          if (onHospitalSelect) {
-            onHospitalSelect(location.id);
-          }
-        });
-
         // 정보창 생성 (병원/보호소 구분)
         const infoWindow = new window.kakao.maps.InfoWindow({
           content: `
@@ -173,14 +166,46 @@ const MapContainer = ({
           `,
         });
 
-        // 마커 호버 이벤트
+        // 마커 클릭 이벤트 - InfoWindow 토글
+        window.kakao.maps.event.addListener(marker, 'click', () => {
+          // 다른 열린 InfoWindow 모두 닫기
+          markers.forEach((existingMarker) => {
+            if (existingMarker.infoWindow) {
+              existingMarker.infoWindow.close();
+            }
+          });
+
+          // 현재 InfoWindow 열기/닫기 토글
+          if (marker.infoWindowOpen) {
+            infoWindow.close();
+            marker.infoWindowOpen = false;
+          } else {
+            infoWindow.open(map, marker);
+            marker.infoWindowOpen = true;
+          }
+
+          // 병원 선택 이벤트 발생
+          if (onHospitalSelect) {
+            onHospitalSelect(location.id);
+          }
+        });
+
+        // 마커 호버 이벤트 - 클릭으로 열린 InfoWindow가 없을 때만 작동
         window.kakao.maps.event.addListener(marker, 'mouseover', () => {
-          infoWindow.open(map, marker);
+          if (!marker.infoWindowOpen) {
+            infoWindow.open(map, marker);
+          }
         });
 
         window.kakao.maps.event.addListener(marker, 'mouseout', () => {
-          infoWindow.close();
+          if (!marker.infoWindowOpen) {
+            infoWindow.close();
+          }
         });
+
+        // 마커에 infoWindow 참조 저장
+        marker.infoWindow = infoWindow;
+        marker.infoWindowOpen = false;
 
         return marker;
       });
@@ -239,15 +264,28 @@ const MapContainer = ({
           location.position.lat,
           location.position.lng
         );
+        
+        // 지도 중심 이동
         map.setCenter(moveLatLon);
         
-        // 약간의 줌 인으로 더 명확하게 표시
-        map.setLevel(6);
+        // 적절한 줌 레벨로 설정 (자동 줌 아웃 제거)
+        map.setLevel(5);
         
-        // 1초 후 원래 줌 레벨로 복원
-        setTimeout(() => {
-          map.setLevel(8);
-        }, 1000);
+        // 해당 마커의 InfoWindow 열기
+        const marker = markers.find(m => m.getTitle() === location.name);
+        if (marker && marker.infoWindow) {
+          // 다른 InfoWindow 모두 닫기
+          markers.forEach((existingMarker) => {
+            if (existingMarker.infoWindow && existingMarker !== marker) {
+              existingMarker.infoWindow.close();
+              existingMarker.infoWindowOpen = false;
+            }
+          });
+          
+          // 선택된 마커의 InfoWindow 열기
+          marker.infoWindow.open(map, marker);
+          marker.infoWindowOpen = true;
+        }
       } else {
         console.warn('❌ 선택된 병원을 찾을 수 없음:', {
           selectedHospital,
@@ -255,7 +293,7 @@ const MapContainer = ({
         });
       }
     }
-  }, [map, selectedHospital, locations]);
+  }, [map, selectedHospital, locations, markers]);
 
   if (isLoading) {
     return (
