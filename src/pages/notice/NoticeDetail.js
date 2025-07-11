@@ -5,7 +5,7 @@ import apiClient from '../../utils/axios';
 
 function NoticeDetail() {
   // eslint-disable-next-line no-unused-vars
-  const { noticeId } = useParams();
+
   const { contentId } = useParams();
   const navigate = useNavigate();
 
@@ -80,9 +80,8 @@ function NoticeDetail() {
           <strong>첨부파일</strong>
           <ul>
             <li>
-              {/* 실제 파일 다운로드 경로는 백엔드 설정에 맞춰야 합니다 */}
               <a
-                href={`/files/${notice.renameFilename}`}
+                href={`${apiClient.defaults.baseURL}/notice/nfdown?ofile=${encodeURIComponent(notice.originalFilename)}&rfile=${notice.renameFilename}`}
                 download={notice.originalFilename}
                 className={styles.attachmentLink}
               >
@@ -97,7 +96,10 @@ function NoticeDetail() {
         <button className={styles.listButton} onClick={() => navigate(-1)}>
           목록으로
         </button>
-        <button className={styles.editButton} onClick={() => navigate(`/notice/update/${contentId}`)}>
+        <button
+          className={styles.editButton}
+          onClick={() => navigate(`/notice/update/${contentId}`)}
+        >
           수정
         </button>
         <button className={styles.deleteButton} onClick={handleDelete}>

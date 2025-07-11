@@ -71,22 +71,47 @@ function QnaDetail() {
     }
   }, [contentId]);
 
-  const handleAnswerSubmit = async () => {
-    // ... (이전과 동일)
+  const handleAnswerSubmit = async (e) => {
+    e.preventDefault();
+
     if (!newAnswer.trim()) {
       alert('답변 내용을 입력해주세요.');
       return;
     }
+
     try {
-      await apiClient.post(`/qna/${contentId}/answer`, {
-        contentBody: newAnswer,
+      const response = await apiClient.post(`/qna/${contentId}/answer`, {
+        content: newAnswer,
       });
-      alert('답변이 성공적으로 등록되었습니다.');
-      setNewAnswer('');
-      fetchQnaDetail();
-    } catch (err) {
-      console.error('답변 등록 중 오류 발생:', err);
-      alert('답변 등록에 실패했습니다. 다시 시도해주세요.');
+
+      if (response.status === 201 || response.status === 200) {
+        alert('답변이 성공적으로 등록되었습니다.');
+        setNewAnswer('');
+        // 답변 등록 후 데이터 새로고침
+        fetchQnaDetail();
+      } else {
+        alert('답변 등록에 실패했습니다. (상태 코드: ' + response.status + ')');
+      }
+    } catch (error) {
+      console.error('답변 등록 중 오류 발생:', error);
+
+      // ⭐️ 이 부분을 수정해야 합니다.
+      if (error && error.response) {
+        // error 객체가 존재하고, 그 안에 response 속성이 있는지 안전하게 확인
+        console.error('서버 응답 상태:', error.response.status);
+        console.error('서버 응답 데이터:', error.response.data);
+        alert(
+          `답변 등록 실패: ${error.response.data || error.response.statusText}`
+        );
+      } else if (error.request) {
+        // 요청은 보냈지만 응답을 받지 못한 경우 (네트워크 문제 등)
+        console.error('요청은 보냈지만 응답을 받지 못했습니다:', error.request);
+        alert('답변 등록 실패: 서버 응답 없음 (네트워크 문제 또는 CORS 오류)');
+      } else {
+        // 그 외 알 수 없는 오류
+        console.error('Axios 오류가 아닌 다른 오류:', error.message);
+        alert('답변 등록 실패: 알 수 없는 오류 발생');
+      }
     }
   };
 
@@ -110,9 +135,10 @@ function QnaDetail() {
       {/* 답변이 있으면 답변만 보여줌 */}
       {hasAnswer && (
         <div className={styles.answerSection}>
-          <div className={styles.answerTabBar} style={{ display: 'none' }} /> {/* 탭 바 완전 제거 */}
+          <div className={styles.answerTabBar} style={{ display: 'none' }} />{' '}
+          {/* 탭 바 완전 제거 */}
           {qna.answers.map((answer) => (
-            <div key={answer.id} className={styles.answerBox}>
+            <div key={answer.commentId} className={styles.answerBox}>
               <div className={styles.answerInfo}>
                 <span>답변 작성자 ID: {answer.userId}</span>{' '}
                 <span>
@@ -130,7 +156,9 @@ function QnaDetail() {
         <div className={styles.answerSection}>
           <div className={styles.answerWriteBox}>
             <div className={styles.answerWriteTitle}>
-              <span role="img" aria-label="edit">📝</span>
+              <span role="img" aria-label="edit">
+                📝
+              </span>
               답변 작성
             </div>
             <textarea
@@ -139,7 +167,10 @@ function QnaDetail() {
               onChange={(e) => setNewAnswer(e.target.value)}
               placeholder="답변을 입력하세요..."
             />
-            <button className={styles.submitButton} onClick={handleAnswerSubmit}>
+            <button
+              className={styles.submitButton}
+              onClick={handleAnswerSubmit}
+            >
               답변 등록
             </button>
           </div>

@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
 
 import logo from '../../assets/images/logo3.png';
+import adminIcon from '../../assets/images/adminIcon.png';
 import styles from './Menubar.module.css'; // 파일명 변경: Header.module.css -> Menubar.module.css
 
 // 메뉴 데이터 정의 (이전과 동일)
@@ -142,10 +143,24 @@ function Menubar({
       <div className={styles.rightSection}>
         {isLoggedIn ? (
           <div className={styles.userSection}>
-            {role !== 'user' && (
+            {role === 'admin' && (
               <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
             )}
             <span className={styles.username}>{username}님</span>
+            {role === 'admin' && (
+              <button
+                className={styles.adminIconButton}
+                onClick={() => navigate('/admin')}
+                style={{ display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: 'none', border: 'none' }}
+                title="관리자 페이지로 이동"
+              >
+                <img
+                  src={adminIcon}
+                  alt="관리자 아이콘"
+                  style={{ width: '18px', height: '18px' }}
+                />
+              </button>
+            )}
             <span className={styles.myPage}>마이페이지 ▼</span>
             <button className={styles.authButton} onClick={handleLogout}>
               로그아웃
