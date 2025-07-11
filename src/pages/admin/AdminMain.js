@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styles from './AdminMain.module.css';
+
 import adoptionService from '../../services/adoptionService';
 
+import apiClient from '../../utils/axios';
+
+
 function BarGraph({ data, total, color }) {
-  if (!data || data.length === 0) return <div className={styles.emptyMsg}>데이터 없음</div>;
+  if (!data || data.length === 0)
+    return <div className={styles.emptyMsg}>데이터 없음</div>;
   return (
     <ul className={styles.barList}>
       {data.map((item) => {
@@ -17,7 +22,9 @@ function BarGraph({ data, total, color }) {
                 style={{ width: `${percent}%`, background: color || '#1976d2' }}
               />
             </div>
-            <span className={styles.barValue}>{item.value.toLocaleString()}명 ({percent}%)</span>
+            <span className={styles.barValue}>
+              {item.value.toLocaleString()}명 ({percent}%)
+            </span>
           </li>
         );
       })}
@@ -28,7 +35,8 @@ function BarGraph({ data, total, color }) {
 const donutColors = ['#1976d2', '#388e3c', '#ffb300', '#e57373', '#7e57c2'];
 
 function DonutChart({ data }) {
-  if (!data || data.length === 0) return <div className={styles.emptyMsg}>데이터 없음</div>;
+  if (!data || data.length === 0)
+    return <div className={styles.emptyMsg}>데이터 없음</div>;
   const total = data.reduce((a, b) => a + b.value, 0);
   let startAngle = 0;
   const radius = 48;
@@ -60,10 +68,22 @@ function DonutChart({ data }) {
   });
   return (
     <div className={styles.donutChartWrap}>
-      <svg width="120" height="120" viewBox="0 0 120 120" className={styles.donutSvg}>
+      <svg
+        width="120"
+        height="120"
+        viewBox="0 0 120 120"
+        className={styles.donutSvg}
+      >
         {paths}
         <circle cx="60" cy="60" r={radius - strokeWidth} fill="#fff" />
-        <text x="60" y="60" textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="#333">
+        <text
+          x="60"
+          y="60"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize="13"
+          fill="#333"
+        >
           연령대
         </text>
       </svg>
@@ -101,26 +121,24 @@ function AdminMain() {
   const [syncStatus, setSyncStatus] = useState(''); // 'success', 'error', ''
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-    // 실제 API 연동 시 아래 fetch 부분만 수정
-    fetch('/api/admin/dashboard')
-      .then((res) => {
-        if (!res.ok) throw new Error('서버 오류');
-        return res.json();
-      })
-      .then((data) => {
-        // 예시: data = { summary, petStatus, memberPetStat, genderStat, ageStat }
-        setSummary(data.summary || []);
-        setPetStatus(data.petStatus || []);
-        setMemberPetStat(data.memberPetStat || []);
-        setGenderStat(data.genderStat || []);
-        setAgeStat(data.ageStat || []);
-      })
-      .catch((err) => {
+    const fetchDashboardData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // ✅ 1. apiClient를 사용하여 인증된 요청 전송
+        const response = await apiClient.get('/admin/dashboard');
+
+        // ✅ 2. 응답 데이터에서 genderStat를 찾아 state에 저장
+        setGenderStat(response.data.genderStat || []);
+      } catch (err) {
         setError('데이터를 불러오지 못했습니다.');
-      })
-      .finally(() => setLoading(false));
+        console.error('대시보드 데이터 조회 실패:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
   }, []);
 
   // 공공 API 동기화 함수
@@ -165,7 +183,9 @@ function AdminMain() {
             ) : (
               summary.map((item) => (
                 <div className={styles.summaryCard} key={item.label}>
-                  <div className={styles.summaryValue}>{item.value.toLocaleString()}</div>
+                  <div className={styles.summaryValue}>
+                    {item.value.toLocaleString()}
+                  </div>
                   <div className={styles.summaryLabel}>{item.label}</div>
                 </div>
               ))
@@ -200,15 +220,27 @@ function AdminMain() {
           <div className={styles.statsGrid}>
             <div className={styles.statsBox}>
               <h3>반려동물 현황</h3>
-              <BarGraph data={petStatus} total={petStatus.reduce((a, b) => a + b.value, 0)} color="#ffb300" />
+              <BarGraph
+                data={petStatus}
+                total={petStatus.reduce((a, b) => a + b.value, 0)}
+                color="#ffb300"
+              />
             </div>
             <div className={styles.statsBox}>
               <h3>회원 통계 (반려동물 보유)</h3>
-              <BarGraph data={memberPetStat} total={memberPetStat.reduce((a, b) => a + b.value, 0)} color="#1976d2" />
+              <BarGraph
+                data={memberPetStat}
+                total={memberPetStat.reduce((a, b) => a + b.value, 0)}
+                color="#1976d2"
+              />
             </div>
             <div className={styles.statsBox}>
               <h3>성별 분포</h3>
-              <BarGraph data={genderStat} total={genderStat.reduce((a, b) => a + b.value, 0)} color="#e57373" />
+              <BarGraph
+                data={genderStat}
+                total={genderStat.reduce((a, b) => a + b.value, 0)}
+                color="#e57373"
+              />
             </div>
             <div className={styles.statsBox}>
               <h3>연령대 분포</h3>
@@ -221,4 +253,4 @@ function AdminMain() {
   );
 }
 
-export default AdminMain; 
+export default AdminMain;

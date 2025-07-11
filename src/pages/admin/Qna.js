@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../../utils/axios';
 import styles from './Qna.module.css';
 import { useNavigate } from 'react-router-dom';
+// --- 1. PagingView 컴포넌트 import ---
+import PagingView from '../../components/common/pagingView';
 
 const FILTER_TABS = [
   { label: '전체', status: null },
@@ -11,14 +13,8 @@ const FILTER_TABS = [
 
 function Qna() {
   const [qnaList, setQnaList] = useState([]);
-  const [pageInfo, setPageInfo] = useState({ totalPages: 1, number: 0 });
-  const [currentPage, setCurrentPage] = useState(0);
-  const qnaPerPage = 10;
-  const totalPages = Math.ceil(qnaList.length / qnaPerPage);
-  const pagedQnaList = qnaList.slice(
-    currentPage * qnaPerPage,
-    (currentPage + 1) * qnaPerPage
-  );
+  const [pageInfo, setPageInfo] = useState({ totalPages: 0, number: 0 });
+  const [currentPage, setCurrentPage] = useState(0); // 0-based index
   const [activeFilter, setActiveFilter] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,24 +24,11 @@ function Qna() {
     const fetchQnaData = async () => {
       setLoading(true);
       setError(null);
-
-      // 현재 활성화된 필터의 status 값을 가져옴
       const status = FILTER_TABS[activeFilter].status;
-
       try {
-        // 백엔드에 보낼 파라미터들
-        const params = {
-          page: currentPage,
-          size: 10,
-          sort: 'createdAt,desc',
-        };
-        // '전체' 탭이 아닐 경우에만 status 파라미터 추가
-        if (status) {
-          params.status = status;
-        }
-
+        const params = { page: currentPage, size: 10, sort: 'createdAt,desc' };
+        if (status) params.status = status;
         const response = await apiClient.get('/qna', { params });
-
         setQnaList(response.data.content);
         setPageInfo(response.data);
       } catch (err) {
@@ -60,14 +43,53 @@ function Qna() {
 
   const handleFilterClick = (idx) => {
     setActiveFilter(idx);
-    setCurrentPage(0); // 필터를 바꾸면 첫 페이지로 이동
+    setCurrentPage(0);
   };
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
+  // --- 2. PagingView에서 받은 페이지 번호(1-based)를 state index(0-based)로 변환 ---
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber - 1);
   };
 
-  console.log('API로부터 받아온 Q&A 목록:', qnaList);
+  const handleWriteClick = () => {
+    navigate('/admin/qna/write');
+  };
+
+  const handleQnaClick = (qnaId) => {
+    navigate(`/admin/qna/${qnaId}`);
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'ANSWERED':
+        return '답변완료';
+      case 'PENDING':
+        return '답변대기';
+      default:
+        return '대기중';
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'ANSWERED':
+        return styles.statusAnswered;
+      case 'PENDING':
+        return styles.statusPending;
+      default:
+        return styles.statusDefault;
+    }
+  };
+
   if (error)
     return (
       <div className={styles.container}>
@@ -75,85 +97,67 @@ function Qna() {
       </div>
     );
 
+  // --- 3. PagingView에 필요한 props 계산 ---
+  const pageBlockSize = 10; // 한 번에 보여줄 페이지 번호 개수
+  const totalPage = pageInfo.totalPages;
+  const currentBlock = Math.floor(currentPage / pageBlockSize);
+  const startPage = currentBlock * pageBlockSize + 1;
+  const endPage = Math.min(startPage + pageBlockSize - 1, totalPage);
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Q&A</h2>
 
+      {/* 필터 및 글쓰기 버튼 UI */}
       <div className={styles.topBar}>
         <div className={styles.filterTabBar}>
           {FILTER_TABS.map((tab, idx) => (
             <button
-              key={tab.label}
-              className={
-                idx === activeFilter
-                  ? `${styles.filterTabButton} ${styles.active}`
-                  : styles.filterTabButton
-              }
+              key={idx}
+              className={`${styles.filterTabButton} ${activeFilter === idx ? styles.active : ''}`}
               onClick={() => handleFilterClick(idx)}
-              type="button"
             >
               {tab.label}
             </button>
           ))}
         </div>
-        <button
-          className={styles.writeButton}
-          type="button"
-          onClick={() => navigate('/admin/qna/write')}
-        >
-          문의하기
+        <button className={styles.writeButton} onClick={handleWriteClick}>
+          글쓰기
         </button>
       </div>
 
+      {/* Q&A 테이블 UI */}
       <table className={styles.qnaTable}>
         <thead className={styles.tableHeader}>
           <tr>
             <th>번호</th>
             <th>제목</th>
-            <th>작성자</th>
             <th>작성일</th>
-            <th>답변상태</th>
+            <th>상태</th>
           </tr>
         </thead>
         <tbody className={styles.tableBody}>
           {loading ? (
             <tr>
-              <td colSpan={5} className={styles.noData}>
+              <td colSpan="4" className={styles.noData}>
                 로딩 중...
               </td>
             </tr>
-          ) : pagedQnaList.length === 0 ? (
+          ) : qnaList.length === 0 ? (
             <tr>
-              <td colSpan={5} className={styles.noData}>
-                문의 내역이 없습니다.
+              <td colSpan="4" className={styles.noData}>
+                등록된 문의글이 없습니다.
               </td>
             </tr>
           ) : (
-            pagedQnaList.map((item) => (
-              <tr key={item.contentId}>
-                <td>{item.contentId}</td>
-                <td
-                  className={styles.qnaTitle}
-                  style={{
-                    cursor: 'pointer',
-                    color: '#1976d2',
-                    textDecoration: 'underline',
-                  }}
-                  onClick={() => navigate(`/admin/qna/${item.contentId}`)}
-                >
-                  {item.title}
-                </td>
-                <td>{item.userId}</td>
-                <td>{new Date(item.createdAt).toLocaleDateString()}</td>
+            qnaList.map((qna, index) => (
+              <tr key={qna.contentId} onClick={() => handleQnaClick(qna.contentId)} style={{ cursor: 'pointer' }}>
+                <td>{pageInfo.totalElements - (currentPage * 10 + index)}</td>
+                <td>{qna.title}</td>
+                <td>{formatDate(qna.createdAt)}</td>
                 <td>
-                  <span
-                    className={
-                      item.status === 'ANSWERED'
-                        ? styles.statusAnswered
-                        : styles.statusPending
-                    }
-                  >
-                    {item.status === 'ANSWERED' ? '답변완료' : '답변대기'}
+                  <span className={getStatusClass(qna.status)}>
+                    {getStatusText(qna.status)}
                   </span>
                 </td>
               </tr>
@@ -162,26 +166,15 @@ function Qna() {
         </tbody>
       </table>
 
-      {qnaList.length > qnaPerPage && (
-        <div className={styles.pagination}>
-          <button
-            className={styles.pageButton}
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 0}
-          >
-            이전
-          </button>
-          <span className={styles.pageInfo}>
-            {currentPage + 1} / {totalPages}
-          </span>
-          <button
-            className={styles.pageButton}
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages - 1}
-          >
-            다음
-          </button>
-        </div>
+      {/* --- 4. 기존 페이지네이션을 PagingView 컴포넌트로 교체 --- */}
+      {totalPage > 1 && (
+        <PagingView
+          currentPage={currentPage + 1} // PagingView는 1-based page를 사용
+          totalPage={totalPage}
+          startPage={startPage}
+          endPage={endPage}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );

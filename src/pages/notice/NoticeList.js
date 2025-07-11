@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../utils/axios';
 import { AuthContext } from '../../AuthProvider';
+import PagingView from '../../components/common/pagingView';
 
 import styles from './NoticeList.module.css';
 
@@ -62,6 +63,18 @@ function NoticeList() {
     setCurrentPage(0);
   };
 
+  // PagingView용 페이지 계산
+  const pageBlockSize = 10;
+  const totalPage = pageInfo.totalPages;
+  const currentBlock = Math.floor(currentPage / pageBlockSize);
+  const startPage = currentBlock * pageBlockSize + 1;
+  const endPage = Math.min(startPage + pageBlockSize - 1, totalPage);
+
+  // PagingView에서 받은 pageNumber(1-based)를 state index(0-based)로 변환
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber - 1);
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>공지사항</h2>
@@ -76,8 +89,11 @@ function NoticeList() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
-            <button className={styles.searchButton} type="submit">
-              검색
+            <button className={styles.searchButton} type="submit" aria-label="검색">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2" />
+                <line x1="14.2" y1="14.2" x2="18" y2="18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
             </button>
           </form>
         </div>
@@ -134,25 +150,16 @@ function NoticeList() {
           )}
         </tbody>
       </table>
-      <div className={styles.pagination}>
-        <button
-          className={styles.pageButton}
-          onClick={() => setCurrentPage(currentPage - 1)}
-          disabled={currentPage === 0}
-        >
-          이전
-        </button>
-        <span className={styles.pageInfo}>
-          {currentPage + 1} / {pageInfo.totalPages}
-        </span>
-        <button
-          className={styles.pageButton}
-          onClick={() => setCurrentPage(currentPage + 1)}
-          disabled={currentPage >= pageInfo.totalPages - 1}
-        >
-          다음
-        </button>
-      </div>
+      {/* PagingView 컴포넌트로 교체 */}
+      {totalPage > 1 && (
+        <PagingView
+          currentPage={currentPage + 1}
+          totalPage={totalPage}
+          startPage={startPage}
+          endPage={endPage}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }

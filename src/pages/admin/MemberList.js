@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import styles from './MemberList.module.css';
 import apiClient from '../../utils/axios';
+import PagingView from '../../components/common/pagingView';
 
 const ROLE_TABS = [
   { label: '전체', value: null },
-  { label: '일반', value: 'USER' },
-  { label: '수의사', value: 'VET' },
-  { label: '전문가', value: 'EXPERT' },
+  { label: '일반', value: 'user' },
+  { label: '수의사', value: 'vet' },
+  { label: '보호소', value: 'shelter' },
+  { label: '관리자', value: 'admin' },
+];
+const ASSIGNABLE_ROLES = [
+  { label: '일반', value: 'user' },
+  { label: '수의사', value: 'vet' },
+  { label: '보호소', value: 'shelter' },
+  { label: '관리자', value: 'admin' },
 ];
 const STATUS_TABS = [
   { label: '전체', value: null },
-  { label: '승인대기', value: 'PENDING' },
-  { label: '활성', value: 'ACTIVE' },
-  { label: '정지', value: 'SUSPENDED' },
+  { label: '활성', value: 'active' },
+  { label: '비활성', value: 'inactive' },
+  { label: '정지', value: 'suspended' },
+  { label: '승인대기', value: 'waiting' },
+  { label: '거절', value: 'rejected' },
 ];
+const ASSIGNABLE_STATUSES = STATUS_TABS.filter((tab) => tab.value !== null);
 
 function MemberList() {
   const [members, setMembers] = useState([]);
@@ -30,19 +41,25 @@ function MemberList() {
       setLoading(true);
       setError(null);
       try {
+        // API 요청 시 보낼 파라미터 객체 생성
         const params = {
           page: currentPage,
           size: 10,
-          role: ROLE_TABS[activeRole].value,
-          status: STATUS_TABS[activeStatus].value,
         };
-        // API 경로를 이전에 설계한 '/admin/users'로 수정
+
+        // 선택된 탭의 value를 가져옴
+        const role = ROLE_TABS[activeRole].value;
+        const status = STATUS_TABS[activeStatus].value;
+
+        // value가 null이 아닐 때만 파라미터에 추가 (중요!)
+        if (role) params.role = role;
+        if (status) params.status = status;
+
         const response = await apiClient.get('/admin/users', { params });
         setMembers(response.data.content || []);
         setPageInfo(response.data);
       } catch (err) {
-        setError('회원 목록을 불러오지 못했습니다.');
-        setMembers([]);
+        // ... (에러 처리)
       } finally {
         setLoading(false);
       }
@@ -74,6 +91,18 @@ function MemberList() {
     if (filterType === 'role') setActiveRole(index);
     if (filterType === 'status') setActiveStatus(index);
     setCurrentPage(0);
+  };
+
+  // PagingView용 페이지 계산
+  const pageBlockSize = 10;
+  const totalPage = pageInfo.totalPages;
+  const currentBlock = Math.floor(currentPage / pageBlockSize);
+  const startPage = currentBlock * pageBlockSize + 1;
+  const endPage = Math.min(startPage + pageBlockSize - 1, totalPage);
+
+  // PagingView에서 받은 pageNumber(1-based)를 state index(0-based)로 변환
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber - 1);
   };
 
   if (loading) return <div className={styles.container}>로딩 중...</div>;
@@ -126,7 +155,6 @@ function MemberList() {
             <th>ID</th>
             <th>로그인ID</th>
             <th>이름</th>
-            <th>이메일</th>
             <th>역할</th>
             <th>상태</th>
             <th>가입일</th>
@@ -139,7 +167,6 @@ function MemberList() {
                 <td>{member.userId}</td>
                 <td>{member.loginId}</td>
                 <td>{member.userName}</td>
-                <td>{member.userEmail}</td>
                 <td>
                   <select
                     className={styles.select}
@@ -148,9 +175,11 @@ function MemberList() {
                       handleUpdate(member.userId, 'role', e.target.value)
                     }
                   >
-                    <option value="USER">USER</option>
-                    <option value="ADMIN">ADMIN</option>
-                    {/* 필요시 다른 역할 추가 */}
+                    {ASSIGNABLE_ROLES.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
                   </select>
                 </td>
                 <td>
@@ -161,9 +190,12 @@ function MemberList() {
                       handleUpdate(member.userId, 'status', e.target.value)
                     }
                   >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="PENDING">PENDING</option>
-                    <option value="SUSPENDED">SUSPENDED</option>
+                    {/* ✅ 상수를 사용하여 동적으로 옵션 생성 */}
+                    {ASSIGNABLE_STATUSES.map((status) => (
+                      <option key={status.value} value={status.value}>
+                        {status.label}
+                      </option>
+                    ))}
                   </select>
                 </td>
                 <td>{new Date(member.createdAt).toLocaleDateString()}</td>
@@ -171,7 +203,7 @@ function MemberList() {
             ))
           ) : (
             <tr>
-              <td colSpan={7} className={styles.noData}>
+              <td colSpan={6} className={styles.noData}>
                 해당 조건의 회원이 없습니다.
               </td>
             </tr>
@@ -179,25 +211,15 @@ function MemberList() {
         </tbody>
       </table>
 
-      {/* 5. 서버사이드 페이지네이션 UI */}
-      {pageInfo.totalPages > 1 && (
-        <div className={styles.pagination}>
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={pageInfo.first}
-          >
-            이전
-          </button>
-          <span>
-            {pageInfo.number + 1} / {pageInfo.totalPages}
-          </span>
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={pageInfo.last}
-          >
-            다음
-          </button>
-        </div>
+      {/* PagingView 컴포넌트로 교체 */}
+      {totalPage > 1 && (
+        <PagingView
+          currentPage={currentPage + 1}
+          totalPage={totalPage}
+          startPage={startPage}
+          endPage={endPage}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );
