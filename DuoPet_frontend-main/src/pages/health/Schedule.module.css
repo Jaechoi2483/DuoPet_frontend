@@ -1,0 +1,152 @@
+/* src/pages/health/Schedule.module.css */
+
+.container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.addButton {
+  padding: 8px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.addButton:hover {
+  background: #2563eb;
+}
+
+/* --- 캘린더 영역 --- */
+.calendarContainer {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.calendarContainer .placeholder {
+  height: 500px;
+  background-color: #f9fafb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  color: #9ca3af;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+/* react-big-calendar custom event styles */
+.event.hospital {
+  background-color: #ef4444;
+}
+.event.vaccination {
+  background-color: #3b82f6;
+}
+.event.medication {
+  background-color: #10b981;
+}
+.event.other {
+  background-color: #f97316;
+}
+
+/* --- 모달 스타일 (다른 탭과 동일) --- */
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.modalTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+.modalContent {
+  padding: 24px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+.formLabel {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+}
+.formInput,
+.formSelect,
+.formTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+.formSelect {
+  background: white;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+.formTextarea {
+  resize: vertical;
+}
+.modalFooter {
+  padding: 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+.submitButton {
+  padding: 10px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.submitButton:hover {
+  background: #2563eb;
+}

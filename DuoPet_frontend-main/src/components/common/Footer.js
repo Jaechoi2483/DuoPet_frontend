@@ -59,8 +59,8 @@ function Footer() {
               <h3 className={styles.footerSectionTitle}>약관 및 정책</h3>
               <ul className={styles.footerList}>
                 <li>
-                  <a
-                    href="#"
+                  <a 
+                    href="#" 
                     className={styles.footerListLink}
                     onClick={(e) => handlePolicyClick(e, 'terms')}
                   >
@@ -68,8 +68,8 @@ function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <a 
+                    href="#" 
                     className={styles.footerListLink}
                     onClick={(e) => handlePolicyClick(e, 'privacy')}
                   >
@@ -77,8 +77,8 @@ function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <a 
+                    href="#" 
                     className={styles.footerListLink}
                     onClick={(e) => handlePolicyClick(e, 'location')}
                   >
@@ -86,8 +86,8 @@ function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <a 
+                    href="#" 
                     className={styles.footerListLink}
                     onClick={(e) => handlePolicyClick(e, 'business')}
                   >

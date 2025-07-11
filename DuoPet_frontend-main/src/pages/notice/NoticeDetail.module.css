@@ -1,0 +1,142 @@
+/* src/pages/notice/NoticeDetail.module.css */
+
+.container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.info {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.content {
+  min-height: 180px;
+  font-size: 1.1rem;
+  color: #444;
+  line-height: 1.7;
+  padding: 18px 0 32px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 24px;
+}
+
+.buttonBar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.listButton {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: #4CAF50;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.listButton:hover {
+  background: #388e3c;
+}
+
+.editButton {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: #1976d2;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 10px;
+}
+.editButton:hover {
+  background: #1251a3;
+}
+
+.deleteButton {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: #e57373;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 10px;
+}
+.deleteButton:hover {
+  background: #b71c1c;
+}
+
+.attachments {
+  margin-bottom: 24px;
+  padding: 14px 0 0 0;
+  border-top: 1px dashed #e0e0e0;
+}
+.attachments strong {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #333;
+  font-size: 15px;
+}
+.attachments ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.attachments li {
+  margin-bottom: 6px;
+}
+.attachmentLink {
+  color: #1976d2;
+  text-decoration: underline;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+.attachmentLink:hover {
+  color: #388e3c;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px 2px;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .info {
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+  }
+  .content {
+    font-size: 1rem;
+    padding: 10px 0 18px 0;
+  }
+  .listButton {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+} 
