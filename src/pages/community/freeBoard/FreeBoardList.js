@@ -1,8 +1,9 @@
 // src/pages/community/freeBoard/FreeBoardList.js
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import apiClient from '../../../utils/axios'; // axios 인스턴스
+import { AuthContext } from '../../../AuthProvider';
 import styles from './FreeBoardList.module.css';
 import PagingView from '../../../components/common/pagingView';
 
@@ -13,12 +14,17 @@ function FreeBoardList() {
   const [topViewedPosts, setTopViewedPosts] = useState([]);
   const [pagingInfo, setPagingInfo] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const { isLoggedIn } = useContext(AuthContext);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
   const handleWriteClick = () => {
+    if (!isLoggedIn) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
     navigate('/community/freeBoard/write');
   };
 
