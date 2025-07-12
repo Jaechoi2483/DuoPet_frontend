@@ -26,34 +26,43 @@
 }
 
 .summaryRow {
-  display: flex;
-  gap: 24px;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   margin-bottom: 36px;
-  flex-wrap: wrap;
 }
 
 .summaryCard {
-  flex: 1 1 0;
-  min-width: 180px;
-  background: #f8f9fa;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 28px 0 18px 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px 16px;
   text-align: center;
-  margin: 0 4px;
+  transition: all 0.2s ease;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.summaryCard:hover {
+  border-color: #1976d2;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.1);
 }
 
 .summaryValue {
-  font-size: 2.1rem;
-  font-weight: bold;
-  color: #388e3c;
-  margin-bottom: 8px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1976d2;
+  margin-bottom: 6px;
+  line-height: 1.2;
 }
 
 .summaryLabel {
-  font-size: 1.1rem;
-  color: #555;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+  line-height: 1.3;
 }
 
 .statsGrid {
@@ -179,7 +188,7 @@
 
 @media (max-width: 900px) {
   .summaryRow {
-    flex-direction: column;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
   .statsGrid {
@@ -192,15 +201,19 @@
   .container {
     padding: 10px 2px;
   }
+  .summaryRow {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
   .summaryCard {
-    min-width: 120px;
-    padding: 16px 0 10px 0;
+    padding: 16px 12px;
+    min-height: 80px;
   }
   .summaryValue {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
   }
   .summaryLabel {
-    font-size: 0.95rem;
+    font-size: 0.8rem;
   }
   .statsBox {
     padding: 12px 6px 8px 6px;
