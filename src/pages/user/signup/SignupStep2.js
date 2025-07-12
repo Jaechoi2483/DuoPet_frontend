@@ -27,9 +27,7 @@ function SignupStep2() {
     }
 
     try {
-      const res = await apiClient.get(
-        `/users/check-nickname?nickname=${signupData.nickname}`
-      );
+      const res = await apiClient.get(`/users/check-nickname?nickname=${signupData.nickname}`);
       setNicknameAvailable(!res.data);
     } catch (err) {
       console.error('[닉네임 중복 확인 오류]', err);
@@ -43,9 +41,7 @@ function SignupStep2() {
       return;
     }
     try {
-      const res = await apiClient.get(
-        `/users/check-email?userEmail=${signupData.userEmail}`
-      );
+      const res = await apiClient.get(`/users/check-email?userEmail=${signupData.userEmail}`);
       setEmailAvailable(!res.data); // true = 중복 → 사용 불가
     } catch (err) {
       console.error('[이메일 중복 확인 오류]', err);
@@ -54,38 +50,18 @@ function SignupStep2() {
   };
 
   const handleNext = async () => {
-    const {
-      userName,
-      nickname,
-      phone,
-      age,
-      gender,
-      address,
-      userEmail,
-      profileFile,
-    } = signupData;
+    const { userName, nickname, phone, age, gender, address, userEmail, profileFile } = signupData;
 
     setError('');
 
-    if (
-      !userName ||
-      !nickname ||
-      !phone ||
-      !age ||
-      !gender ||
-      !address ||
-      !userEmail
-    ) {
+    if (!userName || !nickname || !phone || !age || !gender || !address || !userEmail) {
       setError('모든 항목을 입력해주세요.');
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append(
-        'data',
-        new Blob([JSON.stringify(signupData)], { type: 'application/json' })
-      );
+      formData.append('data', new Blob([JSON.stringify(signupData)], { type: 'application/json' }));
       if (profileFile) formData.append('file', profileFile);
 
       const response = await fetch('/users/signup/step2', {
@@ -114,9 +90,7 @@ function SignupStep2() {
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.title}>회원가입</h2>
-      <p className={styles.subtitle}>
-        DuoPet 서비스를 위한 정보를 입력해주세요.
-      </p>
+      <p className={styles.subtitle}>DuoPet 서비스를 위한 정보를 입력해주세요.</p>
 
       <div className={styles.stepHeader}>
         <div className={styles.stepItem}>기본 정보</div>
@@ -151,19 +125,13 @@ function SignupStep2() {
         />
 
         {signupData.nickname === '' && error === '닉네임을 입력해주세요.' && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            ❗ {error}
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
         )}
         {signupData.nickname && nicknameAvailable === false && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            ❌ 이미 사용 중인 닉네임입니다.
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❌ 이미 사용 중인 닉네임입니다.</div>
         )}
         {signupData.nickname && nicknameAvailable === true && (
-          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>
-            ✅ 사용 가능한 닉네임입니다.
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 닉네임입니다.</div>
         )}
 
         <button type="button" onClick={checkNickname}>
@@ -197,12 +165,7 @@ function SignupStep2() {
         <label>성별 *</label>
         <div className={styles.genderGroup}>
           {['남성', '여성'].map((label) => (
-            <label
-              key={label}
-              className={`${styles.genderCard} ${
-                signupData.gender === label ? styles.selected : ''
-              }`}
-            >
+            <label key={label} className={`${styles.genderCard} ${signupData.gender === label ? styles.selected : ''}`}>
               <input
                 type="radio"
                 name="gender"
@@ -242,19 +205,13 @@ function SignupStep2() {
         />
 
         {signupData.userEmail === '' && error === '이메일을 입력해주세요.' && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            ❗ {error}
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
         )}
         {signupData.userEmail && emailAvailable === false && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            ❌ 이미 사용 중인 이메일입니다.
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❌ 이미 사용 중인 이메일입니다.</div>
         )}
         {signupData.userEmail && emailAvailable === true && (
-          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>
-            ✅ 사용 가능한 이메일입니다.
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 이메일입니다.</div>
         )}
 
         <button type="button" onClick={checkEmail}>
@@ -279,8 +236,8 @@ function SignupStep2() {
               setSignupData({
                 ...signupData,
                 profilePreview: previewUrl,
-                originalFilename: file.name,
-                renameFilename: '',
+                userProfileOriginalFilename: file.name,
+                userProfileRenameFilename: '', // 나중에 step2 응답으로 채워짐
                 profileFile: file,
               });
             }
@@ -295,18 +252,10 @@ function SignupStep2() {
         )}
 
       <div className={styles.buttonGroup}>
-        <button
-          type="button"
-          className={styles.prevButton}
-          onClick={handlePrev}
-        >
+        <button type="button" className={styles.prevButton} onClick={handlePrev}>
           이전 단계
         </button>
-        <button
-          type="button"
-          className={styles.nextButton}
-          onClick={handleNext}
-        >
+        <button type="button" className={styles.nextButton} onClick={handleNext}>
           다음 단계
         </button>
       </div>
