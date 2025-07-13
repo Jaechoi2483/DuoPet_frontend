@@ -24,16 +24,16 @@ const SignupStep3 = ({ onNext, onPrev }) => {
 
   const validateStep = () => {
     if (selectedRole === 'vet') {
-      const { specialization, licenseNumber, hospital, address, vetFileOriginalFilename } = signupData;
-      if (!specialization || !licenseNumber || !hospital || !address || !vetFileOriginalFilename) {
+      const { specialization, licenseNumber, hospital, vetHospitalAddress, vetFileOriginalFilename } = signupData;
+      if (!specialization || !licenseNumber || !hospital || !vetHospitalAddress || !vetFileOriginalFilename) {
         alert('전문가 필수 정보를 모두 입력해주세요.');
         return false;
       }
     }
 
     if (selectedRole === 'shelter') {
-      const { shelterName, phone, userEmail, address, operatingHours } = signupData;
-      if (!shelterName || !phone || !userEmail || !address || !operatingHours) {
+      const { shelterName, shelterPhone, shelterEmail, shelterAddress, operatingHours } = signupData;
+      if (!shelterName || !shelterPhone || !shelterEmail || !shelterAddress || !operatingHours) {
         alert('보호소 필수 정보를 모두 입력해주세요.');
         return false;
       }
@@ -206,8 +206,8 @@ const VetForm = ({ signupData, setSignupData }) => {
         <input
           type="text"
           placeholder="예: 서울 서초구 방배로 101"
-          value={signupData.address || ''}
-          onChange={(e) => setSignupData({ ...signupData, address: e.target.value })}
+          value={signupData.vetHospitalAddress || ''}
+          onChange={(e) => setSignupData({ ...signupData, vetHospitalAddress: e.target.value })}
         />
       </div>
 
@@ -237,80 +237,125 @@ const VetForm = ({ signupData, setSignupData }) => {
 };
 
 // 보호소 폼
-const ShelterForm = ({ signupData, setSignupData }) => (
-  <div className={styles.additionalBox}>
-    <h3>보호소 운영자 추가 정보</h3>
+const ShelterForm = ({ signupData, setSignupData }) => {
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    <div className={styles.formGroup}>
-      <label>보호소명 *</label>
-      <input
-        type="text"
-        placeholder="예: 사랑의 보호소"
-        value={signupData.shelterName || ''}
-        onChange={(e) => setSignupData({ ...signupData, shelterName: e.target.value })}
-      />
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await axios.post('/shelter/upload-temp', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const { originalFilename, renameFilename } = res.data;
+
+      setSignupData((prev) => ({
+        ...prev,
+        shelterProfileFile: file,
+        shelterFileOriginalFilename: originalFilename,
+        shelterFileRenameFilename: renameFilename,
+      }));
+    } catch (err) {
+      alert('파일 업로드 실패');
+    }
+  };
+
+  return (
+    <div className={styles.additionalBox}>
+      <h3>보호소 운영자 추가 정보</h3>
+
+      <div className={styles.formGroup}>
+        <label>보호소명 *</label>
+        <input
+          type="text"
+          placeholder="예: 사랑의 보호소"
+          value={signupData.shelterName || ''}
+          onChange={(e) => setSignupData({ ...signupData, shelterName: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>보호소 연락처 *</label>
+        <input
+          type="text"
+          placeholder="예: 02-123-4567"
+          value={signupData.shelterPhone || ''}
+          onChange={(e) => setSignupData({ ...signupData, shelterPhone: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>보호소 이메일 *</label>
+        <input
+          type="text"
+          placeholder="예: info@shelter.com"
+          value={signupData.shelterEmail || ''}
+          onChange={(e) => setSignupData({ ...signupData, shelterEmail: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>보호소 주소 *</label>
+        <input
+          type="text"
+          placeholder="예: 서울 마포구 상암로 123"
+          value={signupData.shelterAddress || ''}
+          onChange={(e) => setSignupData({ ...signupData, shelterAddress: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>웹사이트 주소 (선택)</label>
+        <input
+          type="text"
+          placeholder="예: https://shelter.or.kr"
+          value={signupData.website || ''}
+          onChange={(e) => setSignupData({ ...signupData, website: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>수용 가능 동물 수 (선택)</label>
+        <input
+          type="number"
+          placeholder="예: 30"
+          value={signupData.capacity || ''}
+          onChange={(e) => setSignupData({ ...signupData, capacity: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>운영 시간 *</label>
+        <input
+          type="text"
+          placeholder="예: 오전 10시 ~ 오후 6시"
+          value={signupData.operatingHours || ''}
+          onChange={(e) => setSignupData({ ...signupData, operatingHours: e.target.value })}
+        />
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>인증 서류 첨부 *</label>
+        <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleFileUpload} />
+        {signupData.shelterFileOriginalFilename && (
+          <div className={styles.statusMessage}>✅ 파일 선택됨: {signupData.shelterFileOriginalFilename}</div>
+        )}
+      </div>
+
+      <div className={styles.formGroup}>
+        <label>파일 설명 *</label>
+        <input
+          type="text"
+          placeholder="예: 운영 위탁 계약서, 수용 보험증 등"
+          value={signupData.authFileDescription || ''}
+          onChange={(e) => setSignupData({ ...signupData, authFileDescription: e.target.value })}
+        />
+      </div>
+
+      <p className={styles.notice}>🔒 첨부한 인증 파일은 관리자 검토 후 승인되며, 보호소 운영 기능이 활성화됩니다.</p>
     </div>
-
-    <div className={styles.formGroup}>
-      <label>보호소 연락처 *</label>
-      <input
-        type="text"
-        placeholder="예: 02-123-4567"
-        value={signupData.phone || ''}
-        onChange={(e) => setSignupData({ ...signupData, phone: e.target.value })}
-      />
-    </div>
-
-    <div className={styles.formGroup}>
-      <label>보호소 이메일 *</label>
-      <input
-        type="text"
-        placeholder="예: info@shelter.com"
-        value={signupData.userEmail || ''}
-        onChange={(e) => setSignupData({ ...signupData, userEmail: e.target.value })}
-      />
-    </div>
-
-    <div className={styles.formGroup}>
-      <label>보호소 주소 *</label>
-      <input
-        type="text"
-        placeholder="예: 서울 마포구 상암로 123"
-        value={signupData.address || ''}
-        onChange={(e) => setSignupData({ ...signupData, address: e.target.value })}
-      />
-    </div>
-
-    <div className={styles.formGroup}>
-      <label>웹사이트 주소 (선택)</label>
-      <input
-        type="text"
-        placeholder="예: https://shelter.or.kr"
-        value={signupData.website || ''}
-        onChange={(e) => setSignupData({ ...signupData, website: e.target.value })}
-      />
-    </div>
-
-    <div className={styles.formGroup}>
-      <label>수용 가능 동물 수 (선택)</label>
-      <input
-        type="number"
-        placeholder="예: 30"
-        value={signupData.capacity || ''}
-        onChange={(e) => setSignupData({ ...signupData, capacity: e.target.value })}
-      />
-    </div>
-
-    <div className={styles.formGroup}>
-      <label>운영 시간 *</label>
-      <input
-        type="text"
-        placeholder="예: 오전 10시 ~ 오후 6시"
-        value={signupData.operatingHours || ''}
-        onChange={(e) => setSignupData({ ...signupData, operatingHours: e.target.value })}
-      />
-    </div>
-
-    <p className={styles.notice}>🔒 보호소 운영자 정보는 관리자 승인 후 기능 사용이 가능합니다.</p>
-  </div>
-);
+  );
+};

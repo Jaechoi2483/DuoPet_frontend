@@ -19,23 +19,31 @@ export const SignupProvider = ({ children }) => {
     role: 'USER',
     status: '',
     faceRecognitionId: '',
-    userProfileRenameFilename: '', // 🔹 변경
+    userProfileRenameFilename: '',
     userProfileOriginalFilename: '',
 
     // VET 테이블용
     specialization: '',
     licenseNumber: '',
     hospital: '',
+    vetHospitalAddress: '',
     website: '',
     licenseFile: null,
-    vetFileRenameFilename: '', // 🔹 추가
+    vetFileRenameFilename: '',
     vetFileOriginalFilename: '',
     isCustomSpecialization: false,
 
     // SHELTER 테이블용
     shelterName: '',
+    shelterPhone: '', // 보호소 연락처 (구분된 필드)
+    shelterEmail: '', // 보호소 이메일
+    shelterAddress: '', // 보호소 주소
     capacity: '',
     operatingHours: '',
+    shelterFileOriginalFilename: '',
+    shelterFileRenameFilename: '',
+    shelterProfileFile: null,
+    authFileDescription: '',
   });
 
   return <SignupContext.Provider value={{ signupData, setSignupData }}>{children}</SignupContext.Provider>;

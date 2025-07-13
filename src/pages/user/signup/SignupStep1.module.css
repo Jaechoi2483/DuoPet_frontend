@@ -123,9 +123,22 @@
 
 .buttonGroup {
   display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 30px;
+  justify-content: center;
+  gap: 12px; /* 버튼 간격 */
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.buttonGroup button {
+  white-space: nowrap; /* 줄바꿈 방지 */
+  padding: 10px 20px;
+  min-width: 180px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .prevButton,
@@ -139,6 +152,10 @@
 
 .prevButton:hover {
   background-color: #0056b3;
+}
+
+.fullButton {
+  min-width: 180px;
 }
 
 /* 하단 로그인 링크 */
@@ -374,4 +391,40 @@
   font-size: 14px;
   margin: 12px 0 0 2px;
   font-weight: 500;
+}
+
+.cancelButton {
+  background-color: #ccc;
+  color: #000;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #bbb;
+}
+
+.secondaryButton {
+  background-color: #fff;
+  color: #007bff;
+  border: 2px solid #007bff;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-left: 10px;
+}
+
+.secondaryButton:hover {
+  background-color: #f0f8ff;
+}
+.smallNotice {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 8px;
 }
