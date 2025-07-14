@@ -81,6 +81,39 @@ function SignupStep4() {
         });
       }
 
+      // 3️ SHELTER 등록 (role === 'shelter')
+      if (signupData.role === 'shelter') {
+        const shelterDto = {
+          shelterName: signupData.shelterName,
+          phone: signupData.phone,
+          email: signupData.userEmail,
+          address: signupData.address,
+          website: signupData.website,
+          capacity: signupData.capacity,
+          operatingHours: signupData.operatingHours,
+          shelterFileOriginalFilename: signupData.shelterFileOriginalFilename,
+          shelterFileRenameFilename: signupData.shelterFileRenameFilename,
+          authFileDescription: signupData.authFileDescription,
+        };
+
+        const shelterFormData = new FormData();
+        shelterFormData.append('shelterDto', new Blob([JSON.stringify(shelterDto)], { type: 'application/json' }));
+
+        if (!signupData.shelterProfileFile) {
+          setError('인증 첨부파일이 누락되었습니다.');
+          return;
+        }
+
+        shelterFormData.append('shelterProfileFile', signupData.shelterProfileFile);
+        shelterFormData.append('loginId', signupData.loginId);
+
+        console.log('[DEBUG] shelterDto:', shelterDto);
+
+        await apiClient.post('/shelter/register', shelterFormData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+      }
+
       alert('회원가입이 완료되었습니다!');
       navigate('/login');
     } catch (err) {
