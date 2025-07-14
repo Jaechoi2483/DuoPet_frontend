@@ -1,11 +1,11 @@
-/* ✅ 전체 페이지 컨테이너 */
+/* 전체 페이지 컨테이너 */
 .container {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-/* ✅ 상단 제목 + 컨트롤 영역 포함 헤더 */
+/* 상단 제목 + 컨트롤 영역 포함 헤더 */
 .listHeader {
   display: flex;
   justify-content: space-between;
@@ -13,14 +13,14 @@
   margin-bottom: 24px;
 }
 
-/* ✅ "커뮤니티 > 자유게시판" 제목 */
+/* "커뮤니티 > 자유게시판" 제목 */
 .title {
   font-size: 24px;
   font-weight: bold;
   margin: 0;
 }
 
-/* ✅ 검색/정렬/글쓰기 버튼 전체 묶음 (좌우 분리용) */
+/* 검색/정렬/글쓰기 버튼 전체 묶음 (좌우 분리용) */
 .listControls {
   display: flex;
   justify-content: space-between;
@@ -29,24 +29,53 @@
   margin-bottom: 24px;
 }
 
-/* ✅ 왼쪽: 정렬 + 검색 필드 그룹 */
+/* 왼쪽: 정렬 + 검색 필드 그룹 */
 .searchSortBox {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: nowrap;
 }
 
-/* ✅ 정렬 드롭다운 */
+/* 공통 입력/버튼 정렬 기준 (모든 input/select/button에 적용) */
+.selectBox,
+.searchInput,
+.dateInput,
+.searchButton,
+.writeButton {
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  line-height: 40px; /* 텍스트 수직 정렬 */
+}
+
+/* 정렬 드롭다운 */
 .selectBox {
   width: 100px;
 }
 
-/* ✅ 검색어 입력창 */
+/* 검색어 입력창 */
 .searchInput {
   width: 220px;
+  margin-top: 12px;
 }
 
-/* ✅ 검색 버튼 */
+/* 날짜 검색창 */
+.dateInput {
+  width: 220px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.dateInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* 검색 버튼 */
 .searchButton {
   width: 88px;
   background-color: #f1f1f1;
@@ -58,7 +87,7 @@
   background-color: #e0e0e0;
 }
 
-/* ✅ 글쓰기 버튼 */
+/* 글쓰기 버튼 */
 .writeButton {
   width: 88px;
   background-color: #007bff;
@@ -74,21 +103,7 @@
   background-color: #005fc4;
 }
 
-/* ✅ 모든 입력/버튼 요소 공통 정렬 기준 */
-.selectBox,
-.searchInput,
-.searchButton,
-.writeButton {
-  height: 40px; /* ✅ 동일한 높이 */
-  padding: 0 12px; /* ✅ 위아래 0, 좌우 12px */
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-  line-height: 40px; /* ✅ 텍스트 수직 가운데 정렬 */
-}
-
-/* ✅ 추천 게시물 전체 영역 (좋아요 / 조회수 TOP) */
+/* 추천 게시물 전체 영역 (좋아요 / 조회수 TOP) */
 .topSection {
   display: flex;
   justify-content: space-between;
@@ -96,7 +111,7 @@
   margin-bottom: 32px;
 }
 
-/* ✅ 추천 게시물 박스 각각 */
+/* 추천 게시물 박스 각각 */
 .topBox {
   flex: 1;
   background-color: #f7f7f7;
@@ -104,7 +119,7 @@
   border-radius: 8px;
 }
 
-/* ✅ 추천 게시물 리스트 */
+/* 추천 게시물 리스트 */
 .cardList {
   display: flex;
   flex-direction: column;
@@ -112,27 +127,32 @@
   margin-top: 12px;
 }
 
-/* ✅ 추천 게시물 카드 한 개 */
+/* 추천 게시물 카드 한 개 */
 .card {
   background: white;
   border: 1px solid #ddd;
   padding: 12px;
   border-radius: 6px;
+  cursor: pointer;
 }
 
-/* ✅ 카드 제목 */
+.card:hover {
+  background-color: #f2f9ff;
+}
+
+/* 카드 제목 */
 .cardTitle {
   font-weight: bold;
   margin: 8px 0;
 }
 
-/* ✅ 카드 하단 정보 */
+/* 카드 하단 정보 */
 .cardStats {
   font-size: 14px;
   color: #555;
 }
 
-/* ✅ 게시판 카테고리 뱃지 */
+/* 게시판 카테고리 뱃지 */
 .badge {
   background-color: #007bff;
   color: white;
@@ -141,7 +161,7 @@
   font-size: 12px;
 }
 
-/* ✅ 전체 게시글 목록 영역 */
+/* 전체 게시글 목록 영역 */
 .postList {
   display: flex;
   flex-direction: column;
@@ -149,40 +169,45 @@
   margin-bottom: 20px;
 }
 
-/* ✅ 게시글 카드 */
+/* 게시글 카드 */
 .postItem {
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   background-color: #fff;
+  cursor: pointer;
 }
 
-/* ✅ 게시글 제목 */
+.postItem:hover {
+  background-color: #f9f9f9;
+}
+
+/* 게시글 제목 */
 .postTitle {
   font-weight: bold;
   margin-bottom: 4px;
 }
 
-/* ✅ 게시글 하단 정보 */
+/* 게시글 하단 정보 */
 .postMeta {
   font-size: 13px;
   color: #666;
 }
 
-/* ✅ 페이지네이션 전체 컨테이너 */
+/* 페이지네이션 전체 컨테이너 */
 .pagination {
   text-align: center;
   margin-top: 20px;
 }
 
-/* ✅ 페이지 번호 */
+/* 페이지 번호 */
 .page {
   margin: 0 6px;
   cursor: pointer;
   font-weight: bold;
 }
 
-/* ✅ 현재 페이지 */
+/* 현재 페이지 */
 .active {
   color: #007bff;
 }

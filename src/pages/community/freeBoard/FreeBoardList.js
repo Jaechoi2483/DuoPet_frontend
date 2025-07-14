@@ -1,7 +1,7 @@
 // src/pages/community/freeBoard/FreeBoardList.js
 
 import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import apiClient from '../../../utils/axios'; // axios 인스턴스
 import { AuthContext } from '../../../AuthProvider';
 import styles from './FreeBoardList.module.css';
@@ -9,43 +9,62 @@ import PagingView from '../../../components/common/pagingView';
 
 function FreeBoardList() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { isLoggedIn } = useContext(AuthContext);
+  const location = useLocation();
+
   const [postList, setPostList] = useState([]);
   const [topLikedPosts, setTopLikedPosts] = useState([]);
   const [topViewedPosts, setTopViewedPosts] = useState([]);
   const [pagingInfo, setPagingInfo] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const { isLoggedIn } = useContext(AuthContext);
-  const [keyword, setKeyword] = useState('');
-  const [sortOption, setSortOption] = useState('date');
-  const [isSearching, setIsSearching] = useState(false);
-  const location = useLocation();
+  const [selectedDate, setSelectedDate] = useState(null);
 
+  // 쿼리스트링에서 keyword, sort 읽기
+  const keyword = searchParams.get('keyword') || '';
+  const sortOption = searchParams.get('sort') || 'title';
+  const dateParam = searchParams.get('date') || null;
+
+  const [inputKeyword, setInputKeyword] = useState(keyword); // 입력 필드 전용 상태
+  const isKeywordSearch = keyword.trim() !== '';
+  const isDateSearch = sortOption === 'date' && dateParam;
+  const isSearching = isKeywordSearch || isDateSearch;
+  const isDateMode = sortOption === 'date';
+
+  // 페이징 핸들러
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-    setCurrentPage(1);
-  };
-
+  // 검색 입력 변경
   const handleKeywordChange = (e) => {
-    const input = e.target.value;
-    setKeyword(input);
+    setInputKeyword(e.target.value);
   };
 
+  // 검색어 입력
   const handleSearch = () => {
-    if (keyword.trim() === '') {
-      setIsSearching(false); // 검색어 없으면 전체 보기
-    } else {
-      setIsSearching(true); // 검색 중 상태
-    }
-    setCurrentPage(1);
+    const query = new URLSearchParams();
+    if (inputKeyword.trim()) query.set('keyword', inputKeyword.trim());
+    if (sortOption) query.set('sort', sortOption);
+    navigate(`/community/freeBoard?${query.toString()}`);
+    setCurrentPage(1); // 페이지 초기화
+  };
 
-    apiClient.get(`/board/freeList?page=1&limit=2&keyword=${keyword}&sort=${sortOption}`).then((res) => {
-      setPostList(res.data.list);
-      setPagingInfo(res.data.paging);
-    });
+  const handleSortChange = (e) => {
+    const newSort = e.target.value;
+    const query = new URLSearchParams();
+    query.set('sort', newSort);
+
+    // 정렬 방식에 따라 입력 초기화
+    if (newSort === 'title') {
+      setInputKeyword('');
+    } else if (newSort === 'date') {
+      setSelectedDate(null);
+    }
+
+    // URL 이동
+    navigate(`/community/freeBoard?${query.toString()}`);
+    setCurrentPage(1);
   };
 
   const handleWriteClick = () => {
@@ -60,25 +79,65 @@ function FreeBoardList() {
     navigate(`/community/freeBoard/${id}`);
   };
 
+  // 날짜 선택
+  const handleDateChange = (e) => {
+    const selected = e.target.value;
+    setSelectedDate(selected);
+
+    const query = new URLSearchParams();
+    query.set('sort', 'date');
+    query.set('date', selected);
+
+    navigate(`/community/freeBoard?${query.toString()}`);
+    setCurrentPage(1);
+  };
+
+  // 자유게시판 경로 클릭 시 검색 초기화 (현재 페이지에서 다시 눌러도 리셋)
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get('reset') === 'true') {
-      setKeyword('');
-      setIsSearching(false);
+    if (location.pathname === '/community/freeBoard') {
+      setInputKeyword(''); // 검색창 초기화
       setCurrentPage(1);
     }
-  }, [location]);
+  }, [location.pathname]);
 
-  // 자유게시판 목록 + 페이징
+  // 게시글 목록 불러오기
   useEffect(() => {
+    const params = new URLSearchParams();
+
+    params.set('page', currentPage);
+    params.set('limit', 2);
+
+    // 제목 정렬 & 키워드 검색
+    if (isSearching && keyword.trim()) {
+      params.set('keyword', keyword);
+      params.set('sort', sortOption);
+    }
+
+    // 날짜 정렬 + 날짜 선택 시
+    if (sortOption === 'date') {
+      params.set('sort', 'date');
+      if (selectedDate) {
+        params.set('date', selectedDate); // 예: 2025-07-14
+      }
+    }
+
+    console.log('💡 요청 URL:', `/board/freeList?${params.toString()}`);
+
     apiClient
-      .get(`/board/freeList?page=${currentPage}&limit=2&keyword=${isSearching ? keyword : ''}&sort=${sortOption}`)
+      .get(`/board/freeList?${params.toString()}`)
       .then((res) => {
         setPostList(res.data.list);
         setPagingInfo(res.data.paging);
       })
       .catch((err) => console.error('자유게시판 목록 조회 실패:', err));
-  }, [currentPage, sortOption, isSearching]);
+  }, [keyword, sortOption, currentPage, selectedDate]);
+
+  useEffect(() => {
+    if (sortOption === 'date' && dateParam) {
+      // 주소에 있는 날짜 반영
+      setSelectedDate(dateParam);
+    }
+  }, [sortOption, dateParam]);
 
   // 좋아요/조회수 TOP3 (처음에만)
   useEffect(() => {
@@ -106,20 +165,26 @@ function FreeBoardList() {
         <div className={styles.listControls}>
           <div className={styles.searchSortBox}>
             <select className={styles.selectBox} value={sortOption} onChange={handleSortChange}>
-              <option value="title">제목순</option>
-              <option value="date">날짜순</option>
+              <option value="title">제목</option>
+              <option value="date">날짜</option>
             </select>
 
-            <input
-              type="text"
-              placeholder="검색어를 입력하세요"
-              className={styles.searchInput}
-              value={keyword}
-              onChange={handleKeywordChange}
-            />
-            <button className={styles.searchButton} onClick={handleSearch}>
-              검색
-            </button>
+            {sortOption === 'title' ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="검색어를 입력하세요"
+                  className={styles.searchInput}
+                  value={inputKeyword}
+                  onChange={handleKeywordChange}
+                />
+                <button className={styles.searchButton} onClick={handleSearch}>
+                  검색
+                </button>
+              </>
+            ) : (
+              <input type="date" className={styles.dateInput} value={selectedDate || ''} onChange={handleDateChange} />
+            )}
           </div>
 
           <button className={styles.writeButton} onClick={handleWriteClick}>
