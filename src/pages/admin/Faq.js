@@ -22,6 +22,20 @@ function parseJwt(token) {
   }
 }
 
+// UTF-8 byte 계산 함수
+function getUtf8Bytes(str) {
+  if (!str) return 0;
+  let bytes = 0;
+  for (let i = 0; i < str.length; i++) {
+    const code = str.charCodeAt(i);
+    if (code <= 0x7f) bytes += 1;
+    else if (code <= 0x7ff) bytes += 2;
+    else if (code <= 0xffff) bytes += 3;
+    else bytes += 4;
+  }
+  return bytes;
+}
+
 function Faq() {
   // 1. 서버사이드 페이징을 위한 state 구조로 변경
   const [faqs, setFaqs] = useState([]);
@@ -196,14 +210,23 @@ function Faq() {
             return (
               <div className={styles.faqItem} key={item.faqId}>
                 <div className={styles.questionContainer}>
-                  <div className={styles.questionContent}>
+                  <div
+                    className={styles.questionContent}
+                    onClick={() => !isEdit && handleToggle(idx)}
+                    style={{ cursor: isEdit ? 'default' : 'pointer' }}
+                  >
                     {isEdit ? (
-                      <input
-                        className={styles.editInput}
-                        value={editQuestion}
-                        onChange={(e) => setEditQuestion(e.target.value)}
-                        placeholder="질문을 입력하세요"
-                      />
+                      <>
+                        <input
+                          className={styles.editInput}
+                          value={editQuestion}
+                          onChange={(e) => setEditQuestion(e.target.value)}
+                          placeholder="질문을 입력하세요"
+                        />
+                        <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                          {getUtf8Bytes(editQuestion)} / 1000 byte
+                        </div>
+                      </>
                     ) : (
                       <span className={styles.questionText}>{item.question}</span>
                     )}
@@ -229,6 +252,9 @@ function Faq() {
                           onChange={(e) => setEditAnswer(e.target.value)}
                           placeholder="답변을 입력하세요"
                         />
+                        <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                          {getUtf8Bytes(editAnswer)} / 4000 byte
+                        </div>
                         <div className={styles.editButtonBar}>
                           <button className={styles.saveButton} onClick={() => handleSave(item.faqId)}>
                             저장
@@ -285,6 +311,9 @@ function Faq() {
                 onChange={(e) => setNewQuestion(e.target.value)}
                 placeholder="질문을 입력하세요"
               />
+              <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                {getUtf8Bytes(newQuestion)} / 1000 byte
+              </div>
             </div>
             <div className={styles.questionActions}>
               <button className={styles.toggleButton} disabled style={{ opacity: 0.3 }}>
@@ -300,6 +329,9 @@ function Faq() {
                 onChange={(e) => setNewAnswer(e.target.value)}
                 placeholder="답변을 입력하세요"
               />
+              <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                {getUtf8Bytes(newAnswer)} / 4000 byte
+              </div>
               <div className={styles.editButtonBar}>
                 <button className={styles.saveButton} onClick={handleAdd}>
                   등록

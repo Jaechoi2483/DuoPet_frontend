@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react'; // 1. useContext 추가
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../utils/axios';
+import { AuthContext } from '../../AuthProvider'; // 2. AuthContext 추가
 import styles from './NoticeWrite.module.css';
 
 function NoticeWrite() {
@@ -8,16 +8,29 @@ function NoticeWrite() {
   const [title, setTitle] = useState('');
   const [contentBody, setContentBody] = useState('');
   const [file, setFile] = useState(null);
-  const [fileMessage, setFileMessage] = useState('1개만 첨부 가능합니다.');
-  const [showError, setShowError] = useState(false);
-  const fileInputRef = React.useRef();
+  const fileInputRef = useRef();
+
+  // 3. AuthContext에서 필요한 모든 값을 가져옵니다.
+  const { userNo, role, isLoggedIn, isAuthLoading, secureApiRequest } = useContext(AuthContext);
+
+  // 4. 인증 및 권한 확인 로직 추가
+  useEffect(() => {
+    // 인증 상태 확인이 끝나기 전까지는 대기
+    if (isAuthLoading) {
+      return;
+    }
+    // 비로그인 상태이거나, 관리자(admin)가 아니면 접근 차단
+    if (!isLoggedIn || role !== 'admin') {
+      alert('공지사항 작성 권한이 없습니다.');
+      navigate(-1); // 이전 페이지로 이동
+    }
+  }, [isLoggedIn, isAuthLoading, role, navigate]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setFile(selectedFile);
     }
-    // 파일 선택 후 input 값을 초기화하여 같은 파일을 다시 선택할 수 있도록 함
     e.target.value = '';
   };
 
@@ -28,37 +41,59 @@ function NoticeWrite() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // FormData 객체 생성
-    const formData = new FormData();
+    if (!title.trim() || !contentBody.trim()) {
+      alert('제목과 내용을 모두 입력해주세요.');
+      return;
+    }
 
-    // DTO 필드에 맞춰 데이터를 추가합니다.
-    // 백엔드 @ModelAttribute Notice notice가 받을 수 있도록 key를 맞춰줍니다.
+    const formData = new FormData();
     formData.append('title', title);
     formData.append('contentBody', contentBody);
-    formData.append('contentType', 'notice'); // 공지사항 타입 지정
-    formData.append('userId', 1); // TODO: 실제 로그인된 사용자 ID로 변경해야 함
+    formData.append('contentType', 'notice');
 
-    // 파일이 있으면 FormData에 추가합니다.
-    // 백엔드 @RequestParam(name="ofile")에 맞춰 key를 "ofile"로 지정합니다.
+    // 5. 하드코딩된 ID 대신, AuthContext에서 가져온 실제 사용자 ID(userNo)를 사용합니다.
+    formData.append('userId', userNo);
+
     if (file) {
       formData.append('ofile', file);
     }
 
     try {
-      // apiClient를 사용해 서버로 POST 요청
-      await apiClient.post('/admin/notice', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data', // Axios가 자동으로 설정하지만 명시적으로 추가 가능
-        },
+      // 6. apiClient.post 대신 secureApiRequest를 사용하여 안전하게 요청합니다.
+      await secureApiRequest('/admin/notice', {
+        method: 'POST',
+        body: formData,
       });
 
       alert('공지사항이 성공적으로 등록되었습니다.');
-      navigate(-1); // 목록 페이지로 이동
+      navigate('/notice'); // 공지사항 목록 페이지로 이동
     } catch (error) {
       console.error('공지사항 등록 중 오류 발생:', error);
-      alert('등록 중 오류가 발생했습니다.');
+      // secureApiRequest가 401 오류를 처리하므로, 여기서는 일반 에러만 처리합니다.
+      if (error.response?.status !== 401) {
+        alert('등록 중 오류가 발생했습니다.');
+      }
     }
   };
+
+  // UTF-8 byte 계산 함수 (기존과 동일)
+  function getUtf8Bytes(str) {
+    if (!str) return 0;
+    let bytes = 0;
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      if (code <= 0x7f) bytes += 1;
+      else if (code <= 0x7ff) bytes += 2;
+      else if (code <= 0xffff) bytes += 3;
+      else bytes += 4;
+    }
+    return bytes;
+  }
+
+  // 인증 확인 중이거나 권한이 없는 경우, 렌더링을 막아 화면 깜빡임 방지
+  if (isAuthLoading || !isLoggedIn || role !== 'admin') {
+    return <div className={styles.container}>권한을 확인 중입니다...</div>;
+  }
 
   return (
     <div className={styles.container}>
@@ -74,6 +109,7 @@ function NoticeWrite() {
             required
             className={styles.input}
           />
+          <div className={styles.charCount}>{getUtf8Bytes(title)} / 1000 byte</div>
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="content">내용</label>
@@ -85,36 +121,21 @@ function NoticeWrite() {
             className={styles.textarea}
             rows={8}
           />
+          <div className={styles.charCount}>{contentBody.length} 글자</div>
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="files">첨부파일</label>
-          <input
-            id="files"
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-          />
-          <button
-            type="button"
-            className={styles.customFileButton}
-            onClick={handleFileButtonClick}
-          >
+          <input id="files" type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: 'none' }} />
+          <button type="button" className={styles.customFileButton} onClick={handleFileButtonClick}>
             파일 선택
           </button>
-          <span className={styles.selectedFileName}>
-            {file ? file.name : '선택된 파일 없음'}
-          </span>
+          <span className={styles.selectedFileName}>{file ? file.name : '선택된 파일 없음'}</span>
         </div>
         <div className={styles.buttonBar}>
           <button type="submit" className={styles.submitButton}>
             등록
           </button>
-          <button
-            type="button"
-            className={styles.cancelButton}
-            onClick={() => navigate(-1)}
-          >
+          <button type="button" className={styles.cancelButton} onClick={() => navigate(-1)}>
             취소
           </button>
         </div>
