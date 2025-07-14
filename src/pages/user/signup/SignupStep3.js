@@ -19,6 +19,10 @@ const SignupStep3 = ({ onNext, onPrev }) => {
   };
 
   const handleNext = () => {
+    if (!selectedRole) {
+      alert('가입 유형을 선택해주세요.');
+      return;
+    }
     navigate('/signup/step4');
   };
 
