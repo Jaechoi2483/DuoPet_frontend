@@ -131,12 +131,7 @@ function Faq() {
   };
 
   if (loading) return <div className={styles.container}>로딩 중...</div>;
-  if (error)
-    return (
-      <div className={styles.container}>
-        데이터를 불러오는 중 오류가 발생했습니다.
-      </div>
-    );
+  if (error) return <div className={styles.container}>데이터를 불러오는 중 오류가 발생했습니다.</div>;
 
   const handleDelete = async (faqId) => {
     // 사용자에게 정말 삭제할 것인지 재확인
@@ -210,9 +205,7 @@ function Faq() {
                         placeholder="질문을 입력하세요"
                       />
                     ) : (
-                      <span className={styles.questionText}>
-                        {item.question}
-                      </span>
+                      <span className={styles.questionText}>{item.question}</span>
                     )}
                   </div>
                   <div className={styles.questionActions}>
@@ -237,16 +230,10 @@ function Faq() {
                           placeholder="답변을 입력하세요"
                         />
                         <div className={styles.editButtonBar}>
-                          <button
-                            className={styles.saveButton}
-                            onClick={() => handleSave(item.faqId)}
-                          >
+                          <button className={styles.saveButton} onClick={() => handleSave(item.faqId)}>
                             저장
                           </button>
-                          <button
-                            className={styles.cancelButton}
-                            onClick={() => setEditIdx(null)}
-                          >
+                          <button className={styles.cancelButton} onClick={() => setEditIdx(null)}>
                             취소
                           </button>
                         </div>
@@ -300,11 +287,7 @@ function Faq() {
               />
             </div>
             <div className={styles.questionActions}>
-              <button
-                className={styles.toggleButton}
-                disabled
-                style={{ opacity: 0.3 }}
-              >
+              <button className={styles.toggleButton} disabled style={{ opacity: 0.3 }}>
                 ▼
               </button>
             </div>
@@ -350,11 +333,17 @@ function Faq() {
       {/* 등록 버튼 (관리자만) */}
       {isAdmin && !isAdding && (
         <div className={styles.addButtonContainer}>
-          <button
-            className={styles.addButton}
-            onClick={() => setIsAdding(true)}
-          >
-            + FAQ 등록
+          <button className={styles.addButton} onClick={() => setIsAdding(true)}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 5V19M5 12H19"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            FAQ 등록
           </button>
         </div>
       )}

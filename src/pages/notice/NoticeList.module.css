@@ -79,18 +79,23 @@
 }
 
 .writeButton {
-  padding: 8px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
-  border: none;
-  background: #1976d2;
-  color: #fff;
-  font-size: 15px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .writeButton:hover {
-  background: #1251a3;
+  border-color: #1976d2;
+  color: #1976d2;
+  background: #f8f9fa;
 }
 
 .noticeTable {

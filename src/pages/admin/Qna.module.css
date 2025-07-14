@@ -157,33 +157,66 @@
 
 /* 상태 표시 스타일 */
 .statusAnswered {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  background-color: #e8f5e8;
-  color: #2e7d32;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background-color: #f0f9ff;
+  color: #1976d2;
   font-size: 12px;
   font-weight: 500;
+  border: 1px solid #e0f2fe;
+}
+
+.statusAnswered::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #1976d2;
 }
 
 .statusPending {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  background-color: #fff3e0;
-  color: #f57c00;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background-color: #fff7ed;
+  color: #ea580c;
   font-size: 12px;
   font-weight: 500;
+  border: 1px solid #fed7aa;
+}
+
+.statusPending::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ea580c;
 }
 
 .statusDefault {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 12px;
-  background-color: #f5f5f5;
-  color: #666;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  color: #6b7280;
   font-size: 12px;
   font-weight: 500;
+  border: 1px solid #e5e7eb;
+}
+
+.statusDefault::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #6b7280;
 }
 
 .pagination {
@@ -230,19 +263,24 @@
 }
 
 .writeButton {
-  padding: 8px 20px;
+  padding: 8px 16px;
   border-radius: 6px;
-  border: none;
-  background: #1976d2;
-  color: #fff;
-  font-size: 15px;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  color: #666;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
   margin-left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .writeButton:hover {
-  background: #1251a3;
+  border-color: #1976d2;
+  color: #1976d2;
+  background: #f8f9fa;
 }
 
 @media (max-width: 768px) {
