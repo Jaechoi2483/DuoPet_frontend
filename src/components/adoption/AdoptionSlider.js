@@ -145,27 +145,29 @@ const AdoptionSlider = () => {
               <div className={styles.imageWrapper}>
                 <img
                   src={animal.imageUrl || '/default-animal.svg'}
-                  alt={animal.kindCd}
+                  alt={animal.kindCd || animal.breed || '보호동물'}
                   className={styles.animalImage}
                   onError={(e) => {
                     e.target.src = '/default-animal.svg';
                   }}
                 />
-                <div className={styles.statusBadge}>{animal.processState}</div>
+                <div className={styles.statusBadge}>보호중</div>
               </div>
 
               <div className={styles.animalInfo}>
-                <h3 className={styles.animalBreed}>{animal.kindCd}</h3>
+                <h3 className={styles.animalBreed}>{animal.kindCd || animal.breed || '품종 정보 없음'}</h3>
                 <p className={styles.animalDetails}>
-                  {animal.sexCd === 'M'
-                    ? '수컷'
-                    : animal.sexCd === 'F'
-                      ? '암컷'
-                      : '미상'}
-                  {animal.age && ` · ${animal.age}`}
+                  <span className={styles.gender}>
+                    👤 {animal.sexCd === 'M' ? '수컷' : animal.sexCd === 'F' ? '암컷' : '미상'}
+                  </span>
+                  {animal.age !== null && animal.age !== undefined && (
+                    <span className={styles.age}>
+                      🎂 {animal.age === 0 ? '1살 미만' : `${animal.age}살`}
+                    </span>
+                  )}
                 </p>
-                <p className={styles.shelterInfo}>{animal.careNm}</p>
-                <p className={styles.location}>{animal.careAddr}</p>
+                <p className={styles.shelterInfo}>{animal.shelterName || '보호소 정보 없음'}</p>
+                <p className={styles.location}>{animal.shelterAddress || '주소 정보 없음'}</p>
               </div>
             </div>
           ))}

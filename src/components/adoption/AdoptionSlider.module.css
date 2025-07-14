@@ -129,6 +129,30 @@
   font-size: 0.9rem;
   color: #666;
   margin: 0 0 0.5rem 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.gender,
+.age {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gender {
+  background-color: #E3F2FD;
+  color: #1976D2;
+}
+
+.age {
+  background-color: #FFF3E0;
+  color: #F57C00;
 }
 
 .shelterInfo {

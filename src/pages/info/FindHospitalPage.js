@@ -139,6 +139,7 @@ const FindHospitalPage = () => {
       setLoading(true);
       setError(null);
       
+      // Info Plaza의 hospital API 사용
       let url = '/api/info/hospitals';
       const params = new URLSearchParams();
       
@@ -155,12 +156,10 @@ const FindHospitalPage = () => {
         params.append('service', searchParams.service);
       }
       
-      if (params.toString()) {
-        if (searchParams.keyword || searchParams.emergency || searchParams.service) {
-          url += '/search?' + params.toString();
-        } else {
-          url += '?' + params.toString();
-        }
+      if (searchParams.keyword) {
+        url = '/api/info/hospitals/search?' + params.toString();
+      } else if (params.toString()) {
+        url += '?' + params.toString();
       }
       
       console.log('API 요청:', url);
@@ -172,35 +171,28 @@ const FindHospitalPage = () => {
       const hospitalData = response.data.content || response.data;
       console.log('백엔드 원본 데이터:', hospitalData);
       
-      // 모든 병원의 좌표를 실제 주소로부터 가져오기
-      setGeocodingProgress({ current: 0, total: hospitalData.length });
-      
-      const mappedHospitals = [];
-      for (let i = 0; i < hospitalData.length; i++) {
-        const hospital = hospitalData[i];
-        setGeocodingProgress({ current: i + 1, total: hospitalData.length });
-        
-        const position = await geocodeAddress(hospital.address);
-        
-        mappedHospitals.push({
-          id: hospital.vetId?.toString() || hospital.id?.toString(),
-          name: hospital.name || hospital.hospitalName,
+      // HospitalDto.Response 형식에 맞게 매핑
+      const mappedHospitals = hospitalData
+        .filter(hospital => hospital.latitude && hospital.longitude) // 좌표가 있는 병원만 필터링
+        .map(hospital => ({
+          id: hospital.vetId?.toString(), // vetId 사용
+          name: hospital.name,
           address: hospital.address,
           phone: hospital.phone,
-          position: position,
+          position: {
+            lat: Number(hospital.latitude),
+            lng: Number(hospital.longitude)
+          },
           rating: hospital.rating || 4.5,
           reviewCount: hospital.reviewCount || 0,
           openHours: hospital.openHours || '09:00 - 18:00',
           services: hospital.services || ['진료', '건강검진', '예방접종'],
           specialization: hospital.specialization || '종합진료',
-          isEmergency: hospital.isEmergency || false
-        });
-        
-        // 지오코딩 API 부하 방지를 위한 짧은 딜레이
-        if (i < hospitalData.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
+          isEmergency: hospital.isEmergency || false,
+          website: hospital.website,
+          email: hospital.email,
+          description: hospital.description
+        }));
       
       setHospitals(mappedHospitals);
       console.log('🏥 지오코딩 완료!', {

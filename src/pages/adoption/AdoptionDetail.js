@@ -84,15 +84,27 @@ const AdoptionDetail = () => {
 
         <div className={styles.infoSection}>
           <div className={styles.basicInfo}>
-            <h1 className={styles.breed}>{animal.kindCd}</h1>
+            <h1 className={styles.breed}>{animal.kindCd || animal.breed || '품종 정보 없음'}</h1>
             <div className={styles.tags}>
               <span className={styles.tag}>
+                <span className={styles.icon}>👤</span>
                 {animal.sexCd === 'M' ? '수컷' : animal.sexCd === 'F' ? '암컷' : '미상'}
               </span>
-              {animal.age && <span className={styles.tag}>{animal.age}</span>}
-              {animal.weight && <span className={styles.tag}>{animal.weight}</span>}
+              {animal.age !== null && animal.age !== undefined && (
+                <span className={styles.tag}>
+                  <span className={styles.icon}>🎂</span>
+                  {animal.age === 0 ? '1살 미만' : `${animal.age}살`}
+                </span>
+              )}
+              {animal.weight && (
+                <span className={styles.tag}>
+                  <span className={styles.icon}>⚖️</span>
+                  {animal.weight}kg
+                </span>
+              )}
               <span className={styles.tag}>
-                중성화: {animal.neuterYn === 'Y' ? '완료' : animal.neuterYn === 'N' ? '미완료' : '미상'}
+                <span className={styles.icon}>✂️</span>
+                중성화 {animal.neuterYn === 'Y' ? '완료' : animal.neuterYn === 'N' ? '미완료' : '미상'}
               </span>
             </div>
           </div>
@@ -113,12 +125,8 @@ const AdoptionDetail = () => {
                 <dd>{animal.specialMark || '특별한 특징이 없습니다.'}</dd>
               </div>
               <div className={styles.infoItem}>
-                <dt>공고 기간</dt>
-                <dd>
-                  {animal.noticeSdt && animal.noticeEdt
-                    ? `${animal.noticeSdt} ~ ${animal.noticeEdt}`
-                    : '정보 없음'}
-                </dd>
+                <dt>품종</dt>
+                <dd>{animal.kindCd || animal.breed || '정보 없음'}</dd>
               </div>
             </dl>
           </div>
@@ -128,15 +136,15 @@ const AdoptionDetail = () => {
             <dl className={styles.infoList}>
               <div className={styles.infoItem}>
                 <dt>보호소명</dt>
-                <dd>{animal.careNm || '정보 없음'}</dd>
+                <dd>{animal.shelterName || '정보 없음'}</dd>
               </div>
               <div className={styles.infoItem}>
                 <dt>보호소 주소</dt>
-                <dd>{animal.careAddr || '정보 없음'}</dd>
+                <dd>{animal.shelterAddress || '정보 없음'}</dd>
               </div>
               <div className={styles.infoItem}>
                 <dt>연락처</dt>
-                <dd>{animal.careTel || '정보 없음'}</dd>
+                <dd>{animal.shelterPhone || '정보 없음'}</dd>
               </div>
               <div className={styles.infoItem}>
                 <dt>관할 기관</dt>
