@@ -74,8 +74,7 @@ function Menubar({
   updateMemberResults,
   resetSearchInput,
 }) {
-  const { isLoggedIn, username, role, logoutAndRedirect } =
-    useContext(AuthContext);
+  const { isLoggedIn, username, role, logoutAndRedirect } = useContext(AuthContext);
 
   const navigate = useNavigate();
 
@@ -114,11 +113,7 @@ function Menubar({
               // onMouseEnter와 onMouseLeave 이벤트는 이제 제거합니다.
             >
               {menu.title === '건강 관리' ? (
-                <Link
-                  to="/health"
-                  className={styles.menuTitle}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
+                <Link to="/health" className={styles.menuTitle} style={{ textDecoration: 'none', color: 'inherit' }}>
                   {menu.title}
                 </Link>
               ) : (
@@ -143,22 +138,23 @@ function Menubar({
       <div className={styles.rightSection}>
         {isLoggedIn ? (
           <div className={styles.userSection}>
-            {role === 'admin' && (
-              <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
-            )}
+            {role === 'admin' && <span className={styles.roleBadge}>{getRoleBadge(role)}</span>}
             <span className={styles.username}>{username}님</span>
             {role === 'admin' && (
               <button
                 className={styles.adminIconButton}
                 onClick={() => navigate('/admin')}
-                style={{ display: 'flex', alignItems: 'center', padding: 0, cursor: 'pointer', background: 'none', border: 'none' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 0,
+                  cursor: 'pointer',
+                  background: 'none',
+                  border: 'none',
+                }}
                 title="관리자 페이지로 이동"
               >
-                <img
-                  src={adminIcon}
-                  alt="관리자 아이콘"
-                  style={{ width: '18px', height: '18px' }}
-                />
+                <img src={adminIcon} alt="관리자 아이콘" style={{ width: '18px', height: '18px' }} />
               </button>
             )}
             <span className={styles.myPage}>마이페이지 ▼</span>
@@ -168,10 +164,7 @@ function Menubar({
           </div>
         ) : (
           <>
-            <button
-              className={styles.authButton}
-              onClick={() => navigate('/login')}
-            >
+            <button className={styles.authButton} onClick={() => navigate('/login')}>
               로그인
             </button>
             <span className={styles.separator}>|</span>
