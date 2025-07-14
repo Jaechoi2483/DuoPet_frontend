@@ -327,3 +327,51 @@
   border-color: #2196f3;
   box-shadow: 0 0 3px rgba(33, 150, 243, 0.5);
 }
+
+/* 약관 전체 wrapper */
+.agreementBox {
+  background-color: #f9fbff;
+  border: 1px solid #cbdaf5;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+/* 개별 약관 항목 */
+.agreeItem {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #dce3f0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.agreeItem:hover {
+  background-color: #f0f5ff;
+}
+
+/* 전체 동의 강조 */
+.agreeAll {
+  background-color: #e3f2fd;
+  border: 2px solid #2196f3;
+  font-weight: 600;
+}
+
+/* 체크박스 간격 및 텍스트 정리 */
+.agreeItem input[type='checkbox'] {
+  transform: scale(1.2);
+  accent-color: #2196f3;
+}
+
+/* 에러 메시지 위치 통일 */
+.agreeError {
+  color: #d32f2f;
+  font-size: 14px;
+  margin: 12px 0 0 2px;
+  font-weight: 500;
+}

@@ -1,3 +1,5 @@
+// src/compoments/context/SignupContext.js
+
 import { createContext, useState } from 'react';
 
 export const SignupContext = createContext();
@@ -14,11 +16,11 @@ export const SignupProvider = ({ children }) => {
     gender: '',
     address: '',
     userEmail: '',
-    role: 'USER', // USER, VET, SHELTER
-    status: 'ACTIVE', // or 'WAITING'
+    role: 'USER',
+    status: '',
     faceRecognitionId: '',
-    renameFilename: '', // 프로필 이미지 or 첨부파일
-    originalFilename: '',
+    userProfileRenameFilename: '', // 🔹 변경
+    userProfileOriginalFilename: '',
 
     // VET 테이블용
     specialization: '',
@@ -26,18 +28,15 @@ export const SignupProvider = ({ children }) => {
     hospital: '',
     website: '',
     licenseFile: null,
+    vetFileRenameFilename: '', // 🔹 추가
+    vetFileOriginalFilename: '',
     isCustomSpecialization: false,
 
     // SHELTER 테이블용
     shelterName: '',
     capacity: '',
     operatingHours: '',
-    // 프로필 이미지 제외 (파일 첨부는 보류 중)
   });
 
-  return (
-    <SignupContext.Provider value={{ signupData, setSignupData }}>
-      {children}
-    </SignupContext.Provider>
-  );
+  return <SignupContext.Provider value={{ signupData, setSignupData }}>{children}</SignupContext.Provider>;
 };
