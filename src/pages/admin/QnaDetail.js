@@ -1,149 +1,138 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import apiClient from '../../utils/axios';
 import styles from './QnaDetail.module.css';
-
-// JWT 토큰의 payload를 디코딩하는 헬퍼 함수
-function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map(function (c) {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    return null;
-  }
-}
+import { AuthContext } from '../../AuthProvider'; // 1. AuthContext를 import 합니다.
 
 function QnaDetail() {
   const { contentId } = useParams();
   const navigate = useNavigate();
 
+  // 2. AuthContext에서 필요한 모든 상태와 함수를 가져옵니다.
+  const { isLoggedIn, role, isAuthLoading, secureApiRequest } = useContext(AuthContext);
+
   const [qna, setQna] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // --- 수정된 상태 ---
-  const [isAdmin, setIsAdmin] = useState(false); // 기본값을 false로 설정
   const [newAnswer, setNewAnswer] = useState('');
-  // answerTab 관련 상태 제거
 
-  // --- 추가된 useEffect (사용자 역할 확인용) ---
+  // 3. 관리자 여부를 Context의 role 상태로 안전하게 판단합니다.
+  const isAdmin = role === 'admin';
+
+  // --- 데이터 조회 로직 ---
   useEffect(() => {
-    // ❗ 로컬 스토리지에 저장된 토큰의 key 이름으로 변경하세요.
-    const token = localStorage.getItem('accessToken');
+    // 인증 상태 확인이 끝나기 전까지는 API를 호출하지 않습니다.
+    if (isAuthLoading) {
+      return;
+    }
+    // Q&A 상세 보기는 로그인이 필수이므로, 비로그인 시 접근을 차단합니다.
+    if (!isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      navigate('/login');
+      return;
+    }
 
-    if (token) {
-      const decoded = parseJwt(token);
-      // ❗ 토큰 payload에 역할 정보가 담긴 key 이름(예: 'role')과
-      // ❗ 관리자를 나타내는 값(예: 'ADMIN')으로 변경하세요.
-      if (decoded && decoded.role === 'admin') {
-        setIsAdmin(true);
+    const fetchQnaDetail = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // 4. secureApiRequest를 사용하여 안전하게 데이터를 조회합니다.
+        const response = await secureApiRequest(`/qna/${contentId}`);
+        setQna(response.data);
+      } catch (err) {
+        console.error('Q&A 상세 정보 조회 중 오류 발생:', err);
+        if (err.response?.status !== 401) {
+          setError('게시물을 불러오는 중 오류가 발생했습니다.');
+        }
+      } finally {
+        setLoading(false);
       }
-    }
-  }, []); // 컴포넌트 마운트 시 한 번만 실행
+    };
 
-  const fetchQnaDetail = async () => {
-    // ... (이전과 동일)
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await apiClient.get(`/qna/${contentId}`);
-      setQna(response.data);
-    } catch (err) {
-      setError(err);
-      console.error('Q&A 상세 정보 조회 중 오류 발생:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchQnaDetail();
+  }, [contentId, isLoggedIn, isAuthLoading, navigate, secureApiRequest]);
 
-  useEffect(() => {
-    if (contentId) {
-      fetchQnaDetail();
-    }
-  }, [contentId]);
-
+  // --- 답변 등록 핸들러 ---
   const handleAnswerSubmit = async (e) => {
     e.preventDefault();
-
     if (!newAnswer.trim()) {
       alert('답변 내용을 입력해주세요.');
       return;
     }
 
     try {
-      const response = await apiClient.post(`/qna/${contentId}/answer`, {
-        content: newAnswer,
+      // 5. secureApiRequest를 사용하여 안전하게 답변을 등록합니다.
+      await secureApiRequest(`/qna/${contentId}/answer`, {
+        method: 'POST',
+        // secureApiRequest는 객체를 자동으로 JSON 문자열로 변환해줍니다.
+        body: { content: newAnswer },
       });
 
-      if (response.status === 201 || response.status === 200) {
-        alert('답변이 성공적으로 등록되었습니다.');
-        setNewAnswer('');
-        // 답변 등록 후 데이터 새로고침
-        fetchQnaDetail();
-      } else {
-        alert('답변 등록에 실패했습니다. (상태 코드: ' + response.status + ')');
-      }
+      alert('답변이 성공적으로 등록되었습니다.');
+      setNewAnswer('');
+      // 답변 등록 후 데이터를 새로고침하기 위해 다시 조회 함수를 호출합니다.
+      // 이 부분은 개선의 여지가 있으나, 현재 구조에서는 가장 직관적인 방식입니다.
+      const response = await secureApiRequest(`/qna/${contentId}`);
+      setQna(response.data);
     } catch (error) {
       console.error('답변 등록 중 오류 발생:', error);
-
-      // ⭐️ 이 부분을 수정해야 합니다.
-      if (error && error.response) {
-        // error 객체가 존재하고, 그 안에 response 속성이 있는지 안전하게 확인
-        console.error('서버 응답 상태:', error.response.status);
-        console.error('서버 응답 데이터:', error.response.data);
-        alert(
-          `답변 등록 실패: ${error.response.data || error.response.statusText}`
-        );
-      } else if (error.request) {
-        // 요청은 보냈지만 응답을 받지 못한 경우 (네트워크 문제 등)
-        console.error('요청은 보냈지만 응답을 받지 못했습니다:', error.request);
-        alert('답변 등록 실패: 서버 응답 없음 (네트워크 문제 또는 CORS 오류)');
-      } else {
-        // 그 외 알 수 없는 오류
-        console.error('Axios 오류가 아닌 다른 오류:', error.message);
-        alert('답변 등록 실패: 알 수 없는 오류 발생');
+      if (error.response?.status !== 401) {
+        alert(`답변 등록 실패: ${error.response?.data?.message || '서버 오류'}`);
       }
     }
   };
 
-  // ... (이하 렌더링 로직은 이전과 동일)
-  if (loading) return <div className={styles.container}>로딩 중...</div>;
-  if (error) return <div className={styles.container}>오류 발생</div>;
-  if (!qna) return <div className={styles.container}>게시물 없음</div>;
+  // UTF-8 byte 계산 함수 추가
+  function getUtf8Bytes(str) {
+    if (!str) return 0;
+    let bytes = 0;
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      if (code <= 0x7f) bytes += 1;
+      else if (code <= 0x7ff) bytes += 2;
+      else if (code <= 0xffff) bytes += 3;
+      else bytes += 4;
+    }
+    return bytes;
+  }
+
+  // --- 렌더링 로직 ---
+
+  // 1. 인증 확인 중일 때의 UI
+  if (isAuthLoading) {
+    return <div className={styles.container}>사용자 정보를 확인 중입니다...</div>;
+  }
+  // 2. 데이터 로딩 중일 때의 UI
+  if (loading) {
+    return <div className={styles.container}>데이터를 불러오는 중...</div>;
+  }
+  // 3. 에러 발생 시의 UI
+  if (error) {
+    return <div className={styles.container}>{error}</div>;
+  }
+  // 4. 데이터가 없을 때의 UI
+  if (!qna) {
+    return <div className={styles.container}>문의 내역을 찾을 수 없습니다.</div>;
+  }
 
   const hasAnswer = qna.answers && qna.answers.length > 0;
 
-  console.log('--- 디버깅 정보 ---');
-  console.log('게시물에 답변이 있나? (hasAnswer):', hasAnswer);
-  console.log('관리자 인가? (isAdmin):', isAdmin);
-  console.log('--------------------');
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>{qna.title}</h2>
-      {/* ... (질문 내용은 동일) ... */}
+      <div className={styles.info}>
+        <span>작성자 ID: {qna.userId}</span>
+        <span>작성일: {new Date(qna.createdAt).toLocaleDateString()}</span>
+      </div>
       <div className={styles.content}>{qna.contentBody}</div>
 
-      {/* 답변이 있으면 답변만 보여줌 */}
+      {/* 답변이 있으면 답변을 보여줌 */}
       {hasAnswer && (
         <div className={styles.answerSection}>
-          <div className={styles.answerTabBar} style={{ display: 'none' }} />{' '}
-          {/* 탭 바 완전 제거 */}
           {qna.answers.map((answer) => (
             <div key={answer.commentId} className={styles.answerBox}>
               <div className={styles.answerInfo}>
-                <span>답변 작성자 ID: {answer.userId}</span>{' '}
-                <span>
-                  답변 작성일: {new Date(answer.createdAt).toLocaleDateString()}
-                </span>
+                <span>답변 작성자: 관리자</span>
+                <span>답변 작성일: {new Date(answer.createdAt).toLocaleDateString()}</span>
               </div>
               <div className={styles.answer}>{answer.content}</div>
             </div>
@@ -151,29 +140,37 @@ function QnaDetail() {
         </div>
       )}
 
-      {/* 답변이 없고, 관리자인 경우 답변 작성 폼만 보여줌 */}
+      {/* 답변이 없고, 현재 사용자가 관리자일 경우에만 답변 작성 폼을 보여줌 */}
       {!hasAnswer && isAdmin && (
         <div className={styles.answerSection}>
-          <div className={styles.answerWriteBox}>
-            <div className={styles.answerWriteTitle}>
-              <span role="img" aria-label="edit">
-                📝
-              </span>
+          <form className={styles.answerWriteBox} onSubmit={handleAnswerSubmit} style={{ background: 'none', border: 'none', boxShadow: 'none', padding: 0, gap: 6 }}>
+            <div className={styles.answerWriteTitle} style={{ color: '#1976d2', fontWeight: 400, fontSize: '1rem', marginBottom: 2 }}>
               답변 작성
             </div>
             <textarea
               className={styles.answerTextarea}
               value={newAnswer}
-              onChange={(e) => setNewAnswer(e.target.value)}
+              onChange={(e) => {
+                let val = e.target.value;
+                // 255byte 초과 시 자동으로 자르기
+                let bytes = getUtf8Bytes(val);
+                while (bytes > 255) {
+                  val = val.slice(0, -1);
+                  bytes = getUtf8Bytes(val);
+                }
+                setNewAnswer(val);
+              }}
               placeholder="답변을 입력하세요..."
+              required
+              style={{ minHeight: 60, borderRadius: 4, border: '1px solid #e0e7ef', fontSize: '1rem', fontWeight: 400, background: 'none', color: '#222', padding: '8px', boxShadow: 'none' }}
             />
-            <button
-              className={styles.submitButton}
-              onClick={handleAnswerSubmit}
-            >
+            <div style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+              {getUtf8Bytes(newAnswer)} / 255 byte
+            </div>
+            <button type="submit" className={styles.submitButton} style={{ minWidth: 100, fontWeight: 400, fontSize: '1rem', padding: '7px 18px', borderRadius: 4, border: '1.2px solid #1976d2', background: 'none', color: '#1976d2', boxShadow: 'none' }}>
               답변 등록
             </button>
-          </div>
+          </form>
         </div>
       )}
 

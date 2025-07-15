@@ -54,30 +54,48 @@ export const AuthProvider = ({ children }) => {
   // 브라우저에 이 컴포넌트가 랜더링될 때 (로드되어서 출력) 작동되는 훅임
   // window.onload = function(){ 페이지 출력될 때 자동 실행하는 코드 구문};  과 같은 기능을 수행하는 훅임
   // 처리 기능 : 마운트시 토큰 검사
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
   useEffect(() => {
-    // 초기화 시 토큰 확인 및 상태 설정
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-    console.log('useEffect : ', accessToken, refreshToken);
+    // 페이지 로드 시 인증 상태를 확인하는 로직
+    const checkAuthStatus = () => {
+      try {
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+        console.log('AuthProvider 마운트: 토큰 확인 중...');
 
-    if (accessToken && refreshToken) {
-      const parsedToken = parseAccessToken(accessToken);
-      console.log('useEffect 실행 : ', parsedToken);
-      console.log('-----------------------------');
-
-      if (parsedToken) {
-        setAuthInfo({
-          isLoggedIn: true,
-          role: parsedToken.role,
-          username: parsedToken.nickname,
-          userid: parsedToken.sub,
-          userNo: parsedToken.userNo, // DB 고유번호
-        });
-      } else {
-        // 토큰 파싱이 실패한 경우 로그아웃 처리
-        logoutAndRedirect();
+        if (accessToken && refreshToken) {
+          const parsedToken = parseAccessToken(accessToken);
+          if (parsedToken) {
+            // 토큰이 유효하면 로그인 상태로 설정
+            setAuthInfo({
+              isLoggedIn: true,
+              role: parsedToken.role,
+              username: parsedToken.nickname,
+              userid: parsedToken.sub,
+              userNo: parsedToken.userNo,
+            });
+          } else {
+            // 토큰 파싱 실패 시, 로그아웃 상태로 확정
+            setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
+            localStorage.clear();
+          }
+        } else {
+          // ✨ [수정 #2] 토큰이 없는 경우에도, 명시적으로 로그아웃 상태임을 확정해줍니다.
+          setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
+        }
+      } catch (error) {
+        console.error('인증 상태 확인 중 오류 발생', error);
+        setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
+      } finally {
+        // ✨ [수정 #3] 모든 확인 절차가 끝나면, 로딩 상태를 false로 변경하여
+        // 자식 컴포넌트들에게 "이제 확인 끝났으니 동작해도 좋다"는 신호를 보냅니다.
+        console.log('AuthProvider: 인증 상태 확인 완료.');
+        setIsAuthLoading(false);
       }
-    }
+    };
+
+    checkAuthStatus();
   }, []); //useEffect
 
   // 로그아웃 함수
@@ -170,9 +188,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           Authorization: `Bearer ${accessToken}`, //빽틱 사용할 것
           RefreshToken: `Bearer ${refreshToken}`, //빽틱 사용할 것
-          ...(isFormData
-            ? { 'Content-Type': 'multipart/form-data' }
-            : { 'Content-Type': 'application/json' }),
+          ...(isFormData ? { 'Content-Type': 'multipart/form-data' } : { 'Content-Type': 'application/json' }),
         },
         data,
       });
@@ -189,9 +205,7 @@ export const AuthProvider = ({ children }) => {
         // ststus.code : 401 (UnAuthrized 임)
         // RefreshToken 만료시 로그인 연장 여부 확인
         if (tokenExpiredHeader === 'RefreshToken') {
-          const confirmExtend = window.confirm(
-            '로그인 세션이 만료되었습니다. 로그인 연장하시겠습니까?'
-          );
+          const confirmExtend = window.confirm('로그인 세션이 만료되었습니다. 로그인 연장하시겠습니까?');
           if (confirmExtend) {
             console.log('로그인 연장 동의 누름...');
             try {
@@ -218,10 +232,7 @@ export const AuthProvider = ({ children }) => {
             await handleReissueTokens();
             return secureApiRequest(url, options, false); // API 재호출 시도
           } catch (accessError) {
-            console.error(
-              'AccessToken 재발급 실패...',
-              accessError.response?.data
-            );
+            console.error('AccessToken 재발급 실패...', accessError.response?.data);
             logoutAndRedirect();
           }
         }
@@ -267,10 +278,7 @@ export const AuthProvider = ({ children }) => {
       console.error('Reissue 실패 - 응답 데이터 : ', error.response?.data);
 
       const expiredTokenType = error.response?.headers['token-expired'];
-      if (
-        expiredTokenType === 'RefreshToken' ||
-        error.response?.data === 'Session Expired'
-      ) {
+      if (expiredTokenType === 'RefreshToken' || error.response?.data === 'Session Expired') {
         alert('세션이 만료되었습니다. 다시 로그인해주세요.');
         logoutAndRedirect();
       } else if (expiredTokenType === 'AccessToken') {
@@ -291,6 +299,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         ...authInfo,
         setAuthInfo,
+        isAuthLoading,
         secureApiRequest,
         logoutAndRedirect,
         updateTokens,

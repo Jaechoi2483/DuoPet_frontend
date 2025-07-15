@@ -1,7 +1,7 @@
 /* src/pages/admin/MemberList.module.css */
 
 .container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 32px 16px;
 }
@@ -148,6 +148,15 @@
   background-color: #f5f5f5;
 }
 
+.memberRow {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.memberRow:hover {
+  background-color: #e3f2fd !important;
+}
+
 .noData {
   text-align: center;
   padding: 40px 0;
@@ -197,9 +206,16 @@
   color: #333;
   outline: none;
   transition: border 0.2s;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
 }
 .select:focus {
-  border: 1.5px solid #4CAF50;
+  border: 1.5px solid #1976d2;
+  background: #fff;
+}
+.select:hover {
+  border-color: #1976d2;
   background: #fff;
 }
 

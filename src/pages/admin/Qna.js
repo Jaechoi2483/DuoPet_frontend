@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import apiClient from '../../utils/axios';
-import styles from './Qna.module.css';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-// --- 1. PagingView 컴포넌트 import ---
+import { AuthContext } from '../../AuthProvider';
+import apiClient from '../../utils/axios';
 import PagingView from '../../components/common/pagingView';
+import styles from './Qna.module.css';
 
+// 컴포넌트 외부로 분리하여 불필요한 리렌더링 방지
 const FILTER_TABS = [
   { label: '전체', status: null },
   { label: '답변완료', status: 'ANSWERED' },
@@ -12,17 +13,34 @@ const FILTER_TABS = [
 ];
 
 function Qna() {
+  // --- 상태 관리 (State) ---
   const [qnaList, setQnaList] = useState([]);
   const [pageInfo, setPageInfo] = useState({ totalPages: 0, number: 0 });
-  const [currentPage, setCurrentPage] = useState(0); // 0-based index
+  const [currentPage, setCurrentPage] = useState(0);
   const [activeFilter, setActiveFilter] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [dataLoading, setDataLoading] = useState(false); // 데이터 로딩 상태
+  const [error, setError] = useState(null); // 에러 메시지 상태
 
+  // --- 컨텍스트 및 훅 ---
+  const navigate = useNavigate();
+  // AuthContext에서 필요한 값들을 직접 구조 분해하여 가져옵니다.
+  const { isLoggedIn, isAuthLoading } = useContext(AuthContext);
+
+  // --- 데이터 조회 로직 (useEffect) ---
   useEffect(() => {
+    // 1. 인증 상태 확인이 끝나기 전까지는(isAuthLoading) API를 호출하지 않습니다.
+    if (isAuthLoading) {
+      return;
+    }
+
+    // 2. 비로그인 상태가 확정되면, API 호출을 중단합니다.
+    if (isLoggedIn === false) {
+      return;
+    }
+
+    // 3. 로그인 상태가 확인되었을 때만 데이터를 조회하는 함수를 실행합니다.
     const fetchQnaData = async () => {
-      setLoading(true);
+      setDataLoading(true); // 데이터 로딩 시작
       setError(null);
       const status = FILTER_TABS[activeFilter].status;
       try {
@@ -32,83 +50,75 @@ function Qna() {
         setQnaList(response.data.content);
         setPageInfo(response.data);
       } catch (err) {
-        setError(err);
         console.error('Q&A 목록 조회 중 오류 발생:', err);
+        if (err.response && err.response.status === 401) {
+          alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+          navigate('/login');
+        } else {
+          setError('데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        }
       } finally {
-        setLoading(false);
+        setDataLoading(false); // 데이터 로딩 종료 (성공/실패 무관)
       }
     };
-    fetchQnaData();
-  }, [currentPage, activeFilter]);
 
+    fetchQnaData();
+  }, [currentPage, activeFilter, isLoggedIn, isAuthLoading, navigate]); // 의존성 배열에 상태값 명시
+
+  // --- 이벤트 핸들러 ---
   const handleFilterClick = (idx) => {
     setActiveFilter(idx);
     setCurrentPage(0);
   };
 
-  // --- 2. PagingView에서 받은 페이지 번호(1-based)를 state index(0-based)로 변환 ---
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber - 1);
   };
 
-  const handleWriteClick = () => {
-    navigate('/admin/qna/write');
-  };
+  const handleWriteClick = () => navigate('/admin/qna/write');
+  const handleQnaClick = (qnaId) => navigate(`/admin/qna/${qnaId}`);
 
-  const handleQnaClick = (qnaId) => {
-    navigate(`/admin/qna/${qnaId}`);
-  };
+  // --- 유틸리티 함수 ---
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+  const getStatusText = (status) => ({ ANSWERED: '답변완료', PENDING: '답변대기' })[status] || '대기중';
+  const getStatusClass = (status) =>
+    ({ ANSWERED: styles.statusAnswered, PENDING: styles.statusPending })[status] || styles.statusDefault;
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-  };
+  // --- 렌더링 로직 ---
 
-  const getStatusText = (status) => {
-    switch (status) {
-      case 'ANSWERED':
-        return '답변완료';
-      case 'PENDING':
-        return '답변대기';
-      default:
-        return '대기중';
-    }
-  };
-
-  const getStatusClass = (status) => {
-    switch (status) {
-      case 'ANSWERED':
-        return styles.statusAnswered;
-      case 'PENDING':
-        return styles.statusPending;
-      default:
-        return styles.statusDefault;
-    }
-  };
-
-  if (error)
+  // 1. 최초 인증 상태 확인 중일 때의 UI
+  if (isAuthLoading) {
     return (
       <div className={styles.container}>
-        데이터 조회 중 오류가 발생했습니다.
+        <div className={styles.loadingMessage}>페이지를 불러오는 중입니다...</div>
       </div>
     );
+  }
 
-  // --- 3. PagingView에 필요한 props 계산 ---
-  const pageBlockSize = 10; // 한 번에 보여줄 페이지 번호 개수
-  const totalPage = pageInfo.totalPages;
-  const currentBlock = Math.floor(currentPage / pageBlockSize);
-  const startPage = currentBlock * pageBlockSize + 1;
-  const endPage = Math.min(startPage + pageBlockSize - 1, totalPage);
+  // 2. 비로그인 상태가 확정되었을 때의 UI
+  if (isLoggedIn === false) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loginGuideBox}>
+          <div className={styles.loginGuideIcon}>🔒</div>
+          <div className={styles.loginGuideTitle}>1:1 문의는 로그인 후 이용 가능합니다</div>
+          <div className={styles.loginGuideDesc}>
+            문의 내역 확인, 답변 알림 등 다양한 서비스를 이용하려면 로그인이 필요합니다.
+          </div>
+          <button className={styles.loginGuideButton} onClick={() => navigate('/login')}>
+            로그인 하러 가기
+          </button>
+        </div>
+      </div>
+    );
+  }
 
+  // 3. 로그인 상태에서 보여줄 메인 UI
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Q&A</h2>
 
-      {/* 필터 및 글쓰기 버튼 UI */}
       <div className={styles.topBar}>
         <div className={styles.filterTabBar}>
           {FILTER_TABS.map((tab, idx) => (
@@ -116,6 +126,7 @@ function Qna() {
               key={idx}
               className={`${styles.filterTabButton} ${activeFilter === idx ? styles.active : ''}`}
               onClick={() => handleFilterClick(idx)}
+              disabled={dataLoading} // 데이터 로딩 중에는 버튼 비활성화
             >
               {tab.label}
             </button>
@@ -123,13 +134,18 @@ function Qna() {
         </div>
         <button className={styles.writeButton} onClick={handleWriteClick}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M12 5V19M5 12H19"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
           글쓰기
         </button>
       </div>
 
-      {/* Q&A 테이블 UI */}
       <table className={styles.qnaTable}>
         <thead className={styles.tableHeader}>
           <tr>
@@ -140,10 +156,16 @@ function Qna() {
           </tr>
         </thead>
         <tbody className={styles.tableBody}>
-          {loading ? (
+          {dataLoading ? (
             <tr>
-              <td colSpan="4" className={styles.noData}>
-                로딩 중...
+              <td colSpan="4" className={styles.loadingMessage}>
+                데이터를 불러오는 중...
+              </td>
+            </tr>
+          ) : error ? (
+            <tr>
+              <td colSpan="4" className={styles.errorMessage}>
+                {error}
               </td>
             </tr>
           ) : qnaList.length === 0 ? (
@@ -154,14 +176,12 @@ function Qna() {
             </tr>
           ) : (
             qnaList.map((qna, index) => (
-              <tr key={qna.contentId} onClick={() => handleQnaClick(qna.contentId)} style={{ cursor: 'pointer' }}>
+              <tr key={qna.contentId} onClick={() => handleQnaClick(qna.contentId)} className={styles.qnaRow}>
                 <td>{pageInfo.totalElements - (currentPage * 10 + index)}</td>
                 <td>{qna.title}</td>
                 <td>{formatDate(qna.createdAt)}</td>
                 <td>
-                  <span className={getStatusClass(qna.status)}>
-                    {getStatusText(qna.status)}
-                  </span>
+                  <span className={getStatusClass(qna.status)}>{getStatusText(qna.status)}</span>
                 </td>
               </tr>
             ))
@@ -169,15 +189,8 @@ function Qna() {
         </tbody>
       </table>
 
-      {/* --- 4. 기존 페이지네이션을 PagingView 컴포넌트로 교체 --- */}
-      {totalPage > 1 && (
-        <PagingView
-          currentPage={currentPage + 1} // PagingView는 1-based page를 사용
-          totalPage={totalPage}
-          startPage={startPage}
-          endPage={endPage}
-          onPageChange={handlePageChange}
-        />
+      {pageInfo.totalPages > 1 && !dataLoading && (
+        <PagingView currentPage={pageInfo.number + 1} totalPage={pageInfo.totalPages} onPageChange={handlePageChange} />
       )}
     </div>
   );

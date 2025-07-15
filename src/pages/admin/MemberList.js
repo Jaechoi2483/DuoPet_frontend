@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styles from './MemberList.module.css';
 import apiClient from '../../utils/axios';
 import PagingView from '../../components/common/pagingView';
+import MemberDetailModal from './MemberDetailModal';
 
 const ROLE_TABS = [
   { label: '전체', value: null },
@@ -34,6 +35,8 @@ function MemberList() {
   const [activeStatus, setActiveStatus] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 회원 목록 불러오기 (백엔드 연동)
   useEffect(() => {
@@ -45,6 +48,7 @@ function MemberList() {
         const params = {
           page: currentPage,
           size: 10,
+          sort: 'userId,desc', // 회원번호 내림차순 정렬 (큰 번호 먼저)
         };
 
         // 선택된 탭의 value를 가져옴
@@ -105,6 +109,18 @@ function MemberList() {
     setCurrentPage(pageNumber - 1);
   };
 
+  // 회원 상세 모달 열기
+  const handleMemberClick = (member) => {
+    setSelectedMember(member);
+    setIsModalOpen(true);
+  };
+
+  // 모달 닫기
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedMember(null);
+  };
+
   if (loading) return <div className={styles.container}>로딩 중...</div>;
   if (error)
     return (
@@ -152,9 +168,10 @@ function MemberList() {
       <table className={styles.memberTable}>
         <thead className={styles.tableHeader}>
           <tr>
+            <th>회원번호</th>
             <th>ID</th>
-            <th>로그인ID</th>
             <th>이름</th>
+            <th>닉네임</th>
             <th>역할</th>
             <th>상태</th>
             <th>가입일</th>
@@ -163,17 +180,25 @@ function MemberList() {
         <tbody className={styles.tableBody}>
           {members.length > 0 ? (
             members.map((member) => (
-              <tr key={member.userId}>
+              <tr 
+                key={member.userId} 
+                className={styles.memberRow}
+                onClick={() => handleMemberClick(member)}
+              >
                 <td>{member.userId}</td>
                 <td>{member.loginId}</td>
                 <td>{member.userName}</td>
+                <td>{member.nickname || '-'}</td>
                 <td>
                   <select
                     className={styles.select}
                     value={member.role}
-                    onChange={(e) =>
-                      handleUpdate(member.userId, 'role', e.target.value)
-                    }
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleUpdate(member.userId, 'role', e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
                   >
                     {ASSIGNABLE_ROLES.map((role) => (
                       <option key={role.value} value={role.value}>
@@ -186,9 +211,12 @@ function MemberList() {
                   <select
                     className={styles.select}
                     value={member.status}
-                    onChange={(e) =>
-                      handleUpdate(member.userId, 'status', e.target.value)
-                    }
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      handleUpdate(member.userId, 'status', e.target.value);
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
                   >
                     {/* ✅ 상수를 사용하여 동적으로 옵션 생성 */}
                     {ASSIGNABLE_STATUSES.map((status) => (
@@ -203,7 +231,7 @@ function MemberList() {
             ))
           ) : (
             <tr>
-              <td colSpan={6} className={styles.noData}>
+              <td colSpan={7} className={styles.noData}>
                 해당 조건의 회원이 없습니다.
               </td>
             </tr>
@@ -221,6 +249,13 @@ function MemberList() {
           onPageChange={handlePageChange}
         />
       )}
+
+      {/* 회원 상세 모달 */}
+      <MemberDetailModal
+        member={selectedMember}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 }
