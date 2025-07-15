@@ -65,9 +65,28 @@ function FreeBoardDetail() {
   };
 
   const handleLike = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    // 로그인 안 했을 경우 메시지 출력
+    if (!accessToken || !refreshToken) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
     try {
-      const res = await apiClient.post(`/like/${id}`, null, { params: { userId: userNo } });
-      setLiked(res.data.liked); // 서버에서 내려준 liked 상태로 반영
+      const res = await apiClient.post(`/board/like/${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          RefreshToken: `Bearer ${refreshToken}`,
+        },
+        withCredentials: true, // CORS 쿠키 인증 허용
+      });
+
+      console.log('accessToken:', accessToken);
+      console.log('refreshToken:', refreshToken);
+      console.log('서버 응답 데이터:', res.data);
+
+      setLiked(res.data.liked);
       setLikeCount((prev) => (res.data.liked ? prev + 1 : prev - 1));
       triggerToast(res.data.liked ? '좋아요를 눌렀습니다.' : '좋아요를 취소했습니다.');
     } catch (err) {
@@ -77,8 +96,18 @@ function FreeBoardDetail() {
 
   const handleBookmark = async () => {
     try {
-      const res = await apiClient.post(`/bookmark/${id}`, null, { params: { userId: userNo } });
-      setBookmarked(res.data.bookmarked); // 북마크 상태 반영
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      const res = await apiClient.post(`/bookmark/${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          RefreshToken: `Bearer ${refreshToken}`,
+        },
+        withCredentials: true,
+      });
+
+      setBookmarked(res.data.bookmarked);
       triggerToast(res.data.bookmarked ? '북마크에 추가되었습니다.' : '북마크가 해제되었습니다.');
     } catch (err) {
       console.error('북마크 실패', err);
@@ -91,7 +120,7 @@ function FreeBoardDetail() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  // 조회수 증가
+  // 조회수 증가 & 좋아요 수 증가
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -102,6 +131,19 @@ function FreeBoardDetail() {
         const res = await apiClient.get(`/board/detail/${id}`);
         setPost(res.data);
         setLikeCount(res.data.likeCount);
+
+        // accessToken, refreshToken 정의 추가
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        // 좋아요 상태 확인 API 호출
+        const likeRes = await apiClient.get(`/like/${id}/status`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            RefreshToken: `Bearer ${refreshToken}`,
+          },
+        });
+        setLiked(likeRes.data.liked);
       } catch (err) {
         console.error('상세글 조회 실패', err);
       }
