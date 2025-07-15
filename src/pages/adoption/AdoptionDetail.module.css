@@ -90,12 +90,21 @@
 }
 
 .tag {
-  padding: 6px 16px;
+  padding: 8px 16px;
   background-color: #E9ECEF;
   color: #495057;
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.icon {
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 .sectionTitle {

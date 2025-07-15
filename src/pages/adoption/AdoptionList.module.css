@@ -160,11 +160,29 @@
 .age,
 .weight {
   font-size: 0.9rem;
-  color: #6C757D;
-  padding: 4px 10px;
-  background-color: #E9ECEF;
-  border-radius: 4px;
+  color: #495057;
+  padding: 6px 12px;
+  background-color: #F0F4F8;
+  border-radius: 6px;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gender {
+  background-color: #E3F2FD;
+  color: #1976D2;
+}
+
+.age {
+  background-color: #FFF3E0;
+  color: #F57C00;
+}
+
+.weight {
+  background-color: #E8F5E9;
+  color: #388E3C;
 }
 
 .shelterName {

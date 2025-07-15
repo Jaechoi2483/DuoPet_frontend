@@ -9,6 +9,11 @@ const PagingView = ({
   endPage,
   onPageChange,
 }) => {
+  // 유효성 검사
+  if (!totalPage || totalPage <= 0) return null;
+  if (!currentPage || currentPage <= 0) return null;
+  if (!startPage || !endPage || startPage > endPage) return null;
+
   const pages = Array.from(
     { length: endPage - startPage + 1 },
     (_, i) => startPage + i

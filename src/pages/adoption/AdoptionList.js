@@ -67,6 +67,24 @@ const AdoptionList = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page - 1); // PagingView는 1부터 시작, API는 0부터 시작
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // 페이지 상단으로 스크롤
+  };
+
+  // 페이지네이션 계산 함수
+  const calculatePagination = () => {
+    const pageGroupSize = 10;
+    const currentPageDisplay = currentPage + 1; // API는 0부터, 화면은 1부터
+    
+    const currentGroup = Math.ceil(currentPageDisplay / pageGroupSize);
+    const startPage = (currentGroup - 1) * pageGroupSize + 1;
+    const endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+    
+    return {
+      currentPage: currentPageDisplay,
+      totalPage: totalPages,
+      startPage,
+      endPage
+    };
   };
 
   if (loading && animals.length === 0) {
@@ -198,13 +216,21 @@ const AdoptionList = () => {
               </div>
 
               <div className={styles.animalInfo}>
-                <h3 className={styles.animalBreed}>{animal.kindCd}</h3>
+                <h3 className={styles.animalBreed}>{animal.kindCd || animal.breed || '품종 정보 없음'}</h3>
                 <div className={styles.animalDetails}>
                   <span className={styles.gender}>
-                    {animal.sexCd === 'M' ? '수컷' : animal.sexCd === 'F' ? '암컷' : '미상'}
+                    {animal.sexCd === 'M' ? '👤 수컷' : animal.sexCd === 'F' ? '👤 암컷' : '👤 미상'}
                   </span>
-                  {animal.age && <span className={styles.age}>{animal.age}</span>}
-                  {animal.weight && <span className={styles.weight}>{animal.weight}</span>}
+                  {animal.age !== null && animal.age !== undefined && (
+                    <span className={styles.age}>
+                      {animal.age === 0 ? '1살 미만' : `${animal.age}살`}
+                    </span>
+                  )}
+                  {animal.weight && (
+                    <span className={styles.weight}>
+                      {animal.weight}kg
+                    </span>
+                  )}
                 </div>
                 <p className={styles.shelterName}>{animal.careNm}</p>
                 <p className={styles.location}>{animal.careAddr}</p>
@@ -218,15 +244,18 @@ const AdoptionList = () => {
       )}
 
       {/* 페이징 */}
-      {totalPages > 0 && (
-        <PagingView
-          pageGroupSize={10}
-          totalCount={totalElements}
-          currentPage={currentPage + 1} // PagingView는 1부터 시작
-          pageSize={pageSize}
-          onPageChange={handlePageChange}
-        />
-      )}
+      {totalPages > 0 && (() => {
+        const pagination = calculatePagination();
+        return (
+          <PagingView
+            currentPage={pagination.currentPage}
+            totalPage={pagination.totalPage}
+            startPage={pagination.startPage}
+            endPage={pagination.endPage}
+            onPageChange={handlePageChange}
+          />
+        );
+      })()}
     </div>
   );
 };
