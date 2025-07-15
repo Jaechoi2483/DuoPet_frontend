@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SignupContext } from '../../../components/context/SignupContext';
-import styles from './SignupStep1.module.css'; // 같은 CSS 사용
+import { SignupContext, initialSignupData } from '../../../components/context/SignupContext';
+import styles from './SignupStep1.module.css';
 import apiClient from '../../../utils/axios';
 
 function SignupStep4() {
   const navigate = useNavigate();
-  const { signupData } = useContext(SignupContext);
+  const { signupData, setSignupData } = useContext(SignupContext);
 
   const [agreeAll, setAgreeAll] = useState(false);
   const [terms1, setTerms1] = useState(false);
@@ -30,18 +30,22 @@ function SignupStep4() {
     }
 
     try {
-      // 1️ USERS 테이블 등록
+      // 1. USERS 테이블 등록
       const formData = new FormData();
       formData.append('data', new Blob([JSON.stringify(signupData)], { type: 'application/json' }));
       if (signupData.profileFile) {
         formData.append('file', signupData.profileFile);
       }
 
-      await apiClient.post('/users/signup/final', formData, {
+      const userRes = await apiClient.post('/users/signup/final', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      // 2️ VET 테이블 등록 (전문가일 경우)
+      const userId = userRes.data.userId;
+      localStorage.setItem('userId', userId); // 펫 등록에 필요
+      console.log('[Step4] 저장할 userId:', userId);
+
+      // 2. VET 테이블 등록
       if (signupData.role === 'vet') {
         const vetDto = {
           name: signupData.userName,
@@ -66,22 +70,12 @@ function SignupStep4() {
         vetFormData.append('licenseFile', signupData.licenseFile);
         vetFormData.append('loginId', signupData.loginId);
 
-        console.log('[DEBUG] vetDto:', vetDto);
-        console.log('[DEBUG] licenseFile:', signupData.licenseFile);
-
-        // handleSubmit 함수 내부에 추가 (axios 요청 전에)
-        console.log('[DEBUG] vetDto 생성 직전');
-        console.log('vetFileOriginalFilename:', signupData.vetFileOriginalFilename);
-        console.log('vetFileRenameFilename:', signupData.vetFileRenameFilename);
-        console.log('licenseFile:', signupData.licenseFile);
-        console.log('loginId:', signupData.loginId);
-
         await apiClient.post('/vet/register', vetFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
 
-      // 3️ SHELTER 등록 (role === 'shelter')
+      // 3. SHELTER 테이블 등록
       if (signupData.role === 'shelter') {
         const shelterDto = {
           shelterName: signupData.shelterName,
@@ -107,19 +101,29 @@ function SignupStep4() {
         shelterFormData.append('shelterProfileFile', signupData.shelterProfileFile);
         shelterFormData.append('loginId', signupData.loginId);
 
-        console.log('[DEBUG] shelterDto:', shelterDto);
-
         await apiClient.post('/shelter/register', shelterFormData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
 
+      // Context 초기화 (보안 차원)
+      setSignupData(initialSignupData);
+
       alert('회원가입이 완료되었습니다!');
-      navigate('/login');
+      navigate('/signup/step5'); // 반려동물 등록 단계로 이동
     } catch (err) {
       console.error(err);
-      const message = err.response?.data || '회원가입 처리 중 오류가 발생했습니다.';
-      setError(message);
+
+      // 1. 서버가 응답한 에러 메시지 가져오기
+      const message = err.response?.data;
+
+      // 2. 특정 필드 누락 등 예상 가능한 경우
+      if (message?.includes('LOGIN_ID')) {
+        setError('아이디가 누락되었습니다. 처음부터 다시 시도해주세요.');
+      } else {
+        // 3. 그 외 일반적인 오류
+        setError('회원가입 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
     }
   };
 

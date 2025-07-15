@@ -1,20 +1,25 @@
 // src/pages/user/signup/SignupStep5.js
 
-import React, { useContext } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { SignupContext } from '../../../components/context/SignupContext';
 import styles from './SignupStep1.module.css';
 
 const SignupStep5 = () => {
   const navigate = useNavigate();
-  const { signupData, setSignupData } = useContext(SignupContext);
 
-  // 반려동물 등록 페이지로 이동하며 loginId 전달
+  // 반려동물 등록 페이지로 이동하며 userId 전달
   const handleRegisterPet = () => {
+    const userId = localStorage.getItem('userId');
+    console.log('[Step5] localStorage에서 가져온 userId:', userId);
+
+    if (!userId) {
+      alert('유저 정보가 유실되었습니다. 다시 로그인해주세요.');
+      navigate('/login');
+      return;
+    }
+
     navigate('/user/pet/register', {
-      state: {
-        loginId: signupData.loginId,
-      },
+      state: { userId },
     });
   };
 
@@ -26,7 +31,7 @@ const SignupStep5 = () => {
 
   return (
     <div className={styles.wrapper}>
-      <h2 className={styles.title}>🎉 회원가입이 완료되었습니다!</h2>
+      <h2 className={styles.title}>🎉 회원가입이 완료되었습니다! 🎉</h2>
       <p className={styles.subtitle}>이제 반려동물의 정보를 등록해보세요.</p>
 
       <div className={styles.petInfoBox}>
