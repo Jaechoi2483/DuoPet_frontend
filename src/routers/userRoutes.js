@@ -10,6 +10,8 @@ import SignupStep3 from '../pages/user/signup/SignupStep3';
 import SignupStep4 from '../pages/user/signup/SignupStep4';
 import SignupStep5 from '../pages/user/signup/SignupStep5';
 import PetRegister from '../pages/user/pet/PetRegister';
+import SocialSignupPage from '../pages/social/SocialSignupPage';
+import SocialRedirect from '../pages/social/SocialRedirect';
 // 나중에 SignupPage, MyPage 등도 여기에 추가
 
 const userRoutes = [
@@ -20,6 +22,8 @@ const userRoutes = [
   <Route path="/signup/step4" element={<SignupStep4 />} />,
   <Route path="/signup/step5" element={<SignupStep5 />} />,
   <Route path="/user/pet/register" element={<PetRegister />} />,
+  <Route path="/social-signup" element={<SocialSignupPage />} />,
+  <Route path="/social-redirect" element={<SocialRedirect />} />,
 ];
 
 export default userRoutes;
