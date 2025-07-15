@@ -102,6 +102,7 @@
   display: flex;
   gap: 10px;
   margin-bottom: 16px;
+  position: relative; /* ✅ 토스트 메시지를 이 기준으로 배치 */
 }
 
 .actions button {
@@ -117,6 +118,47 @@
   background-color: #ffe0e0;
   border: 1px solid #ff9999;
   color: #cc0000;
+}
+
+/* ✅ 좋아요/북마크 토스트 메시지 */
+.toast {
+  position: absolute; /* .actions 기준 위치 */
+  top: -35px;
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  z-index: 1000;
+  white-space: nowrap;
+  animation:
+    fadein 0.3s ease,
+    fadeout 0.3s ease 2.7s;
+}
+
+/* 토스트 나타날 때 애니메이션 */
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 토스트 사라질 때 애니메이션 */
+@keyframes fadeout {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 
 /* 유튜브 추천 영상 영역 */

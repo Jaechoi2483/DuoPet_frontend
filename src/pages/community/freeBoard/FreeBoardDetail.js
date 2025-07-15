@@ -30,9 +30,14 @@ const dummyVideos = [
 function FreeBoardDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [post, setPost] = useState(null);
   const { secureApiRequest } = useContext(AuthContext);
   const { isLoggedIn, userNo } = useContext(AuthContext);
+  const [post, setPost] = useState(null);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [showToast, setShowToast] = useState(false);
 
   const handleEdit = () => {
     navigate(`/community/freeBoard/edit/${id}`);
@@ -59,23 +64,59 @@ function FreeBoardDetail() {
     }
   };
 
+  const handleLike = async () => {
+    try {
+      const res = await apiClient.post(`/like/${id}`, null, { params: { userId: userNo } });
+      setLiked(res.data.liked); // 서버에서 내려준 liked 상태로 반영
+      setLikeCount((prev) => (res.data.liked ? prev + 1 : prev - 1));
+      triggerToast(res.data.liked ? '좋아요를 눌렀습니다.' : '좋아요를 취소했습니다.');
+    } catch (err) {
+      console.error('좋아요 실패', err);
+    }
+  };
+
+  const handleBookmark = async () => {
+    try {
+      const res = await apiClient.post(`/bookmark/${id}`, null, { params: { userId: userNo } });
+      setBookmarked(res.data.bookmarked); // 북마크 상태 반영
+      triggerToast(res.data.bookmarked ? '북마크에 추가되었습니다.' : '북마크가 해제되었습니다.');
+    } catch (err) {
+      console.error('북마크 실패', err);
+    }
+  };
+
+  const triggerToast = (msg) => {
+    setToastMessage(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  // 조회수 증가
   useEffect(() => {
     const fetchPost = async () => {
       try {
+        // 조회수 증가 요청 (비회원도 접근 가능)
+        await apiClient.get(`/board/view-count`, { params: { id } });
+
+        // 게시글 상세 정보 가져오기
         const res = await apiClient.get(`/board/detail/${id}`);
         setPost(res.data);
+        setLikeCount(res.data.likeCount);
       } catch (err) {
         console.error('상세글 조회 실패', err);
       }
     };
 
     fetchPost();
-  }, []);
+  }, [id]); // id 변경 시 재실행
 
   if (!post) return <p>로딩 중...</p>;
 
   return (
     <div className={styles.container}>
+      {/* 토스트 메시지 출력 */}
+      {showToast && <div className={styles.toast}>{toastMessage}</div>}
+
       {/* 게시판 뱃지 + 태그 */}
       <div className={styles.tagHeader}>
         <span className={styles.badge}>자유게시판</span>
@@ -96,22 +137,19 @@ function FreeBoardDetail() {
           {isLoggedIn && post.userId === userNo && (
             <div className={styles.editArea}>
               <button className={styles.editBtn} onClick={handleEdit}>
-                {' '}
                 ✏ 수정
               </button>
               <button className={styles.DeleteBtn} onClick={handleDelete}>
-                {' '}
                 🗑 삭제
               </button>
             </div>
           )}
         </div>
         <div className={styles.meta}>
-          <span>작성자ID: {post.userId}</span> |{' '}
-          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+          <span>작성자ID: {post.userId}</span> | <span>{new Date(post.createdAt).toLocaleDateString()}</span>
         </div>
         <div className={styles.stats}>
-          👁 {post.viewCount} ❤ {post.likeCount}
+          👁 {post.viewCount} ❤ {likeCount}
         </div>
       </div>
 
@@ -120,10 +158,10 @@ function FreeBoardDetail() {
         <p className={styles.content}>{post.contentBody}</p>
       </div>
 
-      {/* 좋아요/북마크/공유 */}
+      {/* 좋아요/북마크/신고하기 */}
       <div className={styles.actions}>
-        <button>❤ 좋아요 {post.likeCount}</button>
-        <button>🔖 북마크</button>
+        <button onClick={handleLike}>{liked ? '❤️ 좋아요 취소' : '🤍 좋아요'}</button>
+        <button onClick={handleBookmark}>{bookmarked ? '🔖 북마크 해제' : '📌 북마크'}</button>
         <button className={styles.report}>🚩 신고하기</button>
       </div>
 
