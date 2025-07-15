@@ -14,16 +14,11 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // 인증이 필요하지 않은 공개 API 경로들
-    const publicPaths = [
-      '/api/adoption',
-      '/api/info',
-      '/notice',
-      '/board'
-    ];
-    
+    const publicPaths = ['/api/adoption', '/api/info', '/notice', '/board'];
+
     // 현재 요청 URL이 공개 API인지 확인
-    const isPublicPath = publicPaths.some(path => config.url.includes(path));
-    
+    const isPublicPath = publicPaths.some((path) => config.url.includes(path));
+
     // 공개 API가 아닌 경우에만 토큰 추가 및 인증 쿠키 포함
     if (!isPublicPath) {
       // axios 로 요청시 같이 전송보낼 토큰 지정 처리
@@ -35,7 +30,7 @@ apiClient.interceptors.request.use(
         config.headers['Authorization'] = `Bearer ${accessToken}`; //빽틱 사용해야 함
         config.headers['RefreshToken'] = `Bearer ${refreshToken}`; //빽틱 사용해야 함
       }
-      
+
       // 인증이 필요한 요청에만 쿠키 포함
       config.withCredentials = true;
     } else {
