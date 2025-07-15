@@ -28,19 +28,8 @@ function Qna() {
 
   // --- 데이터 조회 로직 (useEffect) ---
   useEffect(() => {
-    // 1. 인증 상태 확인이 끝나기 전까지는(isAuthLoading) API를 호출하지 않습니다.
-    if (isAuthLoading) {
-      return;
-    }
-
-    // 2. 비로그인 상태가 확정되면, API 호출을 중단합니다.
-    if (isLoggedIn === false) {
-      return;
-    }
-
-    // 3. 로그인 상태가 확인되었을 때만 데이터를 조회하는 함수를 실행합니다.
     const fetchQnaData = async () => {
-      setDataLoading(true); // 데이터 로딩 시작
+      setDataLoading(true);
       setError(null);
       const status = FILTER_TABS[activeFilter].status;
       try {
@@ -58,11 +47,16 @@ function Qna() {
           setError('데이터를 불러오는 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
         }
       } finally {
-        setDataLoading(false); // 데이터 로딩 종료 (성공/실패 무관)
+        setDataLoading(false);
       }
     };
 
-    fetchQnaData();
+    // ✅ 데이터 조회 조건을 명확하게 변경
+    // 인증 상태 확인이 완료되었고(isAuthLoading === false),
+    // 로그인 상태일 때만(isLoggedIn === true) 데이터를 조회합니다.
+    if (!isAuthLoading && isLoggedIn) {
+      fetchQnaData();
+    }
   }, [currentPage, activeFilter, isLoggedIn, isAuthLoading, navigate]); // 의존성 배열에 상태값 명시
 
   // --- 이벤트 핸들러 ---
