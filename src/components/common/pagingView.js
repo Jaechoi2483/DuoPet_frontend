@@ -23,7 +23,7 @@ const PagingView = ({
     <div className={styles.pagingContainer}>
       {/* 첫 페이지로 이동 */}
       <button disabled={currentPage === 1} onClick={() => onPageChange(1)}>
-        〈
+        〈〈
       </button>
 
       {/* 이전 그룹으로 이동 */}
@@ -31,7 +31,7 @@ const PagingView = ({
         disabled={startPage === 1}
         onClick={() => onPageChange(startPage - 1)}
       >
-        〈〈
+        〈
       </button>
 
       {/* 페이지 숫자들 */}
@@ -50,7 +50,7 @@ const PagingView = ({
         disabled={endPage === totalPage}
         onClick={() => onPageChange(endPage + 1)}
       >
-        〉〉
+        〉
       </button>
 
       {/* 마지막 페이지로 이동 */}
@@ -58,7 +58,7 @@ const PagingView = ({
         disabled={currentPage === totalPage}
         onClick={() => onPageChange(totalPage)}
       >
-        〉
+        〉〉
       </button>
     </div>
   );

@@ -24,9 +24,6 @@ function SocialRedirect() {
         alert('소셜 로그인 성공! 🎉');
         navigate('/');
       }
-    } else {
-      alert('소셜 로그인 실패 😥 다시 시도해주세요.');
-      navigate('/login');
     }
   }, []);
 

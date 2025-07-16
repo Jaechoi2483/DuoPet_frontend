@@ -1,10 +1,10 @@
 // src/components/common/Footer.js
 
-import React, { useState } from 'react';
+import React, { useState, forwardRef } from 'react';
 import styles from './Footer.module.css'; // Footer.module.css 임포트
 import PolicyModal from './PolicyModal';
 
-function Footer() {
+function Footer(props, ref) {
   const [modalType, setModalType] = useState(null);
 
   const handlePolicyClick = (e, type) => {
@@ -18,7 +18,7 @@ function Footer() {
 
   return (
     <>
-      <footer className={styles.footer}>
+      <footer className={styles.footer} ref={ref}>
         <div className={styles.footerContainer}>
           <div className={styles.footerGrid}>
             <div>
@@ -114,4 +114,4 @@ function Footer() {
   );
 }
 
-export default Footer;
+export default forwardRef(Footer);

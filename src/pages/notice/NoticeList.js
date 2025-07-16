@@ -6,7 +6,7 @@ import PagingView from '../../components/common/pagingView';
 
 import styles from './NoticeList.module.css';
 
-function NoticeList() {
+function NoticeList({ onNoticeClick }) {
   // 1. 데이터를 관리할 state 변수들
   const [notices, setNotices] = useState([]); // 게시물 목록
   const [pageInfo, setPageInfo] = useState({ totalPages: 1, number: 0 }); // 페이징 정보
@@ -139,7 +139,13 @@ function NoticeList() {
                 <td>{notice.contentId}</td>
                 <td
                   className={styles.noticeTitle}
-                  onClick={() => navigate(`/notice/${notice.contentId}`)}
+                  onClick={() => {
+                    if (onNoticeClick) {
+                      onNoticeClick(notice.contentId);
+                    } else {
+                      navigate(`/notice/${notice.contentId}`);
+                    }
+                  }}
                 >
                   {notice.title}
                 </td>

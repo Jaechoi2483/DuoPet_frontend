@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react'; // 1. useContext 추가
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from './NoticeDetail.module.css';
 import apiClient from '../../utils/axios';
 import { AuthContext } from '../../AuthProvider'; // 2. AuthContext 추가
 
-function NoticeDetail() {
-  const { contentId } = useParams();
+function NoticeDetail({ contentId: propContentId, onBack, isAdminView }) {
+  const params = useParams();
+  const contentId = propContentId || params.contentId;
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [notice, setNotice] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -109,7 +111,18 @@ function NoticeDetail() {
       )}
 
       <div className={styles.buttonBar}>
-        <button className={styles.listButton} onClick={() => navigate('/notice')}>
+        <button
+          className={styles.listButton}
+          onClick={() => {
+            if (isAdminView && onBack) {
+              onBack();
+            } else if (location.pathname.includes('admin')) {
+              navigate('/admin');
+            } else {
+              navigate('/notice');
+            }
+          }}
+        >
           목록으로
         </button>
         {/* 7. 로그인한 사용자가 'admin'일 경우에만 수정/삭제 버튼을 보여줍니다. */}

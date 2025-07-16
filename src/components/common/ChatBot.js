@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import apiClient from '../../utils/axios';
 import styles from './Chatbot.module.css';
 
-function ChatBot({ isOpen, onClose }) {
+function ChatBot({ isOpen, onClose, hideClose }) {
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
   useEffect(() => {
     setChatHistory([
@@ -15,6 +16,12 @@ function ChatBot({ isOpen, onClose }) {
       },
     ]);
   }, []);
+
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatHistory]);
 
   if (!isOpen) return null;
 
@@ -78,14 +85,16 @@ function ChatBot({ isOpen, onClose }) {
 
   return (
     <div className={styles.chatbotContainer}>
-      <button className={styles.closeBtn} onClick={onClose}>
-        &times;
-      </button>
+      {!hideClose && (
+        <button className={styles.closeBtn} onClick={onClose}>
+          &times;
+        </button>
+      )}
       <div className={styles.chatWindow}>
         {chatHistory.map((msg, index) => (
           <div key={index} className={`${styles.message} ${styles[msg.role]}`}>
             <div className={styles.bubble}>
-              <p>{msg.content}</p>
+              {msg.content}
               {msg.actions && msg.actions.length > 0 && (
                 <div className={styles.actionsContainer}>
                   {msg.actions.map((action) => (
@@ -115,6 +124,7 @@ function ChatBot({ isOpen, onClose }) {
             </div>
           </div>
         )}
+        <div ref={chatEndRef} />
       </div>
       <div className={styles.inputArea}>
         <input
@@ -122,7 +132,7 @@ function ChatBot({ isOpen, onClose }) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          placeholder="메시지를 입력하세요..."
+          placeholder="메시지를 입력..."
           disabled={isLoading}
         />
         <button onClick={handleSendMessage} disabled={isLoading}>

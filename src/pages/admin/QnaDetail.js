@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import styles from './QnaDetail.module.css';
 import { AuthContext } from '../../AuthProvider'; // 1. AuthContext를 import 합니다.
 
-function QnaDetail() {
-  const { contentId } = useParams();
+function QnaDetail({ contentId: propContentId, onBack, isAdminView }) {
+  const params = useParams();
+  const contentId = propContentId || params.contentId;
   const navigate = useNavigate();
 
   // 2. AuthContext에서 필요한 모든 상태와 함수를 가져옵니다.
@@ -175,7 +176,16 @@ function QnaDetail() {
       )}
 
       <div className={styles.buttonBar}>
-        <button className={styles.listButton} onClick={() => navigate(-1)}>
+        <button
+          className={styles.listButton}
+          onClick={() => {
+            if (isAdminView && onBack) {
+              onBack();
+            } else {
+              navigate(-1);
+            }
+          }}
+        >
           목록으로
         </button>
       </div>
