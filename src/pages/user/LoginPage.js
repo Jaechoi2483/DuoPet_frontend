@@ -69,7 +69,7 @@ function LoginPage() {
   };
 
   const handleSocialLogin = () => {
-    alert('SNS 로그인은 현재 준비 중입니다.');
+    window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
   };
 
   const handleFaceLogin = () => {
@@ -79,9 +79,7 @@ function LoginPage() {
   return (
     <div className={styles.loginContainer}>
       <h2>로그인</h2>
-      <p className={styles.subtext}>
-        DuoPet 서비스를 이용하려면 로그인해주세요
-      </p>
+      <p className={styles.subtext}>DuoPet 서비스를 이용하려면 로그인해주세요</p>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -99,19 +97,11 @@ function LoginPage() {
 
         <div className={styles.checkboxGroup}>
           <label>
-            <input
-              type="checkbox"
-              checked={rememberId}
-              onChange={(e) => setRememberId(e.target.checked)}
-            />
+            <input type="checkbox" checked={rememberId} onChange={(e) => setRememberId(e.target.checked)} />
             아이디 저장
           </label>
           <label>
-            <input
-              type="checkbox"
-              checked={autoLogin}
-              onChange={(e) => setAutoLogin(e.target.checked)}
-            />
+            <input type="checkbox" checked={autoLogin} onChange={(e) => setAutoLogin(e.target.checked)} />
             자동 로그인
           </label>
         </div>
@@ -120,49 +110,27 @@ function LoginPage() {
         </button>
 
         <div className={styles.divider}>또는</div>
-        <button
-          type="button"
-          onClick={handleFaceLogin}
-          className={styles.faceBtn}
-        >
+        <button type="button" onClick={handleFaceLogin} className={styles.faceBtn}>
           📷 얼굴인식 로그인
         </button>
 
         <div className={styles.snsLogin}>
-          <button
-            type="button"
-            className={`${styles.sns} ${styles.kakao}`}
-            onClick={handleSocialLogin}
-          >
+          <button type="button" className={`${styles.sns} ${styles.kakao}`} onClick={handleSocialLogin}>
             카카오
           </button>
-          <button
-            type="button"
-            className={`${styles.sns} ${styles.naver}`}
-            onClick={handleSocialLogin}
-          >
+          <button type="button" className={`${styles.sns} ${styles.naver}`} onClick={handleSocialLogin}>
             네이버
           </button>
-          <button
-            type="button"
-            className={`${styles.sns} ${styles.google}`}
-            onClick={handleSocialLogin}
-          >
+          <button type="button" className={`${styles.sns} ${styles.google}`} onClick={handleSocialLogin}>
             구글
           </button>
         </div>
 
         <div className={styles.loginLinks}>
-          <span
-            onClick={() => navigate('/signup/step1')}
-            className={styles.link}
-          >
+          <span onClick={() => navigate('/signup/step1')} className={styles.link}>
             회원가입
           </span>
-          <span
-            onClick={() => navigate('/find-password')}
-            className={styles.link}
-          >
+          <span onClick={() => navigate('/find-password')} className={styles.link}>
             비밀번호 찾기
           </span>
         </div>
