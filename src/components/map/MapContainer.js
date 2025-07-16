@@ -1,5 +1,5 @@
 // src/components/map/MapContainer.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const MapContainer = ({
   hospitals = [],
@@ -16,6 +16,8 @@ const MapContainer = ({
   const [map, setMap] = useState(null);
   const [markers, setMarkers] = useState([]);
   const [openInfoWindow, setOpenInfoWindow] = useState(null);
+  const markersRef = useRef([]);
+  const infoWindowsRef = useRef([]);
 
   useEffect(() => {
     const apiKey = process.env.REACT_APP_KAKAO_MAP_KEY;
@@ -119,14 +121,38 @@ const MapContainer = ({
 
     initializeMap();
   }, [center.lat, center.lng, zoom, userLocation]);
+  
+  // 지도 클릭 이벤트 핸들러
+  useEffect(() => {
+    if (map) {
+      const clickListener = () => {
+        // 모든 InfoWindow 닫기
+        infoWindowsRef.current.forEach(iw => iw.close());
+        setOpenInfoWindow(null);
+      };
+      
+      window.kakao.maps.event.addListener(map, 'click', clickListener);
+      
+      return () => {
+        window.kakao.maps.event.removeListener(map, 'click', clickListener);
+      };
+    }
+  }, [map]);
 
   // 위치 마커 업데이트 (병원/보호소 공통)
   useEffect(() => {
     if (map && locations.length > 0) {
-      // 기존 마커 제거
-      markers.forEach((marker) => marker.setMap(null));
+      // 기존 마커 및 InfoWindow 제거
+      markersRef.current.forEach((marker) => {
+        marker.setMap(null);
+      });
+      infoWindowsRef.current.forEach((infoWindow) => {
+        infoWindow.close();
+      });
+      markersRef.current = [];
+      infoWindowsRef.current = [];
 
-      const newMarkers = locations.map((location) => {
+      const newMarkers = locations.map((location, index) => {
         const markerPosition = new window.kakao.maps.LatLng(
           location.position.lat,
           location.position.lng
@@ -169,13 +195,16 @@ const MapContainer = ({
 
         // 마커 클릭 이벤트 - InfoWindow 토글
         window.kakao.maps.event.addListener(marker, 'click', () => {
-          // 이전에 열린 InfoWindow가 있으면 닫기
-          if (openInfoWindow && openInfoWindow !== infoWindow) {
-            openInfoWindow.close();
-          }
+          // 모든 InfoWindow 닫기
+          infoWindowsRef.current.forEach((iw, idx) => {
+            if (idx !== index) {
+              iw.close();
+            }
+          });
 
-          // 현재 InfoWindow 열기/닫기 토글
-          if (openInfoWindow === infoWindow) {
+          // 현재 InfoWindow 토글
+          const isOpen = infoWindow.getMap();
+          if (isOpen) {
             infoWindow.close();
             setOpenInfoWindow(null);
           } else {
@@ -191,23 +220,28 @@ const MapContainer = ({
 
         // 마커 호버 이벤트 - 클릭으로 열린 InfoWindow가 없을 때만 작동
         window.kakao.maps.event.addListener(marker, 'mouseover', () => {
-          if (openInfoWindow !== infoWindow) {
+          const hasOpenInfoWindow = infoWindowsRef.current.some(iw => iw.getMap());
+          if (!hasOpenInfoWindow) {
             infoWindow.open(map, marker);
           }
         });
 
         window.kakao.maps.event.addListener(marker, 'mouseout', () => {
-          if (openInfoWindow !== infoWindow) {
+          const isClickedOpen = openInfoWindow === infoWindow;
+          if (!isClickedOpen && infoWindow.getMap()) {
             infoWindow.close();
           }
         });
 
-        // 마커에 infoWindow 참조 저장
+        // 참조 배열에 저장
+        infoWindowsRef.current.push(infoWindow);
         marker.infoWindow = infoWindow;
+        marker.infoWindowIndex = index;
 
         return marker;
       });
 
+      markersRef.current = newMarkers;
       setMarkers(newMarkers);
 
       // 사용자 위치 마커 추가
@@ -233,10 +267,11 @@ const MapContainer = ({
           ),
         });
 
+        markersRef.current.push(userMarker);
         setMarkers((prev) => [...prev, userMarker]);
       }
     }
-  }, [map, locations, userLocation, onHospitalSelect, openInfoWindow]);
+  }, [map, locations, userLocation, onHospitalSelect]);
 
   // 선택된 위치 중심으로 지도 이동
   useEffect(() => {
@@ -270,16 +305,19 @@ const MapContainer = ({
         map.setLevel(5);
         
         // 해당 마커의 InfoWindow 열기
-        const marker = markers.find(m => m.getTitle() === location.name);
-        if (marker && marker.infoWindow) {
-          // 이전에 열린 InfoWindow가 있으면 닫기
-          if (openInfoWindow) {
-            openInfoWindow.close();
-          }
+        const markerIndex = locations.findIndex(l => l.id == selectedHospital || l.id === selectedHospital);
+        if (markerIndex !== -1 && markersRef.current[markerIndex]) {
+          const marker = markersRef.current[markerIndex];
+          const infoWindow = infoWindowsRef.current[markerIndex];
           
-          // 선택된 마커의 InfoWindow 열기
-          marker.infoWindow.open(map, marker);
-          setOpenInfoWindow(marker.infoWindow);
+          if (infoWindow) {
+            // 모든 InfoWindow 닫기
+            infoWindowsRef.current.forEach(iw => iw.close());
+            
+            // 선택된 마커의 InfoWindow 열기
+            infoWindow.open(map, marker);
+            setOpenInfoWindow(infoWindow);
+          }
         }
       } else {
         console.warn('❌ 선택된 병원을 찾을 수 없음:', {
@@ -288,7 +326,7 @@ const MapContainer = ({
         });
       }
     }
-  }, [map, selectedHospital, locations, markers, openInfoWindow]);
+  }, [map, selectedHospital, locations, markers]);
 
   if (isLoading) {
     return (
