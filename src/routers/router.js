@@ -5,7 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 
 import AboutPage from '../pages/AboutPage';
 import HomePage from '../pages/HomePage';
-import DuoPetGreeting from '../components/common/DuoPetGreeting';
+import GreetingPage from '../pages/GreetingPage';
 
 import noticeRoutes from './noticeRoutes';
 import userRoutes from './userRoutes';
@@ -23,7 +23,7 @@ const AppRouter = () => {
     <Routes>
       <Route path="/about" element={<AboutPage />} />
       <Route path="/" element={<HomePage />} />
-      <Route path="/greeting" element={<DuoPetGreeting />} />
+      <Route path="/greeting" element={<GreetingPage />} />
       {userRoutes}
       {noticeRoutes}
       {freeBoardRoutes}

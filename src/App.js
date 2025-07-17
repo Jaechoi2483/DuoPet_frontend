@@ -3,12 +3,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import './App.css';
-import HomePage from './pages/HomePage';
 import AppRouter from './routers/router';
 import Menubar from './components/common/Menubar';
 import Footer from './components/common/Footer';
-
-import DuoPetGreeting from './components/common/DuoPetGreeting';
 import { SignupProvider } from './components/context/SignupContext';
 import ChatBot from './components/common/ChatBot';
 import ChatbotModal from './components/common/ChatbotModal';
