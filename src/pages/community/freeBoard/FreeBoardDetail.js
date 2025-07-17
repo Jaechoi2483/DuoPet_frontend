@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/axios';
 import { AuthContext } from '../../../AuthProvider';
+import FreeBoardReport from './FreeBoardReport';
 import styles from './FreeBoardDetail.module.css';
 
 const dummyVideos = [
@@ -36,8 +37,10 @@ function FreeBoardDetail() {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
 
   const handleEdit = () => {
     navigate(`/community/freeBoard/edit/${id}`);
@@ -95,11 +98,16 @@ function FreeBoardDetail() {
   };
 
   const handleBookmark = async () => {
-    try {
-      const accessToken = localStorage.getItem('accessToken');
-      const refreshToken = localStorage.getItem('refreshToken');
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
 
-      const res = await apiClient.post(`/bookmark/${id}`, null, {
+    if (!accessToken || !refreshToken) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
+
+    try {
+      const res = await apiClient.post(`/board/bookmark/${id}`, null, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           RefreshToken: `Bearer ${refreshToken}`,
@@ -107,8 +115,11 @@ function FreeBoardDetail() {
         withCredentials: true,
       });
 
-      setBookmarked(res.data.bookmarked);
-      triggerToast(res.data.bookmarked ? '북마크에 추가되었습니다.' : '북마크가 해제되었습니다.');
+      console.log('서버 응답 데이터:', res.data);
+
+      setBookmarked(res.data.bookmarked); // 북마크 상태 업데이트
+      setBookmarkCount((prev) => (res.data.bookmarked ? prev + 1 : prev - 1)); // 북마크 카운트 업데이트
+      triggerToast(res.data.bookmarked ? '북마크가 등록되었습니다.' : '북마크가 해제되었습니다.');
     } catch (err) {
       console.error('북마크 실패', err);
     }
@@ -119,6 +130,10 @@ function FreeBoardDetail() {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
+
+  // 신고 폼 관련 상태
+  const handleOpenReport = () => setIsReportOpen(true);
+  const handleCloseReport = () => setIsReportOpen(false);
 
   // 조회수 증가 & 좋아요 수 증가
   useEffect(() => {
@@ -204,8 +219,11 @@ function FreeBoardDetail() {
       <div className={styles.actions}>
         <button onClick={handleLike}>{liked ? '❤️ 좋아요 취소' : '🤍 좋아요'}</button>
         <button onClick={handleBookmark}>{bookmarked ? '🔖 북마크 해제' : '📌 북마크'}</button>
-        <button className={styles.report}>🚩 신고하기</button>
+        <button onClick={handleOpenReport}>🚩 신고하기</button>
       </div>
+
+      {/* 신고 모달 연결 */}
+      {isReportOpen && <FreeBoardReport postId={id} onClose={handleCloseReport} />}
 
       {/* 관련 YouTube 영상 */}
       <div className={styles.youtubeSection}>
