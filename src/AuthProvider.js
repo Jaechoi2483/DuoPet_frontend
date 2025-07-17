@@ -127,28 +127,37 @@ export const AuthProvider = ({ children }) => {
 
   // 로그인 성공시 공통 토큰 저장 처리 및 상태 업데이트 함수
   const updateTokens = (accessToken, refreshToken) => {
-    if (accessToken) {
-      localStorage.setItem('accessToken', accessToken);
-      const parsedToken = parseAccessToken(accessToken);
-      console.log('AuthProvider updateTokens : ', parsedToken);
+    setIsAuthLoading(true); // 로딩 시작
+    try {
+      if (accessToken) {
+        localStorage.setItem('accessToken', accessToken);
+        const parsedToken = parseAccessToken(accessToken);
+        console.log('AuthProvider updateTokens : ', parsedToken);
 
-      if (parsedToken) {
-        setAuthInfo({
-          isLoggedIn: true,
-          role: parsedToken.role,
-          username: parsedToken.nickname,
-          userid: parsedToken.sub,
-          userNo: parsedToken.userNo,
-        });
-        console.log('updateTokens:authInfo : ', authInfo);
-      } else {
-        // 파싱 실패시 로그아웃 처리
-        logoutAndRedirect();
+        if (parsedToken) {
+          setAuthInfo({
+            isLoggedIn: true,
+            role: parsedToken.role,
+            username: parsedToken.nickname,
+            userid: parsedToken.sub,
+            userNo: parsedToken.userNo,
+          });
+        } else {
+          // 파싱 실패시 로그아웃 처리
+          localStorage.clear();
+          setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
+        }
       }
-    }
 
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+    } catch (error) {
+      console.error('토큰 업데이트 중 오류 발생:', error);
+      localStorage.clear();
+      setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
+    } finally {
+      setIsAuthLoading(false); // 로딩 완료
     }
   }; // updateTokens
 

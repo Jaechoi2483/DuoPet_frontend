@@ -1,37 +1,116 @@
-.container {
-  max-width: 400px;
+/* 기본 스타일 */
+.wrapper {
+  width: 450px;
   margin: 50px auto;
-  padding: 20px;
-  border-radius: 12px;
-  background-color: #f9f9f9;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  background: linear-gradient(145deg, #ffffff, #f2f2f2);
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
 }
 
-.formGroup {
-  margin-bottom: 16px;
-}
-
-.formGroup label {
-  display: block;
+/* 제목 스타일 */
+.title {
+  text-align: center;
+  font-size: 26px;
   font-weight: bold;
-  margin-bottom: 6px;
+  color: #333;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* 폼 그룹 스타일 */
+.formGroup {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 레이블 스타일 */
+.formGroup label {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* 입력 필드 스타일 */
 .formGroup input,
 .formGroup select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 6px;
+  padding: 12px;
+  font-size: 16px;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
+.formGroup input:focus,
+.formGroup select:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* 전화번호와 나이 필드 */
+.formGroup input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* 성별 드롭다운 */
+.formGroup select {
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* 버튼 스타일 */
 .submitButton {
   width: 100%;
-  padding: 10px;
-  background-color: #3399ff;
+  padding: 15px;
+  font-size: 18px;
+  background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  border-radius: 10px;
   cursor: pointer;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+
+.submitButton:hover {
+  background-color: #45a049;
+  transform: translateY(-3px);
+}
+
+.submitButton:active {
+  transform: translateY(1px);
+}
+
+/* 아이콘 스타일 */
+.inputIcon {
+  position: absolute;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+/* 폼 필드 내부 아이콘 */
+.formGroup {
+  position: relative;
+}
+
+.formGroup input {
+  padding-left: 35px; /* 아이콘 여백 */
+}
+
+/* 추가적인 텍스트 필드 스타일 */
+.formGroup input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* 폼 요소의 부드러운 전환 효과 */
+.formGroup input,
+.formGroup select,
+.submitButton {
+  transition: all 0.3s ease;
 }
