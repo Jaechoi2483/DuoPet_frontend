@@ -3,8 +3,8 @@
   right: 32px;
   bottom: 32px;
   z-index: 1200;
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   border-radius: 50%;
   box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
@@ -12,9 +12,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s, bottom 0.3s;
   border: none;
   outline: none;
+}
+
+/* 푸터가 보일 때 챗봇 버튼을 위로 올림 */
+.footerVisible {
+  bottom: 96px !important;
 }
 
 .chatbotFloatingBtn:hover {
@@ -30,48 +35,53 @@
 
 /* 챗봇 모달 내부 스타일 */
 .chatbotContainer {
-  width: 350px;
-  max-width: 90vw;
-  height: 500px;
+  width: 100%;
+  max-width: 340px;
+  height: 520px;
   max-height: 80vh;
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+  background: #f6f7f9;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(59, 130, 246, 0.10);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  border: 1.5px solid #e5e7eb;
+  margin: 0;
 }
 
 .closeBtn {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
-  font-size: 1.8rem;
-  color: #9ca3af;
+  font-size: 1.5rem;
+  color: #b0b8c1;
   cursor: pointer;
   z-index: 10;
   transition: color 0.2s;
+  padding: 2px 6px;
+  border-radius: 50%;
 }
 .closeBtn:hover {
-  color: #1d4ed8;
+  color: #2563eb;
+  background: #f1f5f9;
 }
 
 .chatWindow {
   flex: 1;
-  padding: 18px 16px 8px 16px;
+  padding: 14px 8px 4px 8px;
   overflow-y: auto;
-  background: #f3f6fa;
+  background: transparent;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .message {
   display: flex;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 .message.assistant {
   justify-content: flex-start;
@@ -82,64 +92,82 @@
 .bubble {
   max-width: 80%;
   padding: 10px 16px;
-  border-radius: 16px;
+  border-radius: 22px;
   font-size: 15px;
-  line-height: 1.5;
-  background: #e0e7ff;
-  color: #1e293b;
+  line-height: 1.7;
+  background: #ececec;
+  color: #22223b;
   margin-bottom: 2px;
   word-break: break-word;
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(255,255,255,0.15);
+  border: none;
+  box-shadow: none;
 }
 .message.user .bubble {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, #248aff 0%, #0b63e5 100%);
   color: #fff;
   align-self: flex-end;
-  font-weight: 600;
-  text-shadow: 0 1px 4px rgba(30,40,60,0.18);
+  font-weight: 500;
+  border-radius: 22px 22px 6px 22px;
+  border: none;
+  box-shadow: none;
 }
 .message.assistant .bubble {
-  background: #f1f5f9;
+  background: #ececec;
   color: #22223b;
   align-self: flex-start;
   font-weight: 500;
-  text-shadow: 0 1px 2px rgba(255,255,255,0.12);
+  border-radius: 22px 22px 22px 6px;
+  border: none;
+  box-shadow: none;
 }
 
 .inputArea {
   display: flex;
-  align-items: center;
-  padding: 12px 10px;
+  align-items: stretch;
+  padding: 10px 6px 10px 6px;
   border-top: 1px solid #e5e7eb;
-  background: #fff;
+  background: #f6f7f9;
+  gap: 6px;
 }
 .inputArea input {
   flex: 1;
-  padding: 10px 14px;
-  border: 1.5px solid #cbd5e1;
-  border-radius: 8px;
+  padding: 9px 18px;
+  border: 1.5px solid #d1d5db;
+  border-radius: 20px;
   font-size: 15px;
+  font-weight: 500;
   outline: none;
-  margin-right: 8px;
+  margin-right: 0;
+  background: #fff;
   transition: border-color 0.2s;
+  box-sizing: border-box;
+  line-height: 1;
+  height: 40px;
+  vertical-align: middle;
 }
 .inputArea input:focus {
-  border-color: #3b82f6;
+  border-color: #248aff;
+  background: #fff;
 }
 .inputArea button {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: #248aff;
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 8px 18px;
+  border-radius: 20px;
+  padding: 9px 18px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background 0.2s;
+  box-shadow: none;
+  box-sizing: border-box;
+  line-height: 1;
+  height: 40px;
+  vertical-align: middle;
 }
 .inputArea button:disabled {
-  background: #9ca3af;
+  background: #b0b8c1;
   cursor: not-allowed;
 }
 
@@ -174,7 +202,7 @@
   gap: 6px;
 }
 .actionButton {
-  background: #f1f5f9;
+  background: #f7fafd;
   color: #2563eb;
   border: none;
   border-radius: 6px;
@@ -183,7 +211,17 @@
   cursor: pointer;
   text-decoration: none;
   transition: background 0.2s;
+  box-shadow: 0 1px 2px rgba(59, 130, 246, 0.06);
 }
 .actionButton:hover {
-  background: #dbeafe;
+  background: #e0e7ff;
+}
+
+.noBgBtn {
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  width: auto !important;
+  height: auto !important;
+  padding: 0;
 } 
