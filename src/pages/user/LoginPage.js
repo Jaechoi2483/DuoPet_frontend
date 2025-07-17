@@ -68,8 +68,16 @@ function LoginPage() {
     }
   };
 
-  const handleSocialLogin = () => {
+  const handleKakaoLogin = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
+  };
+
+  const handleNaverLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/naver';
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
   };
 
   const handleFaceLogin = () => {
@@ -78,8 +86,8 @@ function LoginPage() {
 
   return (
     <div className={styles.loginContainer}>
-      <h2>로그인</h2>
-      <p className={styles.subtext}>DuoPet 서비스를 이용하려면 로그인해주세요</p>
+      <h2 className={styles.title}>로그인</h2>
+      <p className={styles.subtitle}>DuoPet 서비스를 이용하려면 로그인해주세요</p>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -115,13 +123,13 @@ function LoginPage() {
         </button>
 
         <div className={styles.snsLogin}>
-          <button type="button" className={`${styles.sns} ${styles.kakao}`} onClick={handleSocialLogin}>
+          <button type="button" className={`${styles.sns} ${styles.kakao}`} onClick={handleKakaoLogin}>
             카카오
           </button>
-          <button type="button" className={`${styles.sns} ${styles.naver}`} onClick={handleSocialLogin}>
+          <button type="button" className={`${styles.sns} ${styles.naver}`} onClick={handleNaverLogin}>
             네이버
           </button>
-          <button type="button" className={`${styles.sns} ${styles.google}`} onClick={handleSocialLogin}>
+          <button type="button" className={`${styles.sns} ${styles.google}`} onClick={handleGoogleLogin}>
             구글
           </button>
         </div>
