@@ -6,6 +6,7 @@ import apiClient from '../../../utils/axios';
 import { AuthContext } from '../../../AuthProvider';
 import FreeBoardReport from './FreeBoardReport';
 import Modal from '../../../components/common/Modal';
+import CommentBox from '../comment/CommentBox';
 import styles from './FreeBoardDetail.module.css';
 
 const dummyVideos = [
@@ -247,7 +248,7 @@ function FreeBoardDetail() {
       {/* 댓글 영역은 아직 미연동 상태 */}
       <div className={styles.commentSection}>
         <h4>💬 댓글</h4>
-        <p>댓글 기능은 준비 중입니다.</p>
+        <CommentBox contentId={id} />
       </div>
     </div>
   );

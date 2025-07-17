@@ -1,0 +1,116 @@
+/* 전체 댓글 영역 컨테이너 */
+.commentContainer {
+  margin-top: 2rem;
+  border-top: 1px solid #ccc;
+  padding-top: 1.5rem;
+}
+
+/* 댓글 리스트 영역 */
+.commentList {
+  margin-top: 1rem;
+}
+
+/* 개별 댓글 Item (상자형) */
+.commentItem {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+/* 댓글 상단: 닉네임과 날짜 정렬 */
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+/* 닉네임 강조 */
+.nickname {
+  font-weight: bold;
+}
+
+/* 날짜 */
+.date {
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+/* 댓글 본문 텍스트 */
+.content {
+  margin-top: 4px;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* 삭제 버튼 */
+.deleteBtn {
+  font-size: 0.8rem;
+  color: red;
+  background: none;
+  border: none;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+/* 댓글 작성 영역 (카드형) */
+.commentCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin-top: 24px;
+  max-width: 100%;
+}
+
+/* 댓글 작성 라벨 */
+.label {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #333;
+}
+
+/* 댓글 입력창 */
+.textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.textarea:focus {
+  border-color: #339af0;
+  outline: none;
+}
+
+/* 버튼 정렬 영역 */
+.buttonArea {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* 등록 버튼 */
+.submitButton {
+  background-color: #1971c2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #1864ab;
+}
