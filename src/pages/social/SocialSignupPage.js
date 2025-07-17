@@ -20,6 +20,8 @@ const SocialSignupPage = () => {
     userEmail: '',
   });
 
+  const [nicknameExists, setNicknameExists] = useState(false);
+  const [nicknameChecked, setNicknameChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // 로딩 상태 관리
 
   useEffect(() => {
@@ -32,50 +34,85 @@ const SocialSignupPage = () => {
 
   useEffect(() => {
     if (!isAuthLoading && isLoggedIn) {
-      // 로그인된 사용자의 정보로 폼 초기화
-      setForm((prevForm) => ({
-        ...prevForm,
+      setForm((prev) => ({
+        ...prev,
         nickname: username || '',
-        userName: username || '', // Assuming nickname is used for name
-        userEmail: '', // 이메일을 초기화하거나 받아올 수 있습니다.
+        userName: username || '',
+        userEmail: '', // 초기화
       }));
 
-      // `apiClient`를 사용하여 사용자의 정보를 가져옵니다.
       apiClient
         .get(`/users/${userNo}`)
-        .then((response) => {
-          const userData = response.data;
-          console.log(userData); // 받아오는 데이터 확인
-          setForm((prevForm) => ({
-            ...prevForm,
-            phone: userData.phone || '',
+        .then((res) => {
+          const userData = res.data;
+          setForm((prev) => ({
+            ...prev,
+            phone: '',
             age: userData.age || '',
             gender: userData.gender || '',
             address: userData.address || '',
-            userEmail: userData.userEmail || '', // 이메일을 제대로 로딩
+            userEmail: userData.userEmail || '',
           }));
         })
-        .catch((error) => {
-          console.error('사용자 정보를 불러오는 데 실패했습니다:', error);
+        .catch((err) => {
+          console.error('사용자 정보 불러오기 실패:', err);
         });
     }
-  }, [isAuthLoading, isLoggedIn, userNo, username]); // 의존성 배열에 필요한 항목 추가
+  }, [isAuthLoading, isLoggedIn, userNo, username]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (name === 'nickname') {
+      setNicknameExists(false); // 닉네임 변경 시 상태 초기화
+    }
+  };
+
+  const checkNickname = async () => {
+    if (!form.nickname) {
+      alert('닉네임을 입력해주세요.');
+      return;
+    }
+
+    try {
+      const res = await apiClient.get(`/users/check-nickname`, {
+        params: {
+          nickname: form.nickname,
+          userId: userNo, // 자기 자신이면 중복 X
+        },
+      });
+
+      const isDuplicate = res.data; // true = 중복
+
+      setNicknameExists(isDuplicate);
+      setNicknameChecked(true);
+
+      if (isDuplicate) {
+        alert('이미 사용 중인 닉네임입니다.');
+      } else {
+        alert('사용 가능한 닉네임입니다.');
+      }
+    } catch (err) {
+      console.error('닉네임 중복 확인 실패:', err);
+      alert('중복 확인 중 오류가 발생했습니다.');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 필수 값 확인
     if (!form.phone || !form.age || !form.gender) {
       alert('모든 필드를 입력해주세요.');
       return;
     }
 
-    setIsLoading(true); // 로딩 시작
+    if (nicknameExists) {
+      alert('닉네임이 중복됩니다. 다른 닉네임을 입력해주세요.');
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const payload = {
@@ -87,16 +124,14 @@ const SocialSignupPage = () => {
         userEmail: form.userEmail,
       };
 
-      // 사용자 정보 업데이트 API 호출
       await apiClient.put('/users/social-update', payload);
-
       alert('회원 정보가 등록되었습니다!');
-      navigate('/'); // 메인 페이지로 이동
+      navigate('/');
     } catch (err) {
       console.error('업데이트 실패:', err);
       alert('정보 등록에 실패했습니다.');
     } finally {
-      setIsLoading(false); // 로딩 끝
+      setIsLoading(false);
     }
   };
 
@@ -109,21 +144,46 @@ const SocialSignupPage = () => {
       <h2 className={styles.title}>간편 회원가입</h2>
 
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* 이름 */}
+        <div className={styles.formGroup}>
+          <label>이름</label>
+          <input name="userName" value={form.userName} onChange={handleChange} />
+        </div>
+
+        {/* 닉네임 + 중복 확인 */}
         <div className={styles.formGroup}>
           <label>닉네임</label>
-          <input name="nickname" value={form.nickname} onChange={handleChange} disabled />
+
+          {/* 인풋 + 버튼 정렬 */}
+          <div className={styles.inlineGroup}>
+            <input name="nickname" className={styles.inputField} value={form.nickname} onChange={handleChange} />
+            <button type="button" onClick={checkNickname} className={styles.checkButton}>
+              중복 확인
+            </button>
+          </div>
+
+          {/* 상태 메시지 */}
+          {nicknameChecked &&
+            (nicknameExists ? (
+              <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ 이미 사용 중인 닉네임입니다.</div>
+            ) : (
+              <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 닉네임입니다.</div>
+            ))}
         </div>
 
+        {/* 전화번호 */}
         <div className={styles.formGroup}>
-          <label>이메일</label>
-          <input name="userEmail" value={form.userEmail} onChange={handleChange} disabled />
+          <label>전화번호</label>
+          <input name="phone" value={form.phone} onChange={handleChange} />
         </div>
 
+        {/* 나이 */}
         <div className={styles.formGroup}>
           <label>나이</label>
-          <input name="age" value={form.age} onChange={handleChange} type="number" />
+          <input name="age" type="number" value={form.age} onChange={handleChange} />
         </div>
 
+        {/* 성별 */}
         <div className={styles.formGroup}>
           <label>성별</label>
           <select name="gender" value={form.gender} onChange={handleChange}>
@@ -133,12 +193,24 @@ const SocialSignupPage = () => {
           </select>
         </div>
 
+        {/* 주소 */}
         <div className={styles.formGroup}>
           <label>주소</label>
           <input name="address" value={form.address} onChange={handleChange} />
         </div>
 
-        <button className={styles.submitButton} type="submit" disabled={isLoading}>
+        {/* 이메일 */}
+        <div className={styles.formGroup}>
+          <label>이메일</label>
+          <input name="userEmail" value={form.userEmail} disabled />
+        </div>
+
+        {/* 제출 */}
+        <button
+          className={styles.submitButton}
+          type="submit"
+          disabled={isLoading || !nicknameChecked || nicknameExists}
+        >
           {isLoading ? '등록 중...' : '정보 등록'}
         </button>
       </form>

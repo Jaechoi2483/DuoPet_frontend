@@ -1,32 +1,38 @@
 .loginContainer {
-  width: 400px;
-  margin: 50px auto;
-  padding: 30px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
+  width: 380px;
+  margin: 60px auto;
+  padding: 40px;
+  border-radius: 12px;
   background-color: #fff;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.subtext {
+.title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #777;
   font-size: 14px;
-  color: gray;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 input[type='text'],
 input[type='password'] {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 15px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  transition:
-    border-color 0.3s,
-    box-shadow 0.3s;
+  border-radius: 6px;
+  box-sizing: border-box;
 }
 
-/* 포커스 효과 */
 input[type='text']:focus,
 input[type='password']:focus {
   outline: none;
@@ -34,82 +40,65 @@ input[type='password']:focus {
   box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2);
 }
 
-/* 에러 메시지 */
-.error {
-  color: red;
-  font-size: 13px;
-  text-align: left;
-  margin-bottom: 10px;
-}
-
 .checkboxGroup {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
 }
 
 .loginBtn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   background-color: #3182f6;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
-  margin-bottom: 10px;
-  transition: background-color 0.3s;
-}
-
-/* 버튼 hover 효과 */
-.loginBtn:hover {
-  background-color: #2563eb;
-}
-
-/* 로그인 중(disabled)일 때 스타일 */
-.loginBtn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  margin-bottom: 20px;
 }
 
 .divider {
   margin: 20px 0;
+  font-size: 14px;
   color: #aaa;
 }
 
 .faceBtn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background-color: #e9ecef;
   border: none;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.faceBtn:hover {
-  background-color: #dfe3e6;
 }
 
 .snsLogin {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .sns {
   flex: 1;
-  padding: 10px;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: bold;
   border: none;
-  border-radius: 4px;
+  border-radius: 6px;
   color: white;
   cursor: pointer;
-  transition: opacity 0.3s;
-}
-
-.sns:hover {
-  opacity: 0.9;
 }
 
 .kakao {
@@ -126,42 +115,15 @@ input[type='password']:focus {
 }
 
 .loginLinks {
-  margin-top: 15px;
   display: flex;
   justify-content: space-between;
+  margin-top: 24px;
   font-size: 14px;
+  padding: 0 4px;
 }
 
 .link {
   color: #007bff;
   cursor: pointer;
   text-decoration: underline;
-}
-
-/* 반응형 대응 */
-@media (max-width: 480px) {
-  .loginContainer {
-    width: 90%;
-    padding: 20px;
-  }
-
-  .snsLogin {
-    flex-direction: column;
-  }
-
-  .sns {
-    width: 100%;
-    margin-bottom: 8px;
-  }
-
-  .checkboxGroup {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .loginLinks {
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
-  }
 }
