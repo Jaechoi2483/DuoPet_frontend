@@ -91,9 +91,13 @@ function AdminMain() {
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
   const [syncStatus, setSyncStatus] = useState(''); // 'success', 'error', ''
+  const [lastSyncTime, setLastSyncTime] = useState(() => {
+    // localStorage에서 마지막 동기화 시간 불러오기
+    return localStorage.getItem('lastSyncTime') || null;
+  });
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
+  // 대시보드 데이터 불러오기 함수
+  const fetchDashboardData = async () => {
       setLoading(true);
       setError(null);
       try {
@@ -136,8 +140,9 @@ function AdminMain() {
       } finally {
         setLoading(false);
       }
-    };
+  };
 
+  useEffect(() => {
     fetchDashboardData();
   }, []);
 
@@ -150,18 +155,40 @@ function AdminMain() {
     try {
       const result = await adoptionService.syncPublicData();
       setSyncStatus('success');
-      setSyncMessage('공공 API 데이터 동기화가 성공적으로 시작되었습니다. 잠시 후 데이터가 업데이트됩니다.');
+      
+      // 동기화 결과 상세 메시지 표시
+      if (result && result.data) {
+        const { totalProcessed, successCount, failureCount } = result.data;
+        setSyncMessage(
+          `동기화 완료: 총 ${totalProcessed}건 처리 (성공: ${successCount}건, 실패: ${failureCount}건)`
+        );
+      } else {
+        setSyncMessage('공공 API 데이터 동기화가 성공적으로 완료되었습니다.');
+      }
+      
+      // 마지막 동기화 시간 저장
+      const currentTime = new Date().toLocaleString('ko-KR');
+      setLastSyncTime(currentTime);
+      localStorage.setItem('lastSyncTime', currentTime);
+      
+      // 데이터 자동 새로고침
+      setTimeout(async () => {
+        setSyncMessage('데이터를 새로고침하는 중...');
+        await fetchDashboardData();
+        setSyncMessage('대시보드 데이터가 업데이트되었습니다.');
+      }, 1000);
+      
     } catch (error) {
       setSyncStatus('error');
       setSyncMessage('동기화 중 오류가 발생했습니다. 다시 시도해주세요.');
       console.error('동기화 오류:', error);
     } finally {
       setSyncLoading(false);
-      // 5초 후 메시지 제거
+      // 10초 후 메시지 제거 (이전 5초에서 연장)
       setTimeout(() => {
         setSyncMessage('');
         setSyncStatus('');
-      }, 5000);
+      }, 10000);
     }
   };
 
@@ -204,6 +231,11 @@ function AdminMain() {
               >
                 {syncLoading ? '동기화 중...' : '데이터 동기화 실행'}
               </button>
+              {lastSyncTime && (
+                <div className={styles.lastSyncTime}>
+                  마지막 동기화: {lastSyncTime}
+                </div>
+              )}
               {syncMessage && <div className={`${styles.syncMessage} ${styles[syncStatus]}`}>{syncMessage}</div>}
             </div>
           </div>
