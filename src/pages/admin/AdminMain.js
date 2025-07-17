@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styles from './AdminMain.module.css';
-
 import adoptionService from '../../services/adoptionService';
-
 import apiClient from '../../utils/axios';
 
+// BarGraph 컴포넌트 (변경 없음)
 function BarGraph({ data, total, color }) {
   if (!data || data.length === 0) return <div className={styles.emptyMsg}>데이터 없음</div>;
   return (
@@ -29,6 +28,7 @@ function BarGraph({ data, total, color }) {
 
 const donutColors = ['#1976d2', '#388e3c', '#ffb300', '#e57373', '#7e57c2'];
 
+// DonutChart 컴포넌트 (개선)
 function DonutChart({ data }) {
   if (!data || data.length === 0) return <div className={styles.emptyMsg}>데이터 없음</div>;
   const total = data.reduce((a, b) => a + b.value, 0);
@@ -59,7 +59,13 @@ function DonutChart({ data }) {
       <svg width="120" height="120" viewBox="0 0 120 120" className={styles.donutSvg}>
         {paths}
         <circle cx="60" cy="60" r={radius - strokeWidth} fill="#fff" />
-        <text x="60" y="60" textAnchor="middle" dominantBaseline="middle" fontSize="13" fill="#333"></text>
+        {/* ✅ 개선: 차트 중앙에 총합계 표시 */}
+        <text x="60" y="55" textAnchor="middle" dominantBaseline="middle" fontSize="14" fontWeight="bold" fill="#333">
+          {total.toLocaleString()}
+        </text>
+        <text x="60" y="72" textAnchor="middle" dominantBaseline="middle" fontSize="12" fill="#666">
+          Total
+        </text>
       </svg>
       <ul className={styles.donutLegend}>
         {data.map((item, idx) => {
@@ -78,82 +84,74 @@ function DonutChart({ data }) {
 }
 
 function AdminMain() {
-  const [summary, setSummary] = useState([]); // {label, value}
-  const [petStatus, setPetStatus] = useState([]); // {type, value}
-  const [memberPetStat, setMemberPetStat] = useState([]); // {label, value}
-  const [genderStat, setGenderStat] = useState([]); // {label, value}
-  const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState([]);
+  const [memberPetStat, setMemberPetStat] = useState([]);
+  const [genderStat, setGenderStat] = useState([]);
   const [neuteredStat, setNeuteredStat] = useState([]);
-  const [error, setError] = useState(null);
   const [animalTypeStat, setAnimalTypeStat] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // 공공 API 동기화 관련 상태
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
-  const [syncStatus, setSyncStatus] = useState(''); // 'success', 'error', ''
-  const [lastSyncTime, setLastSyncTime] = useState(() => {
-    // localStorage에서 마지막 동기화 시간 불러오기
-    return localStorage.getItem('lastSyncTime') || null;
-  });
+  const [syncStatus, setSyncStatus] = useState('');
+  const [lastSyncTime, setLastSyncTime] = useState(() => localStorage.getItem('lastSyncTime') || null);
 
-
-  // 💡 AI 챗봇 동기화 관련 상태 추가
   const [chatbotSyncLoading, setChatbotSyncLoading] = useState(false);
   const [chatbotSyncMessage, setChatbotSyncMessage] = useState('');
   const [chatbotSyncStatus, setChatbotSyncStatus] = useState('');
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
+  // ❌ 삭제: 사용되지 않는 상태 변수 제거
+  // const [petStatus, setPetStatus] = useState([]);
 
-      setLoading(true);
-      setError(null);
-      try {
-        // ✅ 1. apiClient를 사용하여 인증된 요청 전송
-        const response = await apiClient.get('/admin/dashboard');
-        const data = response.data;
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get('/admin/dashboard');
+      const data = response.data;
 
-        const formattedSummary = (data.summary || []).map((stat) => ({
-          label: stat.item,
-          value: stat.count,
-        }));
-        setSummary(formattedSummary);
+      const formattedSummary = (data.summary || []).map((stat) => ({
+        label: stat.item,
+        value: stat.count,
+      }));
+      setSummary(formattedSummary);
 
-        const formattedGenderStat = response.data.genderStat.map((stat) => ({
-          label: stat.item, // 'item'을 'label'로
-          value: stat.count, // 'count'를 'value'로
-        }));
-        setGenderStat(formattedGenderStat || []);
+      const formattedGenderStat = (data.genderStat || []).map((stat) => ({
+        label: stat.item,
+        value: stat.count,
+      }));
+      setGenderStat(formattedGenderStat);
 
-        const formattedPetCountStat = (data.petCountStat || []).map((stat) => ({
-          label: `${stat.item}마리`, // '0', '1' -> '0마리', '1마리'로 라벨을 더 보기 좋게 만듦
-          value: stat.count,
-        }));
-        setMemberPetStat(formattedPetCountStat);
+      const formattedPetCountStat = (data.petCountStat || []).map((stat) => ({
+        label: `${stat.item}마리`,
+        value: stat.count,
+      }));
+      setMemberPetStat(formattedPetCountStat);
 
-        const formattedAnimalTypeStat = (data.animalTypeStat || []).map((stat) => ({
-          label: stat.item,
-          value: stat.count,
-        }));
-        setAnimalTypeStat(formattedAnimalTypeStat);
+      const formattedAnimalTypeStat = (data.animalTypeStat || []).map((stat) => ({
+        label: stat.item,
+        value: stat.count,
+      }));
+      setAnimalTypeStat(formattedAnimalTypeStat);
 
-        const formattedNeuteredStat = (data.neuteredStat || []).map((stat) => ({
-          label: stat.item === 'Y' ? '중성화 O' : '중성화 X',
-          value: stat.count,
-        }));
-        setNeuteredStat(formattedNeuteredStat);
-      } catch (err) {
-        setError('데이터를 불러오지 못했습니다.');
-        console.error('대시보드 데이터 조회 실패:', err);
-      } finally {
-        setLoading(false);
-      }
+      const formattedNeuteredStat = (data.neuteredStat || []).map((stat) => ({
+        label: stat.item === 'Y' ? '중성화 O' : '중성화 X',
+        value: stat.count,
+      }));
+      setNeuteredStat(formattedNeuteredStat);
+    } catch (err) {
+      setError('데이터를 불러오지 못했습니다.');
+      console.error('대시보드 데이터 조회 실패:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
-  // 공공 API 동기화 함수
   const handleSyncPublicData = async () => {
     setSyncLoading(true);
     setSyncMessage('');
@@ -162,36 +160,29 @@ function AdminMain() {
     try {
       const result = await adoptionService.syncPublicData();
       setSyncStatus('success');
-      
-      // 동기화 결과 상세 메시지 표시
+
       if (result && result.data) {
         const { totalProcessed, successCount, failureCount } = result.data;
-        setSyncMessage(
-          `동기화 완료: 총 ${totalProcessed}건 처리 (성공: ${successCount}건, 실패: ${failureCount}건)`
-        );
+        setSyncMessage(`동기화 완료: 총 ${totalProcessed}건 처리 (성공: ${successCount}건, 실패: ${failureCount}건)`);
       } else {
         setSyncMessage('공공 API 데이터 동기화가 성공적으로 완료되었습니다.');
       }
-      
-      // 마지막 동기화 시간 저장
+
       const currentTime = new Date().toLocaleString('ko-KR');
       setLastSyncTime(currentTime);
       localStorage.setItem('lastSyncTime', currentTime);
-      
-      // 데이터 자동 새로고침
+
       setTimeout(async () => {
         setSyncMessage('데이터를 새로고침하는 중...');
         await fetchDashboardData();
         setSyncMessage('대시보드 데이터가 업데이트되었습니다.');
       }, 1000);
-      
     } catch (error) {
       setSyncStatus('error');
       setSyncMessage('동기화 중 오류가 발생했습니다. 다시 시도해주세요.');
       console.error('동기화 오류:', error);
     } finally {
       setSyncLoading(false);
-      // 10초 후 메시지 제거 (이전 5초에서 연장)
       setTimeout(() => {
         setSyncMessage('');
         setSyncStatus('');
@@ -199,7 +190,6 @@ function AdminMain() {
     }
   };
 
-  // 💡 AI 챗봇 데이터 동기화 함수 추가
   const handleSyncChatbotData = async () => {
     if (
       !window.confirm(
@@ -214,9 +204,7 @@ function AdminMain() {
     setChatbotSyncStatus('');
 
     try {
-      // FastAPI 서버의 관리자용 엔드포인트 호출
       const response = await apiClient.post('/admin/chatbot/resync');
-
       setChatbotSyncStatus('success');
       setChatbotSyncMessage(response.data?.data?.message || '챗봇 데이터 업데이트 작업이 성공적으로 시작되었습니다.');
     } catch (error) {
@@ -225,7 +213,6 @@ function AdminMain() {
       console.error('챗봇 동기화 오류:', error);
     } finally {
       setChatbotSyncLoading(false);
-      // 5초 후 메시지 제거
       setTimeout(() => {
         setChatbotSyncMessage('');
         setChatbotSyncStatus('');
@@ -233,16 +220,18 @@ function AdminMain() {
     }
   };
 
+  // ✅ 제안: useMemo를 사용하여 반복적인 계산 방지
+  const memberPetStatTotal = useMemo(() => memberPetStat.reduce((a, b) => a + b.value, 0), [memberPetStat]);
+  const genderStatTotal = useMemo(() => genderStat.reduce((a, b) => a + b.value, 0), [genderStat]);
+
   return (
     <div className={styles.container}>
       {loading ? (
         <div className={styles.loadingMsg}>로딩 중...</div>
       ) : (
         <>
-          {/* 에러 메시지 표시 */}
           {error && <div className={styles.errorMsg}>{error}</div>}
 
-          {/* 상단 요약 카드 */}
           <div className={styles.summaryRow}>
             {summary.length === 0 ? (
               <div className={styles.emptyMsg}>대시보드 데이터를 불러올 수 없습니다.</div>
@@ -256,10 +245,7 @@ function AdminMain() {
             )}
           </div>
 
-
-          {/* 💡 관리 기능 섹션을 하나로 묶고 그 안에 각 기능을 배치 */}
           <div className={styles.managementGrid}>
-            {/* 공공 API 동기화 섹션 (기존 코드) */}
             <div className={styles.syncSection}>
               <h3>공공 API 데이터 관리</h3>
               <div className={styles.syncContent}>
@@ -270,10 +256,8 @@ function AdminMain() {
                 </p>
                 <button
                   className={`${styles.syncButton} ${syncLoading ? styles.syncButtonLoading : ''}`}
-                  onClick={() => {
-                    alert('공공 API 동기화 기능이 호출되었습니다.');
-                    // handleSyncPublicData() 를 실제 사용할 때 주석 해제
-                  }}
+                  // ✅ 수정: 실제 함수를 호출하도록 변경
+                  onClick={handleSyncPublicData}
                   disabled={syncLoading}
                 >
                   {syncLoading ? '동기화 중...' : '공공 데이터 동기화'}
@@ -282,7 +266,6 @@ function AdminMain() {
               </div>
             </div>
 
-            {/* 💡 AI 챗봇 동기화 섹션 추가 */}
             <div className={styles.syncSection}>
               <h3>AI 챗봇 데이터 관리</h3>
               <div className={styles.syncContent}>
@@ -302,10 +285,10 @@ function AdminMain() {
                   <div className={`${styles.syncMessage} ${styles[chatbotSyncStatus]}`}>{chatbotSyncMessage}</div>
                 )}
               </div>
+              {/* ❌ 삭제: 불필요한 빈 div 태그 제거 */}
+            </div>
+          </div>
 
-          
-
-          {/* 하단 통계 - 그래프 */}
           <div className={styles.statsGrid}>
             <div className={styles.statsBox}>
               <h3>품종 분포 (개/고양이)</h3>
@@ -313,11 +296,13 @@ function AdminMain() {
             </div>
             <div className={styles.statsBox}>
               <h3>회원 통계 (반려동물 보유)</h3>
-              <BarGraph data={memberPetStat} total={memberPetStat.reduce((a, b) => a + b.value, 0)} color="#1976d2" />
+              {/* ✅ 개선: useMemo로 계산된 값 사용 */}
+              <BarGraph data={memberPetStat} total={memberPetStatTotal} color="#1976d2" />
             </div>
             <div className={styles.statsBox}>
               <h3>성별 분포</h3>
-              <BarGraph data={genderStat} total={genderStat.reduce((a, b) => a + b.value, 0)} color="#e57373" />
+              {/* ✅ 개선: useMemo로 계산된 값 사용 */}
+              <BarGraph data={genderStat} total={genderStatTotal} color="#e57373" />
             </div>
             <div className={styles.statsBox}>
               <h3>중성화 비율</h3>
