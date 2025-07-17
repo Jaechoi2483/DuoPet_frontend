@@ -334,6 +334,13 @@
   border: 1px solid #F5C6CB;
 }
 
+.lastSyncTime {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
