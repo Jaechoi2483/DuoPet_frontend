@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/axios';
 import { AuthContext } from '../../../AuthProvider';
 import FreeBoardReport from './FreeBoardReport';
+import Modal from '../../../components/common/Modal';
 import styles from './FreeBoardDetail.module.css';
 
 const dummyVideos = [
@@ -222,8 +223,10 @@ function FreeBoardDetail() {
         <button onClick={handleOpenReport}>🚩 신고하기</button>
       </div>
 
-      {/* 신고 모달 연결 */}
-      {isReportOpen && <FreeBoardReport postId={id} onClose={handleCloseReport} />}
+      {/* 공통 모달로 신고 UI 렌더링 */}
+      <Modal isOpen={isReportOpen} onClose={handleCloseReport}>
+        <FreeBoardReport postId={id} onClose={handleCloseReport} />
+      </Modal>
 
       {/* 관련 YouTube 영상 */}
       <div className={styles.youtubeSection}>
