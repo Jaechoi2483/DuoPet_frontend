@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import apiClient from '../../utils/axios';
 import styles from './Chatbot.module.css';
+import { AuthContext } from '../../AuthProvider';
 
 function ChatBot({ isOpen, onClose, hideClose }) {
+  const { userNo, isLoggedIn, isAuthLoading } = useContext(AuthContext);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,6 +27,18 @@ function ChatBot({ isOpen, onClose, hideClose }) {
 
   if (!isOpen) return null;
 
+  if (isAuthLoading) {
+    return (
+      <div className={styles.chatbotContainer}>
+        <div className={styles.chatWindow}>
+          <div className={`${styles.message} ${styles.assistant}`}>
+            <div className={styles.bubble}>사용자 정보를 확인 중입니다...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleSendMessage = async () => {
     if (!message.trim() || isLoading) return;
     const userMessage = { role: 'user', content: message };
@@ -46,7 +60,7 @@ function ChatBot({ isOpen, onClose, hideClose }) {
         aiServerUrl, // 💡 전체 URL 사용
         {
           message: message,
-          user_id: '1', // TODO: 실제 유저 ID로 교체
+          user_id: isLoggedIn ? String(userNo) : '0',
         },
         {
           // 💡 헤더에 API 키를 추가하여 인증 문제를 해결합니다.
@@ -62,6 +76,7 @@ function ChatBot({ isOpen, onClose, hideClose }) {
           role: 'assistant',
           content: aiResponseData.answer,
           actions: aiResponseData.suggested_actions,
+          predicted_questions: aiResponseData.predicted_questions,
         };
         setChatHistory((prev) => [...prev, aiMessage]);
       } else {
@@ -81,6 +96,13 @@ function ChatBot({ isOpen, onClose, hideClose }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePredictedQuestionClick = (question) => {
+    // 메시지 입력창에 질문을 채워주고, 바로 전송할 수도 있습니다.
+    setMessage(question);
+    // 즉시 전송을 원하면 아래 주석을 해제하세요.
+    // handleSendMessage();
   };
 
   return (
@@ -126,6 +148,25 @@ function ChatBot({ isOpen, onClose, hideClose }) {
         )}
         <div ref={chatEndRef} />
       </div>
+
+      {/* 👇 [추가된 부분] 예상 질문 버튼 영역 */}
+      {chatHistory.length > 0 &&
+        chatHistory[chatHistory.length - 1].role === 'assistant' &&
+        chatHistory[chatHistory.length - 1].predicted_questions?.length > 0 && (
+          <div className={styles.predictedQuestionsContainer}>
+            {chatHistory[chatHistory.length - 1].predicted_questions.map((q, index) => (
+              <button
+                key={index}
+                className={styles.predictedQuestionButton}
+                onClick={() => handlePredictedQuestionClick(q)}
+              >
+                {q}
+              </button>
+            ))}
+          </div>
+        )}
+      {/* [추가된 부분 끝] */}
+
       <div className={styles.inputArea}>
         <input
           type="text"
