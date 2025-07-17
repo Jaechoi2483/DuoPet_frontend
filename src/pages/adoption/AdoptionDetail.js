@@ -19,6 +19,7 @@ const AdoptionDetail = () => {
     try {
       setLoading(true);
       const data = await adoptionService.getAnimalDetail(id);
+      console.log('API 응답 데이터:', data); // displayImageUrl 확인용
       setAnimal(data);
       setError(null);
     } catch (err) {
@@ -73,8 +74,8 @@ const AdoptionDetail = () => {
         <div className={styles.imageSection}>
           <div className={styles.mainImage}>
             <img
-              src={!imageError && animal.imageUrl ? animal.imageUrl : '/default-animal.svg'}
-              alt={animal.kindCd}
+              src={!imageError && animal.displayImageUrl ? animal.displayImageUrl : '/images/default-animal.png'}
+              alt={animal.kindCd || '보호동물'}
               onError={() => setImageError(true)}
               className={styles.image}
             />

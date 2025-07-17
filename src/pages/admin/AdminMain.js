@@ -91,9 +91,20 @@ function AdminMain() {
   const [syncLoading, setSyncLoading] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
   const [syncStatus, setSyncStatus] = useState(''); // 'success', 'error', ''
+  const [lastSyncTime, setLastSyncTime] = useState(() => {
+    // localStorage에서 마지막 동기화 시간 불러오기
+    return localStorage.getItem('lastSyncTime') || null;
+  });
+
+
+  // 💡 AI 챗봇 동기화 관련 상태 추가
+  const [chatbotSyncLoading, setChatbotSyncLoading] = useState(false);
+  const [chatbotSyncMessage, setChatbotSyncMessage] = useState('');
+  const [chatbotSyncStatus, setChatbotSyncStatus] = useState('');
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+
       setLoading(true);
       setError(null);
       try {
@@ -136,8 +147,9 @@ function AdminMain() {
       } finally {
         setLoading(false);
       }
-    };
+  };
 
+  useEffect(() => {
     fetchDashboardData();
   }, []);
 
@@ -150,17 +162,73 @@ function AdminMain() {
     try {
       const result = await adoptionService.syncPublicData();
       setSyncStatus('success');
-      setSyncMessage('공공 API 데이터 동기화가 성공적으로 시작되었습니다. 잠시 후 데이터가 업데이트됩니다.');
+      
+      // 동기화 결과 상세 메시지 표시
+      if (result && result.data) {
+        const { totalProcessed, successCount, failureCount } = result.data;
+        setSyncMessage(
+          `동기화 완료: 총 ${totalProcessed}건 처리 (성공: ${successCount}건, 실패: ${failureCount}건)`
+        );
+      } else {
+        setSyncMessage('공공 API 데이터 동기화가 성공적으로 완료되었습니다.');
+      }
+      
+      // 마지막 동기화 시간 저장
+      const currentTime = new Date().toLocaleString('ko-KR');
+      setLastSyncTime(currentTime);
+      localStorage.setItem('lastSyncTime', currentTime);
+      
+      // 데이터 자동 새로고침
+      setTimeout(async () => {
+        setSyncMessage('데이터를 새로고침하는 중...');
+        await fetchDashboardData();
+        setSyncMessage('대시보드 데이터가 업데이트되었습니다.');
+      }, 1000);
+      
     } catch (error) {
       setSyncStatus('error');
       setSyncMessage('동기화 중 오류가 발생했습니다. 다시 시도해주세요.');
       console.error('동기화 오류:', error);
     } finally {
       setSyncLoading(false);
-      // 5초 후 메시지 제거
+      // 10초 후 메시지 제거 (이전 5초에서 연장)
       setTimeout(() => {
         setSyncMessage('');
         setSyncStatus('');
+      }, 10000);
+    }
+  };
+
+  // 💡 AI 챗봇 데이터 동기화 함수 추가
+  const handleSyncChatbotData = async () => {
+    if (
+      !window.confirm(
+        'AI 챗봇의 지식 베이스를 새로고침 하시겠습니까? 사이트를 새로 크롤링하며, 몇 분 정도 소요될 수 있습니다.'
+      )
+    ) {
+      return;
+    }
+
+    setChatbotSyncLoading(true);
+    setChatbotSyncMessage('');
+    setChatbotSyncStatus('');
+
+    try {
+      // FastAPI 서버의 관리자용 엔드포인트 호출
+      const response = await apiClient.post('/admin/chatbot/resync');
+
+      setChatbotSyncStatus('success');
+      setChatbotSyncMessage(response.data?.data?.message || '챗봇 데이터 업데이트 작업이 성공적으로 시작되었습니다.');
+    } catch (error) {
+      setChatbotSyncStatus('error');
+      setChatbotSyncMessage(error.response?.data?.detail || '챗봇 업데이트 시작 중 오류가 발생했습니다.');
+      console.error('챗봇 동기화 오류:', error);
+    } finally {
+      setChatbotSyncLoading(false);
+      // 5초 후 메시지 제거
+      setTimeout(() => {
+        setChatbotSyncMessage('');
+        setChatbotSyncStatus('');
       }, 5000);
     }
   };
@@ -188,25 +256,54 @@ function AdminMain() {
             )}
           </div>
 
-          {/* 공공 API 동기화 섹션 */}
-          <div className={styles.syncSection}>
-            <h3>공공 API 데이터 관리</h3>
-            <div className={styles.syncContent}>
-              <p className={styles.syncDescription}>
-                동물보호관리시스템의 공공 API 데이터를 수동으로 동기화할 수 있습니다.
-                <br />
-                보호소 정보와 보호 동물 정보가 업데이트됩니다.
-              </p>
-              <button
-                className={`${styles.syncButton} ${syncLoading ? styles.syncButtonLoading : ''}`}
-                onClick={handleSyncPublicData}
-                disabled={syncLoading}
-              >
-                {syncLoading ? '동기화 중...' : '데이터 동기화 실행'}
-              </button>
-              {syncMessage && <div className={`${styles.syncMessage} ${styles[syncStatus]}`}>{syncMessage}</div>}
+
+          {/* 💡 관리 기능 섹션을 하나로 묶고 그 안에 각 기능을 배치 */}
+          <div className={styles.managementGrid}>
+            {/* 공공 API 동기화 섹션 (기존 코드) */}
+            <div className={styles.syncSection}>
+              <h3>공공 API 데이터 관리</h3>
+              <div className={styles.syncContent}>
+                <p className={styles.syncDescription}>
+                  동물보호관리시스템의 공공 API 데이터를 수동으로 동기화합니다.
+                  <br />
+                  보호소 및 보호 동물 정보가 업데이트됩니다.
+                </p>
+                <button
+                  className={`${styles.syncButton} ${syncLoading ? styles.syncButtonLoading : ''}`}
+                  onClick={() => {
+                    alert('공공 API 동기화 기능이 호출되었습니다.');
+                    // handleSyncPublicData() 를 실제 사용할 때 주석 해제
+                  }}
+                  disabled={syncLoading}
+                >
+                  {syncLoading ? '동기화 중...' : '공공 데이터 동기화'}
+                </button>
+                {syncMessage && <div className={`${styles.syncMessage} ${styles[syncStatus]}`}>{syncMessage}</div>}
+              </div>
             </div>
-          </div>
+
+            {/* 💡 AI 챗봇 동기화 섹션 추가 */}
+            <div className={styles.syncSection}>
+              <h3>AI 챗봇 데이터 관리</h3>
+              <div className={styles.syncContent}>
+                <p className={styles.syncDescription}>
+                  웹사이트의 최신 내용을 다시 크롤링하여 AI 챗봇의 지식 베이스를 업데이트합니다.
+                  <br />
+                  새로운 공지나 내용 변경 시 실행해주세요.
+                </p>
+                <button
+                  className={`${styles.syncButton} ${chatbotSyncLoading ? styles.syncButtonLoading : ''}`}
+                  onClick={handleSyncChatbotData}
+                  disabled={chatbotSyncLoading}
+                >
+                  {chatbotSyncLoading ? '업데이트 중...' : '챗봇 지식 업데이트'}
+                </button>
+                {chatbotSyncMessage && (
+                  <div className={`${styles.syncMessage} ${styles[chatbotSyncStatus]}`}>{chatbotSyncMessage}</div>
+                )}
+              </div>
+
+          
 
           {/* 하단 통계 - 그래프 */}
           <div className={styles.statsGrid}>

@@ -36,10 +36,15 @@ function SocialRedirect() {
           navigate('/');
         }
       }
+
     };
 
     loginFlow();
   }, []); // 의존성 배열은 비워둡니다.
+
+    
+ 
+
 
   return null;
 }
