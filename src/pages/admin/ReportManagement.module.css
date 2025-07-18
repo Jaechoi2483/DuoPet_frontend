@@ -73,4 +73,47 @@
 .filterTabButton.active, .filterTabButton.active:focus {
   background: #4e7cff;
   color: #fff;
+}
+.actionDropdown {
+  padding: 4px 6px;
+  border: 1px solid #4e7cff;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: #f5f7fa;
+  color: #333;
+  margin-left: 8px;
+  cursor: pointer;
+  transition: border 0.2s;
+  height: 30px;
+  min-width: 80px;
+}
+.actionDropdown:focus {
+  border: 1.5px solid #4e7cff;
+  outline: none;
+}
+.blockedText {
+  color: #d32f2f;
+  font-weight: bold;
+  background: #fff3f3;
+  border-radius: 4px;
+  padding: 6px 14px;
+  display: inline-block;
+  font-size: 1rem;
+}
+.dangerButton {
+  background: #ffebee;
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.dangerButton:hover {
+  background: #d32f2f;
+  color: #fff;
+  border: 1px solid #b71c1c;
 } 

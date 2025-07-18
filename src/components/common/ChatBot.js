@@ -11,13 +11,34 @@ function ChatBot({ isOpen, onClose, hideClose }) {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    setChatHistory([
-      {
-        role: 'assistant',
-        content: '안녕하세요! DuoPet에 대해 무엇이든 물어보세요.',
-      },
-    ]);
-  }, []);
+    // 챗봇 초기 메시지 설정
+    if (!isAuthLoading) {
+      if (!isLoggedIn) {
+        // 비로그인 사용자
+        setChatHistory([
+          {
+            role: 'assistant',
+            content: '안녕하세요! DuoPet에 오신 것을 환영합니다. 로그인하시면 더 많은 기능을 이용하실 수 있어요.',
+            actions: [{ name: 'login', description: '로그인하기', url: '/login' }],
+            predicted_questions: [
+              '회원가입은 어떻게 하나요?',
+              '비밀번호를 잊어버렸어요.',
+              'DuoPet 서비스는 무엇인가요?',
+            ],
+          },
+        ]);
+      } else {
+        // 로그인한 사용자
+        setChatHistory([
+          {
+            role: 'assistant',
+            content: '안녕하세요! DuoPet에 대해 무엇이든 물어보세요.',
+            predicted_questions: ['우리 아이 건강 상태는 어때?', '내 정보 확인', '재미있는 영상 추천해줘'],
+          },
+        ]);
+      }
+    }
+  }, [isLoggedIn, isAuthLoading]);
 
   useEffect(() => {
     if (chatEndRef.current) {
@@ -47,23 +68,19 @@ function ChatBot({ isOpen, onClose, hideClose }) {
     setMessage('');
 
     try {
-      // ❗ 1. AI 서버의 전체 URL을 직접 지정합니다. (포트 8000)
-      const aiServerUrl = 'http://localhost:8000/api/v1/chatbot/chat';
-
-      // ❗ 2. AI 서버용 API 키를 정의합니다.
-      // (실제로는 .env 파일 등에서 안전하게 관리하는 것을 권장합니다.)
+      const aiServerBaseUrl = 'http://localhost:8000/api/v1/chatbot/chat';
       const apiKey = 'DUOPET_DEV_MASTER_KEY';
 
-      // ❗ 3. apiClient.post 호출 시 세 번째 인자로 'config' 객체를 전달합니다.
-      //    이 config는 이번 요청에만 적용됩니다.
+      const currentUserId = isLoggedIn ? String(userNo) : '0';
+      const aiServerUrlWithQuery = `${aiServerBaseUrl}?user_id=${currentUserId}`;
+
       const response = await apiClient.post(
-        aiServerUrl, // 💡 전체 URL 사용
+        aiServerUrlWithQuery,
         {
           message: message,
-          user_id: isLoggedIn ? String(userNo) : '0',
+          user_id: currentUserId, // user_id를 로그인 여부에 따라 동적으로 전송
         },
         {
-          // 💡 헤더에 API 키를 추가하여 인증 문제를 해결합니다.
           headers: {
             'X-API-Key': apiKey,
           },
@@ -72,10 +89,16 @@ function ChatBot({ isOpen, onClose, hideClose }) {
 
       if (response.data.success) {
         const aiResponseData = response.data.data;
+        // 백엔드에서 받은 actions에 기본 base_url을 붙여줍니다.
+        const processedActions = aiResponseData.suggested_actions.map((action) => ({
+          ...action,
+          url: `http://localhost:3000${action.url}`, // 프론트엔드 URL에 맞게 조정 (예: 3000번 포트)
+        }));
+
         const aiMessage = {
           role: 'assistant',
           content: aiResponseData.answer,
-          actions: aiResponseData.suggested_actions,
+          actions: processedActions, // 처리된 actions 사용
           predicted_questions: aiResponseData.predicted_questions,
         };
         setChatHistory((prev) => [...prev, aiMessage]);
@@ -87,7 +110,7 @@ function ChatBot({ isOpen, onClose, hideClose }) {
         setChatHistory((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
-      console.error('Axios 응답 에러 : ', error); // 디버깅을 위해 에러 로그 유지
+      console.error('Axios 응답 에러 : ', error);
       const networkError = {
         role: 'assistant',
         content: '챗봇 서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.',
@@ -99,10 +122,7 @@ function ChatBot({ isOpen, onClose, hideClose }) {
   };
 
   const handlePredictedQuestionClick = (question) => {
-    // 메시지 입력창에 질문을 채워주고, 바로 전송할 수도 있습니다.
     setMessage(question);
-    // 즉시 전송을 원하면 아래 주석을 해제하세요.
-    // handleSendMessage();
   };
 
   return (
