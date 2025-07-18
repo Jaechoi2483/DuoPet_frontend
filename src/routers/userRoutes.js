@@ -12,6 +12,9 @@ import SignupStep5 from '../pages/user/signup/SignupStep5';
 import PetRegister from '../pages/user/pet/PetRegister';
 import SocialSignupPage from '../pages/social/SocialSignupPage';
 import SocialRedirect from '../pages/social/SocialRedirect';
+import FindIdPage from '../pages/user/FindIdPage';
+import FindPasswordPage from '../pages/user/FindPasswordPage';
+import ResetPasswordPage from '../pages/user/ResetPasswordPage';
 // 나중에 SignupPage, MyPage 등도 여기에 추가
 
 const userRoutes = [
@@ -24,6 +27,9 @@ const userRoutes = [
   <Route path="/user/pet/register" element={<PetRegister />} />,
   <Route path="/social-signup" element={<SocialSignupPage />} />,
   <Route path="/social-redirect" element={<SocialRedirect />} />,
+  <Route path="/find-id" element={<FindIdPage />} />,
+  <Route path="/find-password" element={<FindPasswordPage />} />,
+  <Route path="/reset-password" element={<ResetPasswordPage />} />,
 ];
 
 export default userRoutes;
