@@ -23,6 +23,66 @@
   color: #6b7280;
 }
 
+/* 필터 섹션 */
+.filterSection {
+  background-color: #F8F9FA;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 150px;
+}
+
+.filterGroup label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.filterSelect {
+  padding: 0.5rem 1rem;
+  border: 1px solid #DEE2E6;
+  border-radius: 0.5rem;
+  background-color: white;
+  font-size: 0.95rem;
+  color: #212529;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterSelect:hover {
+  border-color: #4A9FF3;
+}
+
+.filterSelect:focus {
+  outline: none;
+  border-color: #4A9FF3;
+  box-shadow: 0 0 0 3px rgba(74, 159, 243, 0.1);
+}
+
+/* 결과 요약 */
+.resultSummary {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #495057;
+  margin-bottom: 2rem;
+}
+
+.count {
+  font-weight: 700;
+  color: #4A9FF3;
+  font-size: 1.3rem;
+}
+
 /* 검색 섹션 */
 .searchSection {
   margin-bottom: 30px;

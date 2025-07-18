@@ -12,6 +12,11 @@ import SignupStep5 from '../pages/user/signup/SignupStep5';
 import PetRegister from '../pages/user/pet/PetRegister';
 import SocialSignupPage from '../pages/social/SocialSignupPage';
 import SocialRedirect from '../pages/social/SocialRedirect';
+import MypagePage from '../pages/mypage/MypagePage';
+import EditProfilePage from '../pages/mypage/components/profile/EditProfilePage';
+import PetRegisterPage from '../pages/mypage/components/pets/PetRegisterPage';
+import PetDetail from '../pages/mypage/components/pets/PetDetail';
+import PetEditPage from '../pages/mypage/components/pets/PetEditPage';
 // 나중에 SignupPage, MyPage 등도 여기에 추가
 
 const userRoutes = [
@@ -24,6 +29,11 @@ const userRoutes = [
   <Route path="/user/pet/register" element={<PetRegister />} />,
   <Route path="/social-signup" element={<SocialSignupPage />} />,
   <Route path="/social-redirect" element={<SocialRedirect />} />,
+  <Route path="/mypage" element={<MypagePage />} />,
+  <Route path="/mypage/profile/edit" element={<EditProfilePage />} />,
+  <Route path="/mypage/pet/register" element={<PetRegisterPage />} />,
+  <Route path="/mypage/pet/:petId" element={<PetDetail />} />,
+  <Route path="/mypage/pet/:petId/edit" element={<PetEditPage />} />,
 ];
 
 export default userRoutes;

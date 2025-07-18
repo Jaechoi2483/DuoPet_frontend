@@ -100,6 +100,10 @@ function AdminMain() {
   const [chatbotSyncLoading, setChatbotSyncLoading] = useState(false);
   const [chatbotSyncMessage, setChatbotSyncMessage] = useState('');
   const [chatbotSyncStatus, setChatbotSyncStatus] = useState('');
+  
+  const [shelterSyncLoading, setShelterSyncLoading] = useState(false);
+  const [shelterSyncMessage, setShelterSyncMessage] = useState('');
+  const [shelterSyncStatus, setShelterSyncStatus] = useState('');
 
   // ❌ 삭제: 사용되지 않는 상태 변수 제거
   // const [petStatus, setPetStatus] = useState([]);
@@ -219,6 +223,28 @@ function AdminMain() {
       }, 5000);
     }
   };
+  
+  const handleSyncShelterData = async () => {
+    setShelterSyncLoading(true);
+    setShelterSyncMessage('');
+    setShelterSyncStatus('');
+
+    try {
+      const response = await apiClient.post('/admin/shelters/sync');
+      setShelterSyncStatus('success');
+      setShelterSyncMessage(response.data?.message || '보호소 데이터 동기화가 시작되었습니다. 완료까지 몇 분이 소요될 수 있습니다.');
+    } catch (error) {
+      setShelterSyncStatus('error');
+      setShelterSyncMessage(error.response?.data?.error || '보호소 데이터 동기화 중 오류가 발생했습니다.');
+      console.error('보호소 동기화 오류:', error);
+    } finally {
+      setShelterSyncLoading(false);
+      setTimeout(() => {
+        setShelterSyncMessage('');
+        setShelterSyncStatus('');
+      }, 10000);
+    }
+  };
 
   // ✅ 제안: useMemo를 사용하여 반복적인 계산 방지
   const memberPetStatTotal = useMemo(() => memberPetStat.reduce((a, b) => a + b.value, 0), [memberPetStat]);
@@ -265,6 +291,49 @@ function AdminMain() {
                 {syncMessage && <div className={`${styles.syncMessage} ${styles[syncStatus]}`}>{syncMessage}</div>}
               </div>
             </div>
+            
+            <div className={styles.syncSection}>
+              <h3>보호소 데이터 동기화</h3>
+              <div className={styles.syncContent}>
+                <p className={styles.syncDescription}>
+                  동물보호관리시스템의 보호소 정보를 최신 데이터로 동기화합니다.
+                  <br />
+                  전국의 동물보호센터 정보가 업데이트됩니다.
+                </p>
+                {!shelterSyncLoading && shelterSyncStatus !== 'success' ? (
+                  <button
+                    className={styles.syncButton}
+                    onClick={handleSyncShelterData}
+                  >
+                    보호소 데이터 동기화
+                  </button>
+                ) : shelterSyncLoading ? (
+                  <button
+                    className={`${styles.syncButton} ${styles.syncButtonLoading}`}
+                    disabled
+                  >
+                    동기화 중...
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className={styles.syncButton}
+                      onClick={handleSyncShelterData}
+                    >
+                      공공 데이터 동기화
+                    </button>
+                    <div className={`${styles.syncMessage} ${styles.success}`}>
+                      데이터 동기화가 완료되었습니다.
+                    </div>
+                  </>
+                )}
+                {shelterSyncStatus === 'error' && shelterSyncMessage && (
+                  <div className={`${styles.syncMessage} ${styles.error}`}>
+                    {shelterSyncMessage}
+                  </div>
+                )}
+              </div>
+            </div>
 
             <div className={styles.syncSection}>
               <h3>AI 챗봇 데이터 관리</h3>
@@ -285,7 +354,6 @@ function AdminMain() {
                   <div className={`${styles.syncMessage} ${styles[chatbotSyncStatus]}`}>{chatbotSyncMessage}</div>
                 )}
               </div>
-              {/* ❌ 삭제: 불필요한 빈 div 태그 제거 */}
             </div>
           </div>
 

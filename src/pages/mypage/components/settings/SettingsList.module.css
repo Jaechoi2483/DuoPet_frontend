@@ -1,0 +1,153 @@
+.settingsContainer {
+  padding: 20px 0;
+}
+
+.settingsHeader {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.sectionDesc {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0;
+}
+
+.settingsMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.menuItem:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.menuIcon {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.menuContent {
+  flex: 1;
+}
+
+.menuTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.menuDesc {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.menuArrow {
+  font-size: 1.5rem;
+  color: #999;
+}
+
+.dangerZone {
+  padding: 24px;
+  background-color: #fef2f2;
+  border-radius: 12px;
+  border: 1px solid #fee2e2;
+}
+
+.dangerTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin: 0 0 16px 0;
+}
+
+.logoutButton,
+.deleteAccountButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.logoutButton {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+}
+
+.logoutButton:hover {
+  background-color: #f9fafb;
+}
+
+.deleteAccountButton {
+  background-color: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.deleteAccountButton:hover {
+  background-color: #fee2e2;
+}
+
+.buttonIcon {
+  font-size: 1.1rem;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .menuItem {
+    padding: 16px;
+  }
+  
+  .menuIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+  
+  .menuTitle {
+    font-size: 1rem;
+  }
+  
+  .menuDesc {
+    font-size: 0.85rem;
+  }
+}

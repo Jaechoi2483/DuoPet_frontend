@@ -1,0 +1,197 @@
+.petListContainer {
+  padding: 20px 0;
+}
+
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.addButton {
+  padding: 10px 24px;
+  background-color: #4A9FF3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.addButton:hover {
+  background-color: #3a8fe3;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.emptyMessage {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.emptyAddButton {
+  padding: 12px 32px;
+  background-color: #4A9FF3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.emptyAddButton:hover {
+  background-color: #3a8fe3;
+}
+
+.petGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.petCard {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.petCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.petImageWrapper {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.petImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.defaultPetImage {
+  font-size: 4rem;
+}
+
+.petInfo {
+  flex: 1;
+}
+
+.petName {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.petDetails {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+.petWeight {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0 0 12px 0;
+}
+
+.neuteredBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 16px;
+}
+
+.petActions {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 16px;
+}
+
+.editButton,
+.deleteButton {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.editButton {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.editButton:hover {
+  background-color: #e0e0e0;
+}
+
+.deleteButton {
+  background-color: #fff;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+}
+
+.deleteButton:hover {
+  background-color: #fed7d7;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .listHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .petGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .petCard {
+    padding: 16px;
+  }
+  
+  .petImageWrapper {
+    height: 160px;
+  }
+}
