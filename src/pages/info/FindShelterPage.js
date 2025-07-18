@@ -12,97 +12,15 @@ const FindShelterPage = () => {
   const [shelters, setShelters] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [geocodingCache, setGeocodingCache] = useState({});
-  const [geocodingProgress, setGeocodingProgress] = useState({ current: 0, total: 0 });
+  const [totalCount, setTotalCount] = useState(0);
+  
+  // 필터 상태 추가
+  const [filters, setFilters] = useState({
+    region: '',
+    animalType: '',
+    operatingStatus: ''
+  });
 
-  // 주소를 위도/경도로 변환하는 지오코딩 함수 (병원 찾기와 동일)
-  const geocodeAddress = async (address) => {
-    // 캐시 확인
-    if (geocodingCache[address]) {
-      console.log('✅ 캐시에서 좌표 가져옴:', address, geocodingCache[address]);
-      return geocodingCache[address];
-    }
-
-    console.log('🔍 지오코딩 시도:', address);
-
-    try {
-      // Kakao REST API 사용 (한국 주소에 가장 정확)
-      const apiKey = 'c72b3b2a8b1dd13b40c756a5d7c88bb6'; // 공개 API 키 (임시)
-      const response = await fetch(
-        `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(address)}`,
-        {
-          headers: {
-            'Authorization': `KakaoAK ${apiKey}`
-          }
-        }
-      );
-      
-      const data = await response.json();
-      
-      if (data.documents && data.documents.length > 0) {
-        const coords = {
-          lat: parseFloat(data.documents[0].y),
-          lng: parseFloat(data.documents[0].x)
-        };
-        
-        console.log('✅ Kakao 지오코딩 성공:', address, coords);
-        
-        // 캐시에 저장
-        setGeocodingCache(prev => ({
-          ...prev,
-          [address]: coords
-        }));
-        
-        return coords;
-      } else {
-        console.warn('⚠️ Kakao API 응답에 결과 없음:', address, data);
-      }
-    } catch (error) {
-      console.error('❌ Kakao 지오코딩 API 에러:', address, error);
-    }
-    
-    // 실패 시 지역별 대략적 좌표 반환
-    const regionCoords = getRegionCoords(address);
-    console.log('🎯 지오코딩 실패, 지역 좌표 사용:', address, regionCoords);
-    return regionCoords;
-  };
-
-  // 지역별 대략적 좌표 매핑 (병원 찾기와 동일)
-  const getRegionCoords = (address) => {
-    // 서울 구별
-    if (address.includes('강남구')) return { lat: 37.5172, lng: 127.0473 };
-    if (address.includes('서초구')) return { lat: 37.4837, lng: 127.0324 };
-    if (address.includes('중랑구')) return { lat: 37.6066, lng: 127.0925 };
-    if (address.includes('마포구')) return { lat: 37.5638, lng: 126.9084 };
-    if (address.includes('강동구')) return { lat: 37.5301, lng: 127.1238 };
-    if (address.includes('동대문구')) return { lat: 37.5744, lng: 127.0395 };
-    if (address.includes('송파구')) return { lat: 37.5145, lng: 127.1059 };
-    if (address.includes('용산구')) return { lat: 37.5326, lng: 126.9910 };
-    
-    // 경기도
-    if (address.includes('고양시')) return { lat: 37.6584, lng: 126.8320 };
-    if (address.includes('성남시')) return { lat: 37.4449, lng: 127.1388 };
-    if (address.includes('수원시')) return { lat: 37.2636, lng: 127.0286 };
-    if (address.includes('안양시')) return { lat: 37.3943, lng: 126.9568 };
-    if (address.includes('부천시')) return { lat: 37.5035, lng: 126.7660 };
-    
-    // 광역시
-    if (address.includes('부산') || address.includes('부산시')) return { lat: 35.1796, lng: 129.0756 };
-    if (address.includes('대구') || address.includes('대구시')) return { lat: 35.8714, lng: 128.6014 };
-    if (address.includes('인천') || address.includes('인천시')) return { lat: 37.4563, lng: 126.7052 };
-    if (address.includes('광주') || address.includes('광주시')) return { lat: 35.1595, lng: 126.8526 };
-    if (address.includes('대전') || address.includes('대전시')) return { lat: 36.3504, lng: 127.3845 };
-    if (address.includes('울산') || address.includes('울산시')) return { lat: 35.5384, lng: 129.3114 };
-    
-    // 특별시/도
-    if (address.includes('세종') || address.includes('세종시')) return { lat: 36.4800, lng: 127.2890 };
-    if (address.includes('제주') || address.includes('제주시') || address.includes('제주도')) return { lat: 33.4996, lng: 126.5312 };
-    if (address.includes('서귀포')) return { lat: 33.2541, lng: 126.5600 };
-    
-    console.warn('⚠️ 주소에서 지역을 찾을 수 없어 서울 기본값 사용:', address);
-    // 기본값: 서울 중심부
-    return { lat: 37.5665, lng: 126.9780 };
-  };
 
   // 백엔드에서 보호소 데이터 가져오기
   const fetchShelters = async (searchParams = {}) => {
@@ -110,19 +28,20 @@ const FindShelterPage = () => {
       setLoading(true);
       setError(null);
       
-      let url = '/api/info/shelters';
+      // 공공데이터 보호소 API 사용
+      let url = '/api/info/shelters/public';
       const params = new URLSearchParams();
       
       // 모든 보호소 데이터를 가져오기 위해 size를 크게 설정
-      params.append('size', '100');
+      params.append('size', '500');
       
       if (searchParams.keyword) {
-        url += '/search';
+        url = '/api/info/shelters/public/search';
         params.append('keyword', searchParams.keyword);
-      } else {
-        if (params.toString()) {
-          url += '?' + params.toString();
-        }
+      }
+      
+      if (params.toString()) {
+        url += '?' + params.toString();
       }
       
       console.log('🏠 보호소 API 요청:', url);
@@ -134,46 +53,43 @@ const FindShelterPage = () => {
       const shelterData = response.data.content || response.data;
       console.log('🏠 백엔드 원본 보호소 데이터:', shelterData);
       
-      // 모든 보호소의 좌표를 실제 주소로부터 가져오기
-      setGeocodingProgress({ current: 0, total: shelterData.length });
-      
-      const mappedShelters = [];
-      for (let i = 0; i < shelterData.length; i++) {
-        const shelter = shelterData[i];
-        setGeocodingProgress({ current: i + 1, total: shelterData.length });
-        
-        const position = await geocodeAddress(shelter.address);
-        
-        mappedShelters.push({
-          id: shelter.shelterId?.toString() || shelter.id?.toString(),
-          name: shelter.name || shelter.shelterName,
-          address: shelter.address,
-          phone: shelter.phone,
-          position: position,
-          rating: shelter.rating || 4.5,
-          currentAnimals: shelter.currentAnimals || Math.floor(Math.random() * 30),
-          capacity: shelter.capacity || 50,
-          operatingHours: shelter.operatingHours || '09:00 - 18:00',
-          type: shelter.type || 'private',
-          email: shelter.email,
-          website: shelter.website,
-          managerName: shelter.managerName || '관리자',
+      // ShelterInfoDto 형식에 맞게 매핑 (좌표는 백엔드에서 이미 제공)
+      const mappedShelters = shelterData
+        .filter(shelter => shelter.lat && shelter.lng) // 좌표가 있는 보호소만 필터링
+        .map(shelter => ({
+          id: shelter.shelterInfoId?.toString(),
+          name: shelter.careNm,
+          address: shelter.careAddr,
+          phone: shelter.careTel,
+          position: {
+            lat: Number(shelter.lat),
+            lng: Number(shelter.lng)
+          },
+          rating: 4.5, // 기본값
+          currentAnimals: Math.floor(Math.random() * 30), // 임시값
+          capacity: 50, // 기본값
+          operatingHours: formatOperatingHours(shelter.weekOprStime, shelter.weekOprEtime),
+          type: determineShelterType(shelter.divisionNm),
+          email: '',
+          website: '',
+          managerName: shelter.orgNm || '관리자',
           facilities: ['입양상담실', '의료실', '운동장', '보호실'], // 기본 시설
           adoptionProcess: ['상담', '방문', '동물 선택', '입양 신청'], // 기본 절차
           specialNeeds: ['건강검진', '예방접종', '중성화 수술'], // 기본 서비스
-          description: `${shelter.shelterName || shelter.name}에서 사랑이 필요한 동물들을 보호하고 있습니다.`
-        });
-        
-        // 지오코딩 API 부하 방지를 위한 짧은 딜레이
-        if (i < shelterData.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
+          description: `${shelter.careNm}에서 사랑이 필요한 동물들을 보호하고 있습니다.`,
+          // 추가 정보
+          careRegNo: shelter.careRegNo,
+          divisionNm: shelter.divisionNm,
+          saveTrgtAnimal: shelter.saveTrgtAnimal,
+          dsignationDate: shelter.dsignationDate,
+          vetPersonCnt: shelter.vetPersonCnt,
+          specsPersonCnt: shelter.specsPersonCnt
+        }));
       
       setShelters(mappedShelters);
-      console.log('🏠 지오코딩 완료!', {
+      setTotalCount(shelterData.totalElements || mappedShelters.length);
+      console.log('🏠 보호소 데이터 로드 완료!', {
         '총 보호소 수': mappedShelters.length,
-        '지오코딩 성공률': `${Object.keys(geocodingCache).length}/${mappedShelters.length}`,
         '완료된 보호소 데이터': mappedShelters
       });
       
@@ -181,16 +97,8 @@ const FindShelterPage = () => {
       const regionDistribution = {};
       mappedShelters.forEach(shelter => {
         const address = shelter.address;
-        if (address.includes('서울')) {
-          regionDistribution['서울'] = (regionDistribution['서울'] || 0) + 1;
-        } else if (address.includes('경기')) {
-          regionDistribution['경기'] = (regionDistribution['경기'] || 0) + 1;
-        } else if (address.includes('인천')) {
-          regionDistribution['인천'] = (regionDistribution['인천'] || 0) + 1;
-        } else {
-          const region = address.split(' ')[0] || '기타';
-          regionDistribution[region] = (regionDistribution[region] || 0) + 1;
-        }
+        const region = address.split(' ')[0] || '기타';
+        regionDistribution[region] = (regionDistribution[region] || 0) + 1;
       });
       
       console.log('📊 지역별 보호소 분포:', regionDistribution);
@@ -209,11 +117,72 @@ const FindShelterPage = () => {
       setLoading(false);
     }
   };
+  
+  // 운영시간 포맷팅 헬퍼 함수
+  const formatOperatingHours = (startTime, endTime) => {
+    if (!startTime || !endTime) return '09:00 - 18:00';
+    
+    try {
+      const formatTime = (time) => {
+        if (!time) return '';
+        
+        // 디버깅용 로그
+        console.log('시간 원본 데이터:', time, '타입:', typeof time);
+        
+        // 문자열로 변환
+        const timeStr = time.toString();
+        
+        // 이미 콜론이 있으면 그대로 반환
+        if (timeStr.includes(':')) {
+          return timeStr;
+        }
+        
+        // 숫자만 추출
+        const numStr = timeStr.replace(/[^0-9]/g, '');
+        
+        // 길이에 따라 처리
+        if (numStr.length <= 2) {
+          // 시간만 있는 경우 (예: "10" -> "10:00")
+          return `${numStr.padStart(2, '0')}:00`;
+        } else if (numStr.length === 3) {
+          // 3자리인 경우 (예: "900" -> "09:00")
+          return `${numStr.substring(0, 1).padStart(2, '0')}:${numStr.substring(1, 3)}`;
+        } else {
+          // 4자리 이상인 경우 (예: "1000" -> "10:00")
+          return `${numStr.substring(0, 2)}:${numStr.substring(2, 4)}`;
+        }
+      };
+      
+      const result = `${formatTime(startTime)} - ${formatTime(endTime)}`;
+      console.log('포맷팅 결과:', result);
+      return result;
+    } catch (e) {
+      console.error('시간 포맷팅 오류:', e);
+      return '09:00 - 18:00';
+    }
+  };
+  
+  // 보호소 타입 결정 헬퍼 함수
+  const determineShelterType = (divisionNm) => {
+    if (!divisionNm) return 'private';
+    
+    if (divisionNm.includes('법인') || divisionNm.includes('지자체') || divisionNm.includes('시설')) {
+      return 'public';
+    } else if (divisionNm.includes('단체') || divisionNm.includes('협회')) {
+      return 'organization';
+    }
+    return 'private';
+  };
 
   // 컴포넌트 마운트 시 보호소 데이터 로드
   useEffect(() => {
     fetchShelters();
   }, []);
+  
+  // 필터 변경 시 데이터 재로드
+  useEffect(() => {
+    fetchShelters();
+  }, [filters]);
 
 
   // 사용자 위치 가져오기
@@ -248,13 +217,29 @@ const FindShelterPage = () => {
     return R * c;
   };
 
-  // 클라이언트 사이드 필터링된 보호소 목록 (검색어만 적용)
+  // 클라이언트 사이드 필터링된 보호소 목록
   const filteredShelters = shelters
-    .filter(shelter => 
-      shelter.name?.toLowerCase().includes(searchLocation.toLowerCase()) ||
-      shelter.address?.toLowerCase().includes(searchLocation.toLowerCase()) ||
-      shelter.managerName?.toLowerCase().includes(searchLocation.toLowerCase())
-    )
+    .filter(shelter => {
+      // 검색어 필터
+      const matchesSearch = searchLocation === '' || 
+        shelter.name?.toLowerCase().includes(searchLocation.toLowerCase()) ||
+        shelter.address?.toLowerCase().includes(searchLocation.toLowerCase()) ||
+        shelter.managerName?.toLowerCase().includes(searchLocation.toLowerCase());
+      
+      // 지역 필터
+      const matchesRegion = filters.region === '' || 
+        shelter.address?.includes(filters.region);
+      
+      // 보호동물 필터
+      const matchesAnimalType = filters.animalType === '' || 
+        (shelter.saveTrgtAnimal && shelter.saveTrgtAnimal.includes(filters.animalType));
+      
+      // 운영상태 필터 (현재는 모두 운영중으로 가정)
+      const matchesOperatingStatus = filters.operatingStatus === '' || 
+        filters.operatingStatus === 'operating';
+      
+      return matchesSearch && matchesRegion && matchesAnimalType && matchesOperatingStatus;
+    })
     .map(shelter => ({
       ...shelter,
       distance: userLocation
@@ -310,7 +295,73 @@ const FindShelterPage = () => {
         </p>
       </div>
 
-      {/* 검색 및 필터 */}
+      {/* 필터 섹션 */}
+      <div className={styles.filterSection}>
+        <div className={styles.filterGroup}>
+          <label htmlFor="region">지역</label>
+          <select
+            id="region"
+            value={filters.region}
+            onChange={(e) => setFilters(prev => ({ ...prev, region: e.target.value }))}
+            className={styles.filterSelect}
+          >
+            <option value="">전체</option>
+            <option value="서울">서울</option>
+            <option value="경기">경기</option>
+            <option value="인천">인천</option>
+            <option value="부산">부산</option>
+            <option value="대구">대구</option>
+            <option value="광주">광주</option>
+            <option value="대전">대전</option>
+            <option value="울산">울산</option>
+            <option value="세종">세종</option>
+            <option value="강원">강원</option>
+            <option value="충북">충북</option>
+            <option value="충남">충남</option>
+            <option value="전북">전북</option>
+            <option value="전남">전남</option>
+            <option value="경북">경북</option>
+            <option value="경남">경남</option>
+            <option value="제주">제주</option>
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="animalType">보호동물</label>
+          <select
+            id="animalType"
+            value={filters.animalType}
+            onChange={(e) => setFilters(prev => ({ ...prev, animalType: e.target.value }))}
+            className={styles.filterSelect}
+          >
+            <option value="">전체</option>
+            <option value="개">개</option>
+            <option value="고양이">고양이</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+
+        <div className={styles.filterGroup}>
+          <label htmlFor="operatingStatus">운영상태</label>
+          <select
+            id="operatingStatus"
+            value={filters.operatingStatus}
+            onChange={(e) => setFilters(prev => ({ ...prev, operatingStatus: e.target.value }))}
+            className={styles.filterSelect}
+          >
+            <option value="">전체</option>
+            <option value="operating">운영중</option>
+            <option value="closed">휴무</option>
+          </select>
+        </div>
+      </div>
+
+      {/* 결과 요약 */}
+      <div className={styles.resultSummary}>
+        전국 <span className={styles.count}>{totalCount}</span>개의 보호소가 운영 중입니다
+      </div>
+
+      {/* 검색 바 */}
       <div className={styles.searchSection}>
         <div className={styles.searchBar}>
           <input
@@ -360,19 +411,6 @@ const FindShelterPage = () => {
             {loading && (
               <div className={styles.loading}>
                 <p>보호소 정보를 불러오는 중...</p>
-                {geocodingProgress.total > 0 && (
-                  <p>위치 정보 확인 중: {geocodingProgress.current}/{geocodingProgress.total}</p>
-                )}
-                <div className={styles.progressBar}>
-                  <div 
-                    className={styles.progressFill}
-                    style={{ 
-                      width: geocodingProgress.total > 0 
-                        ? `${(geocodingProgress.current / geocodingProgress.total) * 100}%` 
-                        : '0%' 
-                    }}
-                  ></div>
-                </div>
               </div>
             )}
             
@@ -418,9 +456,6 @@ const FindShelterPage = () => {
                     </span>
                   </div>
                   <div className={styles.shelterMeta}>
-                    <span className={styles.occupancy}>
-                      {shelter.currentAnimals}/{shelter.capacity}
-                    </span>
                     {shelter.distance && (
                       <span className={styles.distance}>
                         {shelter.distance.toFixed(1)}km
@@ -431,19 +466,29 @@ const FindShelterPage = () => {
 
                 <div className={styles.shelterInfo}>
                   <p className={styles.address}>📍 {shelter.address}</p>
-                  <div className={styles.rating}>
-                    {renderStars(shelter.rating)}
-                  </div>
-                  <p className={styles.phone}>📞 {shelter.phone}</p>
+                  <p className={styles.phone}>📞 {shelter.phone || '연락처 없음'}</p>
                   <p className={styles.hours}>🕐 {shelter.operatingHours}</p>
-
-                  <div className={styles.facilities}>
-                    <span>보유시설: </span>
-                    {shelter.facilities.map((facility, index) => (
-                      <span key={index} className={styles.facilityTag}>
-                        {facility}
-                      </span>
-                    ))}
+                  
+                  {/* 공공데이터 추가 정보 */}
+                  {shelter.divisionNm && (
+                    <p className={styles.division}>🏛️ 구분: {shelter.divisionNm}</p>
+                  )}
+                  
+                  {shelter.saveTrgtAnimal && (
+                    <p className={styles.animals}>🐾 보호동물: {shelter.saveTrgtAnimal}</p>
+                  )}
+                  
+                  <div className={styles.staffInfo}>
+                    {(shelter.vetPersonCnt > 0 || shelter.specsPersonCnt > 0) && (
+                      <div className={styles.staffNumbers}>
+                        <span className={styles.staffItem}>
+                          👨‍⚕️ 수의사: {shelter.vetPersonCnt || 0}명
+                        </span>
+                        <span className={styles.staffItem}>
+                          👥 전문인력: {shelter.specsPersonCnt || 0}명
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className={styles.description}>
@@ -458,13 +503,6 @@ const FindShelterPage = () => {
               </div>
             ))}
 
-            {filteredShelters.length === 0 && (
-              <div className={styles.noResults}>
-                <div className={styles.noResultsIcon}>🏠</div>
-                <h3>검색 결과가 없습니다</h3>
-                <p>다른 검색어로 다시 시도해보세요</p>
-              </div>
-            )}
           </div>
         </div>
       </div>

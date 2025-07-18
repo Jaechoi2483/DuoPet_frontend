@@ -14,7 +14,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     // 인증이 필요하지 않은 공개 API 경로들
-    const publicPaths = ['/api/adoption', '/api/info', '/notice', '/board'];
+    const publicPaths = ['/api/adoption', '/api/info', '/notice', '/board', '/upload'];
 
     // 현재 요청 URL이 공개 API인지 확인
     const isPublicPath = publicPaths.some((path) => config.url.includes(path));

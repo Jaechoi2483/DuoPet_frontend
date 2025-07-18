@@ -1,0 +1,262 @@
+.privacySettingsContainer {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.backButton {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+  background-color: #e0e0e0;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.settingSection {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.radioLabel:hover {
+  background-color: #f8f9fa;
+}
+
+.radioLabel input[type="radio"] {
+  margin-top: 4px;
+}
+
+.radioLabel input[type="radio"]:checked + .radioText {
+  color: #4A9FF3;
+}
+
+.radioText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radioText strong {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.radioDesc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.toggleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.toggleItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.toggleItem:last-child {
+  border-bottom: none;
+}
+
+.toggleInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toggleLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.toggleDesc {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Toggle Switch Styles */
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.toggleSwitch input:checked + .slider {
+  background-color: #4A9FF3;
+}
+
+.toggleSwitch input:focus + .slider {
+  box-shadow: 0 0 1px #4A9FF3;
+}
+
+.toggleSwitch input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+.dataManagement {
+  background-color: #f8f9fa;
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.dataButton {
+  padding: 12px 24px;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+}
+
+.dataButton:hover {
+  background-color: #f9fafb;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dataInfo {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.saveButton {
+  padding: 12px 32px;
+  background-color: #4A9FF3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.saveButton:hover {
+  background-color: #3a8fe3;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .radioLabel {
+    flex-direction: column;
+  }
+  
+  .toggleItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .toggleSwitch {
+    align-self: flex-end;
+  }
+}

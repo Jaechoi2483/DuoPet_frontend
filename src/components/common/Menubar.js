@@ -67,6 +67,12 @@ const getRoleBadge = (role) => {
   }
 };
 
+// 사용자 이름에서 첫 글자 추출
+const getUserInitial = (username) => {
+  if (!username) return '?';
+  return username.charAt(0).toUpperCase();
+};
+
 function Menubar({
   // 함수 컴포넌트 이름 변경: Header -> Menubar
   updateNoticeResults,
@@ -138,7 +144,11 @@ function Menubar({
       <div className={styles.rightSection}>
         {isLoggedIn ? (
           <div className={styles.userSection}>
-            {role === 'admin' && <span className={styles.roleBadge}>{getRoleBadge(role)}</span>}
+            {role && getRoleBadge(role) ? (
+              <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
+            ) : (
+              <span className={styles.userInitial}>{getUserInitial(username)}</span>
+            )}
             <span className={styles.username}>{username}님</span>
             {role === 'admin' && (
               <button
@@ -157,7 +167,31 @@ function Menubar({
                 <img src={adminIcon} alt="관리자 아이콘" style={{ width: '18px', height: '18px' }} />
               </button>
             )}
-            <span className={styles.myPage}>마이페이지 ▼</span>
+            <div className={styles.mypageDropdown}>
+              <span 
+                className={styles.myPage}
+                onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}
+              >
+                마이페이지 ▼
+              </span>
+              <ul className={styles.mypageSubmenu}>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>프로필</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'pets' } })}>반려동물</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'activity' } })}>내 활동</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'bookmark' } })}>북마크</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'settings' } })}>설정</a>
+                </li>
+              </ul>
+            </div>
             <button className={styles.authButton} onClick={handleLogout}>
               로그아웃
             </button>

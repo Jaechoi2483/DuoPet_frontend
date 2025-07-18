@@ -312,6 +312,20 @@
   font-size: 14px;
 }
 
+/* 일반 사용자 이니셜 */
+.userInitial {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #4A9FF3; /* 메인 파란색 배경 */
+  color: #ffffff; /* 흰색 글자 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
 /* 마이페이지 텍스트 */
 .myPage {
   font-size: 14px;
@@ -319,6 +333,73 @@
   color: #334155;
   cursor: pointer;
   white-space: nowrap;
+}
+
+/* 마이페이지 드롭다운 컨테이너 */
+.mypageDropdown {
+  position: relative;
+  margin-right: 10px;
+}
+
+/* 마이페이지 서브메뉴 */
+.mypageSubmenu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.06);
+  padding: 8px 0;
+  min-width: 150px;
+  list-style: none;
+  margin-top: 8px;
+  z-index: 100;
+
+  /* 초기 상태: 숨김 */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 마이페이지 드롭다운에 호버 시 서브메뉴 표시 */
+.mypageDropdown:hover .mypageSubmenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.mypageSubmenuItem {
+  margin: 2px 8px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.mypageSubmenuItem a {
+  text-decoration: none;
+  color: #475569;
+  display: block;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.mypageSubmenuItem a:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .adminIconButton {
