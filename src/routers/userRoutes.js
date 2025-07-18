@@ -17,6 +17,9 @@ import EditProfilePage from '../pages/mypage/components/profile/EditProfilePage'
 import PetRegisterPage from '../pages/mypage/components/pets/PetRegisterPage';
 import PetDetail from '../pages/mypage/components/pets/PetDetail';
 import PetEditPage from '../pages/mypage/components/pets/PetEditPage';
+import FindIdPage from '../pages/user/FindIdPage';
+import FindPasswordPage from '../pages/user/FindPasswordPage';
+import ResetPasswordPage from '../pages/user/ResetPasswordPage';
 // 나중에 SignupPage, MyPage 등도 여기에 추가
 
 const userRoutes = [
@@ -34,6 +37,9 @@ const userRoutes = [
   <Route path="/mypage/pet/register" element={<PetRegisterPage />} />,
   <Route path="/mypage/pet/:petId" element={<PetDetail />} />,
   <Route path="/mypage/pet/:petId/edit" element={<PetEditPage />} />,
+  <Route path="/find-id" element={<FindIdPage />} />,
+  <Route path="/find-password" element={<FindPasswordPage />} />,
+  <Route path="/reset-password" element={<ResetPasswordPage />} />,
 ];
 
 export default userRoutes;

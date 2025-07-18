@@ -224,4 +224,34 @@
   width: auto !important;
   height: auto !important;
   padding: 0;
+}
+
+.predictedQuestionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 12px 12px 0 12px;
+  background: #f6f7f9;
+  border-top: 1px solid #e5e7eb;
+  margin-bottom: 0;
+}
+
+.predictedQuestionButton {
+  background: #e0e7ff;
+  color: #2563eb;
+  border: none;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 6px;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 1px 2px rgba(59, 130, 246, 0.06);
+}
+.predictedQuestionButton:hover {
+  background: #2563eb;
+  color: #fff;
 } 
