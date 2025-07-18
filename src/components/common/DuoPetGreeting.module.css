@@ -8,7 +8,7 @@
   justify-content: center;
   text-align: center;
   padding: 2rem;
-  background: #fce4ec;
+  background: #FFF6C3;
   position: relative;
   overflow: hidden;
 }
@@ -72,15 +72,10 @@
 }
 
 .contentSection {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 25px;
   padding: 3rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   max-width: 800px;
   width: 90%;
   animation: slideUp 1s ease-out 0.5s both;
-  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 @keyframes slideUp {
