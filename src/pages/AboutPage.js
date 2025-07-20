@@ -1,129 +1,201 @@
-import React, { useEffect } from 'react';
-import logo1 from '../assets/images/logo1.png';
-import dogAndKitten from '../assets/images/dog_and_kitten001.png';
-import dog01 from '../assets/images/dog01.png';
-import kitten01 from '../assets/images/kitten01.png';
+import React from 'react';
+import { motion } from 'framer-motion';
+import video1 from '../assets/videos/video1.mp4';
+import video2 from '../assets/videos/video2.mp4';
 
-const AboutPage = () => {
-  useEffect(() => {
-    const fontLink = document.createElement('link');
-    fontLink.href = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css';
-    fontLink.rel = 'stylesheet';
-    document.head.appendChild(fontLink);
-    return () => {
-      document.head.removeChild(fontLink);
-    };
-  }, []);
+const fadeInUp = {
+  hidden: { opacity: 0, y: 60 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+};
 
-  const mainImageStyle = {
-    width: '220px',
-    maxWidth: '90vw',
-    height: 'auto',
-    borderRadius: '32px',
-    boxShadow: '0 2px 12px 0 rgba(0,0,0,0.07)',
-    margin: '36px auto',
-    display: 'block',
-    background: '#fff',
-    border: 'none',
-    objectFit: 'cover',
-  };
-  const sideImageStyle = {
-    width: '130px',
-    maxWidth: '30vw',
-    height: 'auto',
-    borderRadius: '18px',
-    boxShadow: '0 2px 12px 0 rgba(0,0,0,0.10)',
-    background: '#fff',
-    objectFit: 'cover',
-    margin: '0',
-    flexShrink: 0,
-  };
-
-  return (
-    <div style={{
-      minHeight: '70vh',
+const Section = ({ videoSrc, title, text, reverse }) => (
+  <div
+    style={{
       display: 'flex',
-      flexDirection: 'column',
+      flexDirection: reverse ? 'row-reverse' : 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      textAlign: 'center',
-      padding: '48px 10px',
-      background: '#ffffff',
-      fontFamily: 'Pretendard, sans-serif',
-      color: '#222'
-    }}>
-      <h1 style={{
-        fontSize: '2.8em',
-        fontWeight: 'bold',
-        marginBottom: '36px',
-        color: '#283593',
-        letterSpacing: '0.08em',
+      flexWrap: 'wrap',
+      padding: '80px 20px',
+      backgroundColor: '#fff',
+    }}
+  >
+    <motion.video
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      autoPlay
+      //muted
+      loop
+      playsInline
+      src={videoSrc}
+      style={{
+        width: '546px',
+        height: 'auto',
+        borderRadius: '24px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+        margin: '20px',
+      }}
+    />
+    <motion.div
+      variants={fadeInUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      style={{
+        maxWidth: '620px',
+        padding: '20px',
+        textAlign: 'left',
+        fontSize: '1.25em',
+        lineHeight: '2em',
         fontFamily: 'Pretendard, sans-serif',
-        marginTop: '36px'
-      }}>
-        사이트 소개
-      </h1>
-      <img
-        src={dogAndKitten}
-        alt="강아지와 고양이"
-        style={mainImageStyle}
-      />
-      <div style={{
-        maxWidth: 700,
-        fontSize: '1.18em',
-        lineHeight: 2.1,
-        margin: '0 auto 36px auto',
-        whiteSpace: 'pre-line',
-        fontWeight: 500,
-        fontFamily: 'Pretendard, sans-serif'
-      }}>
-        {`듀오펫은 반려동물과 반려주인 모두의 행복한 삶을 위해 만들어진 종합 플랫폼입니다.\n\n저희는 건강 관리, 커뮤니티, 전문가 상담 등 다양한 서비스를 한 곳에서 제공하여, 반려동물의 건강과 행복, 그리고 보호자의 편리한 일상을 지원합니다.\n\n듀오펫에서는 AI 기반 건강 진단, 맞춤형 건강 관리, 다양한 커뮤니티 소통 공간, 그리고 수의사 및 전문가와의 1:1 상담 등 반려동물과 보호자 모두에게 꼭 필요한 서비스를 경험하실 수 있습니다.\n\n앞으로도 듀오펫은 반려동물과 보호자의 더 나은 삶을 위해 지속적으로 서비스를 발전시키고, 새로운 기능을 제공할 것을 약속드립니다.`}
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '40px',
-          maxWidth: 900,
-          margin: '0 auto',
-          width: '100%',
-          flexWrap: 'wrap',
-        }}
+      }}
+    >
+      <h2 style={{ fontSize: '2.1em', color: '#283593', marginBottom: '16px' }}>{title}</h2>
+      <p style={{ fontSize: '1.1em', lineHeight: '1.9em' }}>{text}</p>
+    </motion.div>
+  </div>
+);
+
+const ServiceCard = ({ title, description }) => (
+  <motion.div
+    variants={fadeInUp}
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true }}
+    style={{
+      backgroundColor: '#fff',
+      borderRadius: '16px',
+      padding: '30px',
+      boxShadow: '0 8px 25px rgba(0,0,0,0.1)',
+      textAlign: 'center',
+      minHeight: '200px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+      cursor: 'pointer',
+    }}
+    whileHover={{
+      transform: 'translateY(-5px)',
+      boxShadow: '0 12px 35px rgba(0,0,0,0.15)',
+    }}
+  >
+    <h3 style={{ 
+      fontSize: '1.4em', 
+      color: '#1e3a8a', 
+      marginBottom: '15px',
+      fontWeight: 'bold',
+      fontFamily: 'Pretendard, sans-serif'
+    }}>
+      {title}
+    </h3>
+    <p style={{ 
+      fontSize: '1em', 
+      lineHeight: '1.6em',
+      color: '#333',
+      fontFamily: 'Pretendard, sans-serif'
+    }}>
+      {description}
+    </p>
+  </motion.div>
+);
+
+const AboutPage = () => {
+  const services = [
+    {
+      title: "AI 건강 진단 및 맞춤 건강관리",
+      description: "사진 한 장으로 반려동물의 건강 상태를 AI가 분석하고, 개인 맞춤형 건강 관리 계획을 제공합니다. 이상 징후를 조기에 발견하여 예방 의학을 실현합니다."
+    },
+    {
+      title: "예방접종, 산책 관리, 체중기록",
+      description: "예방접종 일정 관리부터 산책 기록, 체중 변화 추적까지 반려동물의 일상 건강 관리를 체계적으로 도와줍니다. 중요한 건강 정보를 놓치지 않도록 알림 서비스를 제공합니다."
+    },
+    {
+      title: "보호자 커뮤니티, 후기 공유",
+      description: "같은 반려인들과 경험을 나누고 정보를 교환할 수 있는 커뮤니티를 제공합니다. 병원 후기, 사료 추천, 훈련 팁 등 실용적인 정보를 공유할 수 있습니다."
+    },
+    {
+      title: "수의사 1:1 상담",
+      description: "전문 수의사와 1:1로 상담할 수 있는 서비스로, 반려동물의 건강에 대한 궁금증을 해결하고 전문적인 조언을 받을 수 있습니다. 언제 어디서나 편리하게 상담받을 수 있습니다."
+    }
+  ];
+
+  return (
+    <div style={{ fontFamily: 'Pretendard, sans-serif', backgroundColor: '#fefefe' }}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        style={{ textAlign: 'center', padding: '80px 20px' }}
       >
-        <img
-          src={dog01}
-          alt="강아지"
-          style={sideImageStyle}
-        />
+        <h1
+          style={{
+            fontSize: '2.8em',
+            color: '#283593',
+            fontWeight: 'bold',
+            maxWidth: '900px',
+            margin: '0 auto',
+            lineHeight: '1.4',
+          }}
+        >
+          AI와 함께 반려동물과 보호자의 삶을 더 풍요롭고 건강하게 만들어가는 플랫폼
+        </h1>
+      </motion.div>
+
+      <Section
+        videoSrc={video1}
+        title="AI 기반 건강 진단"
+        text="듀오펫은 AI를 활용하여 반려동물의 건강 상태를 정밀하게 진단합니다. 눈, 피부, 체형 등을 영상 기반으로 분석하며, 보호자는 간편하게 결과를 확인할 수 있습니다."
+      />
+
+      <Section
+        videoSrc={video2}
+        title="전문가 상담과 커뮤니티"
+        text="1:1 전문가 상담부터 다양한 반려인 커뮤니티까지, 듀오펫은 보호자가 필요로 하는 모든 정보를 한 곳에 제공합니다."
+        reverse
+      />
+
+      <div style={{ 
+        textAlign: 'center', 
+        padding: '100px 20px',
+        backgroundColor: '#e3f2fd'
+      }}>
+        <motion.h2 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          style={{ 
+            fontSize: '2.5em', 
+            fontWeight: 'bold', 
+            marginBottom: '50px', 
+            color: '#1e3a8a',
+            fontFamily: 'Pretendard, sans-serif'
+          }}
+        >
+          DuoPet의 주요 서비스
+        </motion.h2>
         <div style={{
-          maxWidth: 520,
-          margin: '0 12px',
-          fontSize: '1.18em',
-          lineHeight: 2.3,
-          textAlign: 'center',
-          background: 'none',
-          fontWeight: 400,
-          fontFamily: 'Pretendard, sans-serif',
-          flex: 1,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: '30px',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '0 20px'
         }}>
-          <div style={{textAlign: 'center', fontWeight: 'bold', marginBottom: '16px', fontSize: '1.15em'}}>주요 서비스</div>
-          <ul style={{listStyle: 'none', padding: 0, margin: 0, textAlign: 'center'}}>
-            <li style={{marginBottom: '12px'}}>반려동물 건강 기록 및 AI 기반 진단</li>
-            <li style={{marginBottom: '12px'}}>산책, 예방접종, 체중 등 맞춤형 건강 관리</li>
-            <li style={{marginBottom: '12px'}}>자유게시판, 후기, 팁 등 커뮤니티 소통</li>
-            <li>수의사, 전문가와의 1:1 상담</li>
-          </ul>
+          {services.map((service, index) => (
+            <ServiceCard
+              key={index}
+              title={service.title}
+              description={service.description}
+            />
+          ))}
         </div>
-        <img
-          src={kitten01}
-          alt="고양이"
-          style={sideImageStyle}
-        />
       </div>
     </div>
   );
 };
 
-export default AboutPage; 
+export default AboutPage;
