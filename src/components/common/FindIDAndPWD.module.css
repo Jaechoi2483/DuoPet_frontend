@@ -105,12 +105,6 @@
   margin-top: 16px;
 }
 
-.result {
-  margin-top: 20px;
-  font-size: 16px;
-  color: #333;
-}
-
 .link {
   margin-top: 24px;
   font-size: 14px;
@@ -141,4 +135,42 @@
   text-align: left;
   margin-top: -12px;
   margin-bottom: 16px;
+}
+
+.resultBox {
+  background-color: #e6f0ff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-top: 20px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.timerSuccess {
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.actionButtons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.actionButtons button:hover {
+  background-color: #0056b3;
 }
