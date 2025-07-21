@@ -37,8 +37,8 @@
 .chatbotContainer {
   width: 100%;
   max-width: 340px;
-  height: 520px;
-  max-height: 80vh;
+  height: 560px;
+  max-height: calc(80vh + 40px);
   background: #f6f7f9;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(59, 130, 246, 0.10);
@@ -50,23 +50,44 @@
   margin: 0;
 }
 
+.chatbotHeader {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 8px;
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerTitle {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 .closeBtn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  position: static;
+  margin: 0;
+  z-index: 1;
   background: none;
   border: none;
-  font-size: 1.5rem;
-  color: #b0b8c1;
+  font-size: 1.7rem;
+  color: #2563eb;
   cursor: pointer;
-  z-index: 10;
-  transition: color 0.2s;
-  padding: 2px 6px;
+  transition: color 0.2s, background 0.2s;
+  padding: 2px 8px;
   border-radius: 50%;
 }
 .closeBtn:hover {
-  color: #2563eb;
-  background: #f1f5f9;
+  color: #1741a6;
+  background: none;
+  box-shadow: none;
+  text-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
 }
 
 .chatWindow {
