@@ -114,3 +114,36 @@
 .submitButton:hover {
   background-color: #1864ab;
 }
+
+/* 대댓글 들여쓰기 */
+.replyIndent {
+  margin-left: 32px;
+  border-left: 2px solid #ddd;
+  padding-left: 16px;
+  margin-top: 12px;
+}
+
+/* 답글 리스트 정렬용 */
+.replyList {
+  margin-top: 8px;
+}
+
+/* 답글, 삭제 버튼 감싸는 영역 */
+.actions {
+  margin-top: 8px;
+}
+
+.actions button {
+  font-size: 0.85rem;
+  margin-right: 8px;
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.actions button:hover {
+  background-color: #f0f0f0;
+}
