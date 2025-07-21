@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../../AuthProvider';
+import { getPetDetail, getPetImageUrl, updatePet } from '../../../../api/petApi';
 import styles from './PetEditPage.module.css';
 
 const PetEditPage = () => {
   const navigate = useNavigate();
   const { petId } = useParams();
-  const { userid } = useContext(AuthContext);
+  const { userNo } = useContext(AuthContext);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -21,20 +22,47 @@ const PetEditPage = () => {
 
   const [petImage, setPetImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [originalData, setOriginalData] = useState(null);
 
   useEffect(() => {
-    // 실제로는 petId를 사용하여 API에서 데이터 가져오기
-    // 임시 데이터 설정
-    setFormData({
-      name: '코코',
-      species: '강아지',
-      breed: '말티즈',
-      gender: '암컷',
-      age: '3',
-      weight: '4.5',
-      neutered: 'Y',
-      description: '매우 활발하고 사람을 좋아합니다. 산책을 좋아하며 다른 강아지들과도 잘 어울립니다.'
-    });
+    const fetchPetData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getPetDetail(petId);
+        
+        // 백엔드 데이터를 폼 데이터 형식으로 변환
+        const transformedData = {
+          name: data.petName || '',
+          species: data.animalType || '',
+          breed: data.breed || '',
+          gender: data.gender === 'M' ? '수컷' : data.gender === 'F' ? '암컷' : '',
+          age: data.age ? data.age.toString() : '',
+          weight: data.weight ? data.weight.toString() : '',
+          neutered: data.neutered || '',
+          description: '' // 백엔드에 설명 필드가 없음
+        };
+        
+        setFormData(transformedData);
+        setOriginalData(data);
+        
+        // 이미지 미리보기 설정
+        if (data.renameFilename) {
+          setImagePreview(getPetImageUrl(data.renameFilename));
+        }
+      } catch (err) {
+        console.error('Failed to fetch pet data:', err);
+        setError('반려동물 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (petId) {
+      fetchPetData();
+    }
   }, [petId]);
 
   const handleInputChange = (e) => {
@@ -67,17 +95,59 @@ const PetEditPage = () => {
       return;
     }
 
-    // 실제로는 API 호출
-    console.log('반려동물 수정 데이터:', formData);
-    console.log('이미지:', petImage);
-    
-    alert('반려동물 정보가 수정되었습니다.');
-    navigate(`/mypage/pet/${petId}`);
+    try {
+      // 백엔드 형식으로 데이터 변환
+      const petData = {
+        userId: userNo,
+        petName: formData.name,
+        animalType: formData.species,
+        breed: formData.breed,
+        age: formData.age ? parseInt(formData.age) : null,
+        gender: formData.gender === '수컷' ? 'M' : 'F',
+        neutered: formData.neutered,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
+        file: petImage
+      };
+      
+      await updatePet(petId, petData);
+      alert('반려동물 정보가 수정되었습니다.');
+      navigate(`/mypage/pet/${petId}`);
+    } catch (error) {
+      console.error('반려동물 수정 실패:', error);
+      alert('반려동물 정보 수정에 실패했습니다.');
+    }
   };
 
   const handleCancel = () => {
     navigate(`/mypage/pet/${petId}`);
   };
+
+  if (loading) {
+    return (
+      <div className={styles.contentWrapper}>
+        <div className={styles.editContainer}>
+          <div className={styles.loadingState}>
+            <p>반려동물 정보를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.contentWrapper}>
+        <div className={styles.editContainer}>
+          <div className={styles.errorState}>
+            <p>{error}</p>
+            <button onClick={() => navigate(-1)} className={styles.backButton}>
+              돌아가기
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.contentWrapper}>
@@ -90,9 +160,9 @@ const PetEditPage = () => {
               
               <div className={styles.imageUploadSection}>
                 <div className={styles.imageWrapper}>
-                  {imagePreview ? (
+                  {imagePreview || originalData?.renameFilename ? (
                     <img 
-                      src={imagePreview} 
+                      src={imagePreview || getPetImageUrl(originalData.renameFilename)} 
                       alt="반려동물" 
                       className={styles.petImage}
                     />

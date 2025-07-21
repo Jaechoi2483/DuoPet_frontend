@@ -1,11 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../../AuthProvider';
+import { registerPet } from '../../../../api/petApi';
 import styles from './PetRegisterPage.module.css';
 
 const PetRegisterPage = () => {
   const navigate = useNavigate();
-  const { userid } = useContext(AuthContext);
+  const { userNo, isAuthLoading } = useContext(AuthContext);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -20,6 +21,7 @@ const PetRegisterPage = () => {
 
   const [petImage, setPetImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -51,12 +53,41 @@ const PetRegisterPage = () => {
       return;
     }
 
-    // 실제로는 API 호출
-    console.log('반려동물 등록 데이터:', formData);
-    console.log('이미지:', petImage);
+    console.log('userNo:', userNo);
     
-    alert('반려동물이 등록되었습니다.');
-    navigate('/mypage', { state: { activeTab: 'pets' } });
+    if (!userNo) {
+      alert('로그인 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
+      navigate('/login');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      // 백엔드 형식으로 데이터 변환
+      const petData = {
+        userId: userNo,
+        petName: formData.name,
+        animalType: formData.species,
+        breed: formData.breed || null,
+        age: formData.age ? parseInt(formData.age) : null,
+        gender: formData.gender === '수컷' ? 'M' : 'F',
+        neutered: formData.neutered,
+        weight: formData.weight ? parseFloat(formData.weight) : null,
+        file: petImage
+      };
+      
+      console.log('반려동물 등록 요청 데이터:', petData);
+      
+      await registerPet(petData);
+      alert('반려동물이 등록되었습니다.');
+      navigate('/mypage', { state: { activeTab: 'pets' } });
+    } catch (error) {
+      console.error('반려동물 등록 실패:', error);
+      alert('반려동물 등록에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -245,8 +276,9 @@ const PetRegisterPage = () => {
               <button 
                 type="submit" 
                 className={styles.submitButton}
+                disabled={loading}
               >
-                등록하기
+                {loading ? '등록 중...' : '등록하기'}
               </button>
             </div>
           </form>

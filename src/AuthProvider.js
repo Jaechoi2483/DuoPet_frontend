@@ -31,7 +31,10 @@ const parseAccessToken = (token) => {
         // 빽틱 (`) 사용할 것
         .join('')
     );
-    return JSON.parse(jsonPayload); // 페이로드 문자열을 json 객체로 파싱해서 리턴함
+    const parsed = JSON.parse(jsonPayload);
+    console.log('토큰 파싱 결과:', parsed); // 디버깅 로그 추가
+    console.log('nickname 값:', parsed.nickname); // nickname 값 확인
+    return parsed; // 페이로드 문자열을 json 객체로 파싱해서 리턴함
   } catch (error) {
     console.error('AccessToken 파싱 오류 : ', error);
     return null;
@@ -65,16 +68,20 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthProvider 마운트: 토큰 확인 중...');
 
         if (accessToken && refreshToken) {
+          console.log('토큰 발견, 파싱 시작');
           const parsedToken = parseAccessToken(accessToken);
           if (parsedToken) {
+            console.log('파싱된 토큰 정보:', parsedToken);
             // 토큰이 유효하면 로그인 상태로 설정
-            setAuthInfo({
+            const authData = {
               isLoggedIn: true,
               role: parsedToken.role,
               username: parsedToken.nickname,
               userid: parsedToken.sub,
               userNo: parsedToken.userNo,
-            });
+            };
+            console.log('설정할 인증 정보:', authData);
+            setAuthInfo(authData);
           } else {
             // 토큰 파싱 실패 시, 로그아웃 상태로 확정
             setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
