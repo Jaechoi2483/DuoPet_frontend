@@ -12,21 +12,35 @@ const ResetPasswordPage = () => {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%*?&])[A-Za-z\d#$@!%*?&]{8,20}$/;
+
   const handleReset = async () => {
+    if (!password || !confirm) {
+      alert('비밀번호를 모두 입력해주세요!');
+      return;
+    }
+
     if (password !== confirm) {
       alert('비밀번호가 일치하지 않습니다.');
       return;
     }
 
+    if (!passwordRegex.test(password)) {
+      alert(
+        '비밀번호 형식이 올바르지 않습니다.\n영문 대소문자, 숫자, 특수문자(@#$!%*?&)를 포함한 8~20자로 설정해주세요.'
+      );
+      return;
+    }
+
     try {
-      await apiClient.post('/api/reset-password', {
+      await apiClient.post('/users/reset-password', {
         loginId,
         newPassword: password,
       });
-      alert('비밀번호가 변경되었습니다.');
+      alert('비밀번호가 성공적으로 변경되었습니다.');
       navigate('/login');
     } catch (err) {
-      alert('비밀번호 변경 실패');
+      alert('비밀번호 변경 실패. 다시 시도해주세요.');
     }
   };
 
@@ -55,7 +69,7 @@ const ResetPasswordPage = () => {
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
       />
-      <button className={styles.submit} onClick={handleReset}>
+      <button className={styles.submit} onClick={handleReset} disabled={!password || !confirm}>
         비밀번호 변경
       </button>
       <div className={styles.link} onClick={() => navigate('/login')}>
