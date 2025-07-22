@@ -6,6 +6,7 @@ const MypageTabBar = ({ activeTab, onTabChange }) => {
     { id: 'profile', label: '프로필', icon: '👤' },
     { id: 'pets', label: '반려동물', icon: '🐾' },
     { id: 'activity', label: '내 활동', icon: '📝' },
+    { id: 'consultations', label: '상담내역', icon: '💬' },
     { id: 'bookmark', label: '북마크', icon: '🔖' },
     { id: 'settings', label: '설정', icon: '⚙️' }
   ];
