@@ -6,12 +6,38 @@ import HealthRecords from './HealthRecords';
 import AiDiagnosis from './AiDiagnosis';
 import AiBehavior from './AiBehavior';
 import ExpertConsult from './ExpertConsult';
+import PetInfoDisplay from '../../components/pet/PetInfoDisplay';
+import { useContext } from 'react';
+import { AuthContext } from '../../AuthProvider';
 
 const HealthMain = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [selectedPet, setSelectedPet] = useState(1);
+  const [selectedPet, setSelectedPet] = useState(null);
   const [activeMainTab, setActiveMainTab] = useState('health-records');
+  const [userId, setUserId] = useState(null);
+  // AuthContext에서 직접 값들을 가져옴
+  const { isLoggedIn, userNo, isAuthLoading } = useContext(AuthContext) || {};
+
+  // 사용자 ID 가져오기 (로그인 정보에서)
+  useEffect(() => {
+    console.log('HealthMain - isLoggedIn:', isLoggedIn);
+    console.log('HealthMain - userNo:', userNo);
+    console.log('HealthMain - isAuthLoading:', isAuthLoading);
+    
+    // AuthContext에서 사용자 정보 가져오기
+    if (isLoggedIn && userNo) {
+      console.log('Using userNo from context:', userNo);
+      setUserId(userNo);
+    } else if (!isAuthLoading) {
+      // 로컬 스토리지에서 userId 찾기 (회원가입 시 저장됨)
+      const storedUserId = localStorage.getItem('userId');
+      console.log('StoredUserId from localStorage:', storedUserId);
+      if (storedUserId) {
+        setUserId(Number(storedUserId));
+      }
+    }
+  }, [isLoggedIn, userNo, isAuthLoading]);
 
   // URL 기반으로 활성 탭 결정
   useEffect(() => {
@@ -49,25 +75,6 @@ const HealthMain = () => {
     }
   };
 
-  const pets = [
-    {
-      id: 1,
-      name: '뽀삐',
-      species: '강아지',
-      breed: '포메라니안',
-      age: 3,
-      weight: 2.8,
-    },
-    {
-      id: 2,
-      name: '나비',
-      species: '고양이',
-      breed: '스코티시폴드',
-      age: 2,
-      weight: 3.2,
-    },
-  ];
-
   const mainTabs = [
     { id: 'health-records', label: '건강 기록' },
     { id: 'ai-diagnosis', label: 'AI 진단' },
@@ -75,20 +82,22 @@ const HealthMain = () => {
     { id: 'expert-consult', label: '전문가 상담' },
   ];
 
-  const currentPet = pets.find((pet) => pet.id === selectedPet);
+  const handlePetSelect = (pet) => {
+    setSelectedPet(pet);
+  };
 
   const renderMainTabContent = () => {
     switch (activeMainTab) {
       case 'health-records':
-        return <HealthRecords pet={currentPet} />;
+        return <HealthRecords pet={selectedPet} />;
       case 'ai-diagnosis':
-        return <AiDiagnosis pet={currentPet} />;
+        return <AiDiagnosis pet={selectedPet} />;
       case 'ai-behavior':
-        return <AiBehavior pet={currentPet} />;
+        return <AiBehavior pet={selectedPet} />;
       case 'expert-consult':
-        return <ExpertConsult pet={currentPet} />;
+        return <ExpertConsult pet={selectedPet} />;
       default:
-        return <HealthRecords pet={currentPet} />;
+        return <HealthRecords pet={selectedPet} />;
     }
   };
 
@@ -123,29 +132,18 @@ const HealthMain = () => {
 
       <div className={styles.petSection}>
         <h2 className={styles.sectionTitle}>반려동물 선택</h2>
-        <div className={styles.petGrid}>
-          {pets.map((pet) => (
-            <div
-              key={pet.id}
-              className={`${styles.petCard} ${selectedPet === pet.id ? styles.isSelected : ''}`}
-              onClick={() => setSelectedPet(pet.id)}
-            >
-              <div className={styles.petAvatar}>
-                {pet.species === '강아지' ? '🐕' : '🐱'}
-              </div>
-              <div className={styles.petInfo}>
-                <h3 className={styles.petName}>{pet.name}</h3>
-                <p className={styles.petBreed}>{pet.breed}</p>
-                <p className={styles.petDetails}>
-                  {pet.age}세 · {pet.weight}kg
-                </p>
-              </div>
-              {selectedPet === pet.id && (
-                <div className={styles.selectedBadge}>선택됨</div>
-              )}
-            </div>
-          ))}
-        </div>
+        {isAuthLoading ? (
+          <div className={styles.loading}>인증 정보를 확인 중입니다...</div>
+        ) : userId ? (
+          <PetInfoDisplay 
+            userId={userId} 
+            onPetSelect={handlePetSelect}
+          />
+        ) : (
+          <div className={styles.emptyState}>
+            로그인 후 이용해주세요.
+          </div>
+        )}
       </div>
 
       {renderMainTabContent()}

@@ -20,6 +20,7 @@ const EditProfilePage = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [currentProfileImage, setCurrentProfileImage] = useState(null);
+  const [fileSize, setFileSize] = useState(null);
 
   // 사용자 정보 가져오기
   useEffect(() => {
@@ -60,7 +61,24 @@ const EditProfilePage = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // 파일 크기 검증 (50MB 제한)
+      const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+      if (file.size > maxSize) {
+        alert('파일 크기가 너무 큽니다. 50MB 이하의 파일을 선택해주세요.');
+        e.target.value = ''; // 파일 선택 초기화
+        return;
+      }
+      
+      // 파일 형식 검증
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('JPG, PNG, GIF 형식의 이미지 파일만 업로드 가능합니다.');
+        e.target.value = ''; // 파일 선택 초기화
+        return;
+      }
+      
       setProfileImageFile(file); // 파일 객체 저장
+      setFileSize((file.size / 1024 / 1024).toFixed(2)); // MB 단위로 파일 크기 저장
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
@@ -99,7 +117,21 @@ const EditProfilePage = () => {
       }
     } catch (error) {
       console.error('프로필 업데이트 실패:', error);
-      alert('프로필 수정 중 오류가 발생했습니다.');
+      
+      // 에러 상태에 따른 구체적인 메시지
+      if (error.response) {
+        if (error.response.status === 413) {
+          alert('파일 크기가 너무 큽니다. 50MB 이하의 파일을 선택해주세요.');
+        } else if (error.response.status === 500) {
+          alert('서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        } else {
+          alert(`프로필 수정 중 오류가 발생했습니다. (오류 코드: ${error.response.status})`);
+        }
+      } else if (error.request) {
+        alert('서버와의 연결에 실패했습니다. 네트워크 상태를 확인해주세요.');
+      } else {
+        alert('프로필 수정 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -147,9 +179,14 @@ const EditProfilePage = () => {
                     </div>
                   )}
                 </div>
-                <label htmlFor="imageUpload" className={styles.uploadButton}>
-                  사진 업로드
-                </label>
+                <div className={styles.uploadControls}>
+                  <label htmlFor="imageUpload" className={styles.uploadButton}>
+                    사진 업로드
+                  </label>
+                  {fileSize && (
+                    <span className={styles.fileSize}>파일 크기: {fileSize}MB</span>
+                  )}
+                </div>
                 <input
                   id="imageUpload"
                   type="file"

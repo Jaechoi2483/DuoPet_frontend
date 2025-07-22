@@ -1,66 +1,142 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { getPetDetail, getPetImageUrl, deletePet } from '../../../../api/petApi';
+import { getHospitalVisitsByPet } from '../../../../api/hospitalVisitApi';
+import { getVaccinationsByPet } from '../../../../api/vaccinationApi';
 import styles from './PetDetail.module.css';
 
 const PetDetail = () => {
   const navigate = useNavigate();
   const { petId } = useParams();
   
-  // 임시 반려동물 상세 데이터 (실제로는 API에서 가져와야 함)
-  const [petData, setPetData] = useState({
-    id: 1,
-    name: '코코',
-    species: '강아지',
-    breed: '말티즈',
-    gender: '암컷',
-    age: 3,
-    weight: 4.5,
-    neutered: true,
-    description: '매우 활발하고 사람을 좋아합니다. 산책을 좋아하며 다른 강아지들과도 잘 어울립니다.',
-    image: null,
-    registeredDate: '2024-01-15',
-    lastModified: '2024-06-20'
-  });
-
-  // 의료 기록 (추후 확장 가능)
-  const [medicalRecords] = useState([
-    {
-      id: 1,
-      date: '2024-06-15',
-      type: '예방접종',
-      description: 'DHPPL 종합백신',
-      hospital: '행복한 동물병원'
-    },
-    {
-      id: 2,
-      date: '2024-05-20',
-      type: '건강검진',
-      description: '정기 건강검진 - 이상없음',
-      hospital: '사랑 동물병원'
-    }
-  ]);
+  const [petData, setPetData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [medicalRecords, setMedicalRecords] = useState([]);
 
   useEffect(() => {
-    // 실제로는 petId를 사용하여 API 호출
-    console.log('반려동물 ID:', petId);
+    fetchPetDetail();
+    fetchMedicalRecords();
   }, [petId]);
+
+  const fetchPetDetail = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getPetDetail(petId);
+      
+      // 데이터 구조 변환
+      const transformedData = {
+        id: data.petId,
+        name: data.petName,
+        species: data.animalType,
+        breed: data.breed,
+        gender: data.gender === 'M' ? '수컷' : '암컷',
+        age: data.age,
+        weight: data.weight,
+        neutered: data.neutered === 'Y',
+        description: '',  // 백엔드에 설명 필드가 없음
+        image: data.renameFilename ? getPetImageUrl(data.renameFilename) : null,
+        registeredDate: data.registrationDate,
+        lastModified: data.registrationDate  // 수정일 필드가 없음
+      };
+      
+      setPetData(transformedData);
+    } catch (err) {
+      console.error('Failed to fetch pet detail:', err);
+      setError('반려동물 정보를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchMedicalRecords = async () => {
+    try {
+      // 병원 방문 기록과 예방접종 기록을 모두 가져와서 합치기
+      const [visitRecords, vaccinationRecords] = await Promise.all([
+        getHospitalVisitsByPet(petId).catch(() => []),
+        getVaccinationsByPet(petId).catch(() => [])
+      ]);
+
+      // 병원 방문 기록 변환
+      const transformedVisits = visitRecords.map(visit => ({
+        id: `visit-${visit.visitId}`,
+        date: visit.visitDate,
+        type: '병원 방문',
+        description: `${visit.visitReason} - ${visit.diagnosis || '진단 없음'}`,
+        hospital: visit.hospitalName || '장소 정보 없음',
+        notes: visit.treatment
+      }));
+
+      // 예방접종 기록 변환
+      const transformedVaccinations = vaccinationRecords.map(vaccination => ({
+        id: `vacc-${vaccination.vaccinationId}`,
+        date: vaccination.administeredDate || vaccination.scheduledDate,
+        type: '예방접종',
+        description: vaccination.vaccineName,
+        hospital: vaccination.hospitalName || '장소 정보 없음',
+        notes: vaccination.description
+      }));
+
+      // 합쳐서 날짜순으로 정렬
+      const allRecords = [...transformedVisits, ...transformedVaccinations]
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      setMedicalRecords(allRecords);
+    } catch (err) {
+      console.error('Failed to fetch medical records:', err);
+      // 에러가 발생해도 빈 배열로 설정 (UI가 깨지지 않도록)
+      setMedicalRecords([]);
+    }
+  };
 
   const handleEdit = () => {
     navigate(`/mypage/pet/${petId}/edit`);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm(`정말로 ${petData.name}의 정보를 삭제하시겠습니까?`)) {
-      // 실제로는 API 호출하여 삭제
-      console.log('반려동물 삭제:', petId);
-      alert('반려동물 정보가 삭제되었습니다.');
-      navigate('/mypage', { state: { activeTab: 'pets' } });
+      try {
+        await deletePet(petId);
+        alert('반려동물 정보가 삭제되었습니다.');
+        navigate('/mypage', { state: { activeTab: 'pets' } });
+      } catch (error) {
+        console.error('반려동물 삭제 실패:', error);
+        alert('반려동물 정보 삭제에 실패했습니다.');
+      }
     }
   };
 
   const handleBack = () => {
     navigate('/mypage', { state: { activeTab: 'pets' } });
   };
+
+  if (loading) {
+    return (
+      <div className={styles.contentWrapper}>
+        <div className={styles.detailContainer}>
+          <div className={styles.loadingState}>
+            <p>반려동물 정보를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !petData) {
+    return (
+      <div className={styles.contentWrapper}>
+        <div className={styles.detailContainer}>
+          <div className={styles.errorState}>
+            <p>{error || '반려동물 정보를 찾을 수 없습니다.'}</p>
+            <button onClick={handleBack} className={styles.backButton}>
+              목록으로 돌아가기
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.contentWrapper}>
@@ -139,11 +215,20 @@ const PetDetail = () => {
             <h2 className={styles.sectionTitle}>의료 기록</h2>
             {medicalRecords.length > 0 ? (
               <div className={styles.medicalList}>
+                <div className={styles.medicalHeader}>
+                  <div className={styles.headerDate}>날짜</div>
+                  <div className={styles.headerType}>구분</div>
+                  <div className={styles.headerDesc}>내용</div>
+                  <div className={styles.headerHospital}>장소</div>
+                </div>
                 {medicalRecords.map(record => (
                   <div key={record.id} className={styles.medicalItem}>
                     <div className={styles.medicalDate}>{record.date}</div>
                     <div className={styles.medicalType}>{record.type}</div>
-                    <div className={styles.medicalDesc}>{record.description}</div>
+                    <div className={styles.medicalDesc}>
+                      <div className={styles.medicalMainDesc}>{record.description}</div>
+                      {record.notes && <div className={styles.medicalSubDesc}>{record.notes}</div>}
+                    </div>
                     <div className={styles.medicalHospital}>{record.hospital}</div>
                   </div>
                 ))}

@@ -1,35 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../../AuthProvider';
+import { getPetList, getPetImageUrl, deletePet } from '../../../../api/petApi';
 import styles from './PetList.module.css';
 
 const PetList = () => {
   const navigate = useNavigate();
+  const { userNo, isAuthLoading } = useContext(AuthContext);
   
-  // 임시 반려동물 데이터 (실제로는 API에서 가져와야 함)
-  const [pets, setPets] = useState([
-    {
-      id: 1,
-      name: '코코',
-      species: '강아지',
-      breed: '말티즈',
-      gender: '암컷',
-      age: 3,
-      weight: 4.5,
-      image: null,
-      neutered: true
-    },
-    {
-      id: 2,
-      name: '초코',
-      species: '고양이',
-      breed: '러시안블루',
-      gender: '수컷',
-      age: 2,
-      weight: 5.2,
-      image: null,
-      neutered: false
+  const [pets, setPets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    console.log('PetList - userNo:', userNo, 'isAuthLoading:', isAuthLoading);
+    if (!isAuthLoading && userNo) {
+      fetchPets();
+    } else if (!isAuthLoading && !userNo) {
+      setLoading(false);
+      setError('사용자 정보를 찾을 수 없습니다.');
     }
-  ]);
+  }, [userNo, isAuthLoading]);
+
+  const fetchPets = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getPetList(userNo);
+      
+      // 데이터 구조 변환
+      const transformedPets = data.map(pet => ({
+        id: pet.petId,
+        name: pet.petName,
+        species: pet.animalType,
+        breed: pet.breed,
+        gender: pet.gender === 'M' ? '수컷' : '암컷',
+        age: pet.age,
+        weight: pet.weight,
+        image: pet.renameFilename ? getPetImageUrl(pet.renameFilename) : null,
+        neutered: pet.neutered === 'Y'
+      }));
+      
+      setPets(transformedPets);
+    } catch (err) {
+      console.error('Failed to fetch pets:', err);
+      setError('반려동물 정보를 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddPet = () => {
     navigate('/mypage/pet/register');
@@ -44,13 +63,43 @@ const PetList = () => {
     navigate(`/mypage/pet/${petId}/edit`);
   };
 
-  const handleDeletePet = (e, petId) => {
+  const handleDeletePet = async (e, petId) => {
     e.stopPropagation();
     if (window.confirm('정말로 이 반려동물 정보를 삭제하시겠습니까?')) {
-      // 실제로는 API 호출
-      setPets(pets.filter(pet => pet.id !== petId));
+      try {
+        await deletePet(petId);
+        // 삭제 성공 후 목록 새로고침
+        setPets(pets.filter(pet => pet.id !== petId));
+        alert('반려동물 정보가 삭제되었습니다.');
+      } catch (error) {
+        console.error('반려동물 삭제 실패:', error);
+        alert('반려동물 정보 삭제에 실패했습니다.');
+      }
     }
   };
+
+  if (isAuthLoading || loading) {
+    return (
+      <div className={styles.petListContainer}>
+        <div className={styles.loadingState}>
+          <p>반려동물 정보를 불러오는 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.petListContainer}>
+        <div className={styles.errorState}>
+          <p>{error}</p>
+          <button onClick={fetchPets} className={styles.retryButton}>
+            다시 시도
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.petListContainer}>

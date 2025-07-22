@@ -197,3 +197,130 @@
 .submitButton:hover {
   background: #2563eb;
 }
+
+/* --- 로딩 및 빈 상태 --- */
+.loading,
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.emptyState p {
+  margin: 8px 0;
+}
+
+/* --- 페이지네이션 --- */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.pageButton {
+  padding: 8px 12px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  padding: 0 16px;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+/* --- 상세 보기 스타일 --- */
+.detailView {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detailItem label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.detailItem p {
+  font-size: 0.9375rem;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* --- 버튼 스타일 추가 --- */
+.editButton {
+  padding: 10px 24px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-right: 8px;
+}
+
+.editButton:hover {
+  background: #059669;
+}
+
+.deleteButton {
+  padding: 10px 24px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #dc2626;
+}
+
+.cancelButton {
+  padding: 10px 24px;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-right: 8px;
+}
+
+.cancelButton:hover {
+  background: #4b5563;
+}

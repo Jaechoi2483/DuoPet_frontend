@@ -32,25 +32,41 @@
   background: #2563eb;
 }
 
+/* --- 콘텐츠 래퍼 --- */
+.contentWrapper {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+}
+
+/* --- 메인 콘텐츠 --- */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 /* --- 캘린더 영역 --- */
-.calendarContainer {
+.calendarSection {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.calendarContainer .placeholder {
-  height: 500px;
-  background-color: #f9fafb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* --- 사이드바 영역 --- */
+.sidebarSection {
+  background: #fff;
+  padding: 20px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  color: #9ca3af;
-  font-size: 1.25rem;
-  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sidebarTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
 }
 
 /* react-big-calendar custom event styles */
@@ -149,4 +165,327 @@
 }
 .submitButton:hover {
   background: #2563eb;
+}
+
+
+/* --- 로딩 상태 --- */
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* --- 빈 상태 --- */
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.emptyState p {
+  margin: 8px 0;
+}
+
+/* --- 다가오는 일정 --- */
+.upcomingList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.upcomingItem {
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upcomingItem:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.upcomingHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.upcomingType {
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+}
+
+.daysUntil {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #059669;
+}
+
+.upcomingTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.upcomingDate {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* --- 레전드 섹션 (캘린더 아래) --- */
+.legendSectionBottom {
+  background: #fff;
+  padding: 16px 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.legendSectionBottom .legendList {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 24px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.legendLabel {
+  font-size: 0.8125rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+/* --- 상세보기 스타일 --- */
+.detailView {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.detailItem label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.detailItem p {
+  font-size: 0.9375rem;
+  color: #1f2937;
+  margin: 0;
+}
+
+/* --- 버튼 스타일 --- */
+.editButton {
+  padding: 10px 24px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-right: 8px;
+}
+
+.editButton:hover {
+  background: #059669;
+}
+
+.deleteButton {
+  padding: 10px 24px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #dc2626;
+}
+
+.cancelButton {
+  padding: 10px 24px;
+  background: #6b7280;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-right: 8px;
+}
+
+.cancelButton:hover {
+  background: #4b5563;
+}
+
+/* --- 체크박스 스타일 --- */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* --- react-big-calendar 커스텀 스타일 --- */
+.calendarSection :global(.rbc-calendar) {
+  font-family: inherit;
+}
+
+.calendarSection :global(.rbc-header) {
+  padding: 10px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.calendarSection :global(.rbc-today) {
+  background-color: #eff6ff;
+}
+
+.calendarSection :global(.rbc-event) {
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+.calendarSection :global(.rbc-selected) {
+  background-color: #2563eb !important;
+}
+
+/* 캘린더 툴바(네비게이션) 스타일 */
+.calendarSection :global(.rbc-toolbar) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 0;
+  position: relative;
+  z-index: 10;
+  flex-wrap: nowrap;
+}
+
+.calendarSection :global(.rbc-toolbar button) {
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 6px;
+  color: #374151;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 2px;
+  position: relative;
+  z-index: 11;
+  pointer-events: auto;
+}
+
+.calendarSection :global(.rbc-toolbar button:hover) {
+  background: #f3f4f6;
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.calendarSection :global(.rbc-toolbar button:active) {
+  background: #e5e7eb;
+  transform: translateY(1px);
+}
+
+.calendarSection :global(.rbc-toolbar button.rbc-active) {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.calendarSection :global(.rbc-toolbar button.rbc-active:hover) {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.calendarSection :global(.rbc-toolbar-label) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  padding: 0 20px;
+  flex: 1;
+  text-align: center;
+}
+
+/* 툴바 버튼 그룹 너비 균등 설정 */
+.calendarSection :global(.rbc-btn-group) {
+  flex: 0 0 auto;
+  min-width: 120px;
+}
+
+.calendarSection :global(.rbc-btn-group:first-child) {
+  text-align: left;
+}
+
+.calendarSection :global(.rbc-btn-group:last-child) {
+  text-align: right;
+}
+
+.calendarSection :global(.rbc-btn-group button) {
+  margin: 0 2px;
+}
+
+/* 사이드바 스크롤바 스타일 */
+.upcomingList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.upcomingList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.upcomingList::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.upcomingList::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
