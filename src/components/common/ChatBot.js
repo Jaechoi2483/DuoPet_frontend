@@ -2,13 +2,16 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import apiClient from '../../utils/axios';
 import styles from './Chatbot.module.css';
 import { AuthContext } from '../../AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 function ChatBot({ isOpen, onClose, hideClose }) {
+  const navigate = useNavigate();
   const { userNo, isLoggedIn, isAuthLoading } = useContext(AuthContext);
   const [message, setMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const chatEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     // 챗봇 초기 메시지 설정
@@ -46,6 +49,12 @@ function ChatBot({ isOpen, onClose, hideClose }) {
     }
   }, [chatHistory]);
 
+  useEffect(() => {
+    if (!isLoading && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isLoading]);
+
   if (!isOpen) return null;
 
   if (isAuthLoading) {
@@ -60,12 +69,14 @@ function ChatBot({ isOpen, onClose, hideClose }) {
     );
   }
 
-  const handleSendMessage = async () => {
-    if (!message.trim() || isLoading) return;
-    const userMessage = { role: 'user', content: message };
+  const handleSendMessage = async (msg) => {
+    const sendMsg = msg !== undefined ? msg : message;
+    if (!sendMsg.trim() || isLoading) return;
+    const userMessage = { role: 'user', content: sendMsg };
     setChatHistory((prev) => [...prev, userMessage]);
     setIsLoading(true);
     setMessage('');
+    if (inputRef.current) inputRef.current.focus();
 
     try {
       const aiServerBaseUrl = 'http://localhost:8000/api/v1/chatbot/chat';
@@ -77,7 +88,7 @@ function ChatBot({ isOpen, onClose, hideClose }) {
       const response = await apiClient.post(
         aiServerUrlWithQuery,
         {
-          message: message,
+          message: sendMsg,
           user_id: currentUserId, // user_id를 로그인 여부에 따라 동적으로 전송
         },
         {
@@ -89,16 +100,11 @@ function ChatBot({ isOpen, onClose, hideClose }) {
 
       if (response.data.success) {
         const aiResponseData = response.data.data;
-        // 백엔드에서 받은 actions에 기본 base_url을 붙여줍니다.
-        const processedActions = aiResponseData.suggested_actions.map((action) => ({
-          ...action,
-          url: `http://localhost:3000${action.url}`, // 프론트엔드 URL에 맞게 조정 (예: 3000번 포트)
-        }));
 
         const aiMessage = {
           role: 'assistant',
           content: aiResponseData.answer,
-          actions: processedActions, // 처리된 actions 사용
+          actions: aiResponseData.suggested_actions, // 처리된 actions 사용
           predicted_questions: aiResponseData.predicted_questions,
         };
         setChatHistory((prev) => [...prev, aiMessage]);
@@ -118,20 +124,21 @@ function ChatBot({ isOpen, onClose, hideClose }) {
       setChatHistory((prev) => [...prev, networkError]);
     } finally {
       setIsLoading(false);
+      if (inputRef.current) inputRef.current.focus();
     }
   };
 
   const handlePredictedQuestionClick = (question) => {
-    setMessage(question);
+    handleSendMessage(question);
   };
 
   return (
     <div className={styles.chatbotContainer}>
-      {!hideClose && (
+      <div className={styles.chatbotHeader}>
         <button className={styles.closeBtn} onClick={onClose}>
           &times;
         </button>
-      )}
+      </div>
       <div className={styles.chatWindow}>
         {chatHistory.map((msg, index) => (
           <div key={index} className={`${styles.message} ${styles[msg.role]}`}>
@@ -140,15 +147,13 @@ function ChatBot({ isOpen, onClose, hideClose }) {
               {msg.actions && msg.actions.length > 0 && (
                 <div className={styles.actionsContainer}>
                   {msg.actions.map((action) => (
-                    <a
-                      href={action.url}
+                    <button
                       key={action.name}
                       className={styles.actionButton}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      onClick={() => navigate(action.url)} // 클릭 시 navigate 함수 호출
                     >
                       {action.description}
-                    </a>
+                    </button>
                   ))}
                 </div>
               )}
@@ -195,8 +200,9 @@ function ChatBot({ isOpen, onClose, hideClose }) {
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
           placeholder="메시지를 입력..."
           disabled={isLoading}
+          ref={inputRef}
         />
-        <button onClick={handleSendMessage} disabled={isLoading}>
+        <button onClick={() => handleSendMessage()} disabled={isLoading}>
           전송
         </button>
       </div>

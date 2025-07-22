@@ -41,7 +41,7 @@ function ChatbotModal({ isOpen, onClose, children }) {
   return (
     <div style={overlayStyle}>
       <div style={modalStyle}>
-        <button style={closeBtnStyle} onClick={onClose} aria-label="닫기">&times;</button>
+        {/* <button style={closeBtnStyle} onClick={onClose} aria-label="닫기">&times;</button> */}
         {children}
       </div>
     </div>
