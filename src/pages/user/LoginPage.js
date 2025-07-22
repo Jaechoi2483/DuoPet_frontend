@@ -57,7 +57,7 @@ function LoginPage() {
       }
 
       alert(`${data.nickname}님 환영합니다!`);
-      navigate('/mypage');
+      navigate('/');
     } catch (err) {
       console.error('로그인 에러:', err);
       if (err.response?.data?.error) {

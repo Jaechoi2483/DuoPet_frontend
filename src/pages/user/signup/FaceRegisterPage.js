@@ -104,7 +104,13 @@ const FaceRegisterPage = () => {
             <button onClick={handleRegister} className={styles.submitButton}>
               등록 완료
             </button>
-            <button onClick={() => setCapturedImage(null)} className={styles.cancelButton}>
+            <button
+              onClick={() => {
+                setCapturedImage(null);
+                startCamera();
+              }}
+              className={styles.cancelButton}
+            >
               다시 찍기
             </button>
           </>

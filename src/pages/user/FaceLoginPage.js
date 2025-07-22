@@ -8,8 +8,7 @@ import { AuthContext } from '../../AuthProvider';
 
 const FaceLoginPage = () => {
   const navigate = useNavigate();
-  const { setLoggedIn, setUserid, setAccessToken, setRefreshToken, accessToken, refreshToken } =
-    useContext(AuthContext);
+  const { setAuthInfo, updateTokens } = useContext(AuthContext);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -17,25 +16,33 @@ const FaceLoginPage = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
 
+  // 카메라 시작
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
       setStream(mediaStream);
       setIsCameraActive(true);
     } catch (err) {
-      alert('카메라 권한이 필요합니다.');
+      if (err.name === 'NotAllowedError') {
+        alert('카메라 접근이 차단되었습니다. 브라우저 주소창 왼쪽 아이콘을 눌러 허용해주세요.');
+      } else if (err.name === 'AbortError') {
+        alert('카메라 시작이 중단되었습니다. 다른 앱에서 사용 중인지 확인해주세요.');
+      } else {
+        alert('카메라 권한이 필요합니다.');
+      }
       console.error('Camera error:', err);
     }
   };
 
+  // 스트림 연결
   useEffect(() => {
     if (isCameraActive && videoRef.current && stream) {
-      const video = videoRef.current;
-      video.srcObject = stream;
-      video.onloadedmetadata = () => video.play();
+      videoRef.current.srcObject = stream;
+      videoRef.current.onloadedmetadata = () => videoRef.current.play();
     }
   }, [isCameraActive, stream]);
 
+  // 캡처
   const handleCapture = () => {
     const ctx = canvasRef.current.getContext('2d');
     ctx.drawImage(videoRef.current, 0, 0, 300, 225);
@@ -43,6 +50,7 @@ const FaceLoginPage = () => {
     setCapturedImage(dataUrl);
   };
 
+  // 얼굴 로그인
   const handleFaceLogin = async () => {
     if (!capturedImage) return alert('사진을 먼저 찍어주세요.');
 
@@ -50,35 +58,36 @@ const FaceLoginPage = () => {
     const file = new File([blob], 'face-login.png', { type: 'image/png' });
 
     const formData = new FormData();
-    formData.append('image', file); // 로그인 API는 image 키 사용
+    formData.append('image', file);
 
     try {
-      const res = await apiClient.post('/face-login/verify', formData, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          RefreshToken: refreshToken,
-        },
+      const res = await apiClient.post('http://localhost:8000/api/v1/face-login/verify', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      const userId = res.data.verified_user;
 
-      if (userId) {
-        // ✅ 로그인 처리
-        setUserid(userId);
-        setLoggedIn(true);
-        // setAccessToken(res.data.accessToken); // 토큰 받을 경우
-        // setRefreshToken(res.data.refreshToken);
+      const { verified, user_id } = res.data;
+      console.log('[FaceLogin] 응답:', res.data);
 
-        alert(`${userId}님 로그인 성공!`);
+      if (verified === true && user_id) {
+        // 백엔드에서 토큰 받아오기
+        const loginRes = await apiClient.post('/face-login/success', { userId: user_id });
+        const { accessToken, refreshToken } = loginRes.data;
+
+        // AuthContext 내 함수로 토큰 저장 + 사용자 정보 설정
+        updateTokens(accessToken, refreshToken);
+
+        alert('얼굴 로그인 성공!');
         navigate('/');
       } else {
-        alert('😢 얼굴 인식 실패: 일치하는 사용자를 찾지 못했습니다.');
+        alert(`${res.data.error || '일치하는 사용자를 찾지 못했습니다.'}`);
       }
     } catch (err) {
-      console.error(err);
+      console.error('[FaceLogin] 에러 응답:', err?.response?.data || err.message);
       alert('인증 중 오류가 발생했습니다.');
     }
   };
 
+  // 카메라 종료 (unmount 시)
   useEffect(() => {
     return () => {
       if (stream) stream.getTracks().forEach((track) => track.stop());
@@ -120,7 +129,13 @@ const FaceLoginPage = () => {
             <button onClick={handleFaceLogin} className={styles.submitButton}>
               로그인 시도
             </button>
-            <button onClick={() => setCapturedImage(null)} className={styles.cancelButton}>
+            <button
+              onClick={() => {
+                setCapturedImage(null);
+                startCamera();
+              }}
+              className={styles.cancelButton}
+            >
               다시 찍기
             </button>
           </>
