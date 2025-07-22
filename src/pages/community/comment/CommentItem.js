@@ -73,11 +73,12 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
         {/* 🚨 신고 버튼 */}
         <button
           onClick={() => {
-            if (!accessToken || accessToken === 'null') {
+            const token = localStorage.getItem('accessToken');
+            if (!token || token === 'null') {
               alert('로그인 후 이용 가능합니다.');
               return;
             }
-            setReportProps({ targetId: comment.commentId, targetType: 'COMMENT' });
+            setReportProps({ targetId: comment.commentId, targetType: 'comment' });
             setIsReportOpen(true);
           }}
         >

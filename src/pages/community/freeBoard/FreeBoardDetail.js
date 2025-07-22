@@ -107,7 +107,7 @@ function FreeBoardDetail() {
       alert('로그인 후 이용 가능합니다.');
       return;
     }
-    setReportProps({ targetId: contentId, targetType: 'BOARD' });
+    setReportProps({ targetId: contentId, targetType: 'content' });
     setIsReportOpen(true);
   };
 
