@@ -25,8 +25,11 @@ const SignupStep5 = () => {
 
   // 나중에 등록할 경우 로그인 페이지로 이동
   const handleSkip = () => {
+    const userId = localStorage.getItem('userId');
     alert('언제든지 마이페이지 > 반려동물 관리에서 등록할 수 있어요!');
-    navigate('/login');
+    navigate('/signup/face-register', {
+      state: { userId },
+    });
   };
 
   return (

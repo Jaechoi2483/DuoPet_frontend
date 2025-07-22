@@ -81,7 +81,7 @@ function LoginPage() {
   };
 
   const handleFaceLogin = () => {
-    alert('얼굴 인식 로그인은 현재 준비 중입니다.');
+    navigate('/face-login');
   };
 
   return (

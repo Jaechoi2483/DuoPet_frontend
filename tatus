@@ -1,0 +1,254 @@
+[33mcommit ee355dd2644e42899a7bdcef64ab33775e8c4fc5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mkh_FindIDPWD2[m[33m)[m
+Author: moai313 <moai313@naver.com>
+Date:   Sun Jul 20 13:05:31 2025 +0900
+
+    아이디찾기 및 비밀번호찾기 구현 완료
+
+[33mcommit 8be08443e7e25f70e10c97b56bff3385bf101e9e[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: 2a2bdaa c369175
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Fri Jul 18 18:16:49 2025 +0900
+
+    Merge pull request #63 from Jaechoi2483/sh_github_fix
+    
+    보호소찾기 기능 API 연결, 셀렉트 필터 적용(보호소, 병원), 병원찾기 페이지 페이징뷰 적용, 마이페이지 디자인 구현 완…
+
+[33mcommit c36917580703c66dd5b502124a77b158c8c1b5b8[m
+Merge: 984300b 2a2bdaa
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Fri Jul 18 18:16:39 2025 +0900
+
+    Merge branch 'main' into sh_github_fix
+
+[33mcommit 2a2bdaa6b2a67a5ae7369c0418afcfc50260591b[m
+Merge: 386c042 1a55a08
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Fri Jul 18 18:15:05 2025 +0900
+
+    Merge pull request #62 from Jaechoi2483/kh_FindIDPWD
+    
+    아이디찾기 및 비밀번호 찾기 구현중
+
+[33mcommit 386c042b6e431a5fe1ede608fa70f2239963c528[m
+Merge: 80edd28 a6abaef
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Fri Jul 18 18:13:36 2025 +0900
+
+    Merge pull request #60 from Jaechoi2483/jy_report
+    
+    신고관리
+
+[33mcommit 1a55a0880a7a8c63defeefa3fcad964342c37bec[m[33m ([m[1;31morigin/kh_FindIDPWD[m[33m, [m[1;32mkh_FindIDPWD[m[33m)[m
+Author: moai313 <moai313@naver.com>
+Date:   Fri Jul 18 18:07:57 2025 +0900
+
+    아이디찾기 및 비밀번호 찾기 구현중
+
+[33mcommit 984300bd8b40c1099150f12ad1bd7afc97caf92c[m
+Author: Starchatcher <snopia@naver.com>
+Date:   Fri Jul 18 17:39:08 2025 +0900
+
+    보호소찾기 기능 API 연결, 셀렉트 필터 적용(보호소, 병원), 병원찾기 페이지 페이징뷰 적용, 마이페이지 디자인 구현 완료, 프로필 부분 기능 완성(백엔드 연동 완료)
+
+[33mcommit a6abaeff423a77daeff8c8cb5951063e0ffa5552[m
+Author: 준용 <wnsdyd1513@gmail.com>
+Date:   Fri Jul 18 17:35:04 2025 +0900
+
+    신고관리
+
+[33mcommit 80edd281b21e20189b7a7b47a7820a1b48a40ebd[m
+Merge: a43fe63 8fa9a13
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 18:02:51 2025 +0900
+
+    Merge pull request #59 from Jaechoi2483/kh_snslogin2
+    
+    소셜(카카오/네이버/구글) 로그인 및 회원가입 구현 완료
+
+[33mcommit 8fa9a134819220a5e9105fca20626c96fc93f001[m[33m ([m[1;31morigin/kh_snslogin2[m[33m, [m[1;32mkh_snslogin2[m[33m)[m
+Author: moai313 <moai313@naver.com>
+Date:   Thu Jul 17 18:01:30 2025 +0900
+
+    소셜(카카오/네이버/구글) 로그인 및 회원가입 구현 완료
+
+[33mcommit a43fe63073b323a1f79be4f2d002606e5b568143[m
+Merge: 95da4d1 ee2b872
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 17:48:48 2025 +0900
+
+    Merge pull request #58 from Jaechoi2483/ch_Comments
+    
+    댓글 기능 구현
+
+[33mcommit 95da4d1a7b8a4d4eaab49d0ab36461d166636301[m
+Merge: f5fb2a9 255238c
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 17:48:22 2025 +0900
+
+    Merge pull request #57 from Jaechoi2483/ch_Report2
+    
+    신고하기 기능 구현
+
+[33mcommit f5fb2a9a4de239bbb70200b5a2cb7b0cd64f4e32[m
+Merge: f4bcde0 cd2f18e
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 17:47:54 2025 +0900
+
+    Merge pull request #56 from Jaechoi2483/sh_about
+    
+    사이트소개 페이지 일부 수정
+
+[33mcommit f4bcde0f4c830fb0ce60cb555576a2708e96e817[m
+Merge: 7ec5288 ac2378e
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 17:47:24 2025 +0900
+
+    Merge pull request #55 from Jaechoi2483/jy_chatbot3
+    
+    챗봇강호ㅓ
+
+[33mcommit ee2b87275206cac3ce496727d82c3be2e1ba6da7[m
+Author: chcyij9914 <chcyij9914@naver.com>
+Date:   Thu Jul 17 17:46:13 2025 +0900
+
+    댓글 기능 구현
+
+[33mcommit cd2f18ec52bc33ddcb2e4154ce034f416e5e86c7[m
+Author: Starchatcher <snopia@naver.com>
+Date:   Thu Jul 17 17:44:07 2025 +0900
+
+    사이트소개 페이지 일부 수정
+
+[33mcommit ac2378e63d788f1f883b82f38358ddcc4a8ae76e[m
+Author: 준용 <wnsdyd1513@gmail.com>
+Date:   Thu Jul 17 17:37:05 2025 +0900
+
+    챗봇강호ㅓ
+
+[33mcommit 255238cc7fd430c3cb820b6397b05d95f04acd6d[m
+Author: chcyij9914 <chcyij9914@naver.com>
+Date:   Thu Jul 17 12:50:20 2025 +0900
+
+    신고하기 기능 구현
+
+[33mcommit 7ec5288403ecd6fce4538d93a7e25ae3de36abaa[m
+Merge: eb680f0 9e4007a
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:31:55 2025 +0900
+
+    Merge pull request #54 from Jaechoi2483/jy_error3
+    
+    에러 ㅠㅠ
+
+[33mcommit 9e4007a63c45f7f51bcfb4a6f537b2f1c6264e01[m
+Author: 준용 <wnsdyd1513@gmail.com>
+Date:   Thu Jul 17 09:31:09 2025 +0900
+
+    에러 ㅠㅠ
+
+[33mcommit eb680f0b65fe8364c47f6f984e7ecb9acb12085b[m
+Merge: d1dfb93 301b062
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:18:54 2025 +0900
+
+    Merge pull request #53 from Jaechoi2483/ch_Report
+    
+    Ch report
+
+[33mcommit d1dfb93eaf4e5e2931d4c44e5385da104046c937[m
+Merge: c89e1cf b1c1fc0
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:18:24 2025 +0900
+
+    Merge pull request #52 from Jaechoi2483/kh_snslogin
+    
+    카카오 소셜 로그인 및 회원가입 구현 완료
+
+[33mcommit b1c1fc0d99f898998fe3541a0ca579f64747a763[m
+Merge: 294496f c89e1cf
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:18:14 2025 +0900
+
+    Merge branch 'main' into kh_snslogin
+
+[33mcommit c89e1cfc0fa1b9432110a6421986992b69371040[m
+Merge: ac1b89a c4f1ae1
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:15:55 2025 +0900
+
+    Merge pull request #51 from Jaechoi2483/jy_chatbot2
+    
+    챗봇기능강화
+
+[33mcommit c4f1ae1fbfd9cf26812687844d262092e6ee66b0[m
+Merge: 15ce2ad ac1b89a
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:15:46 2025 +0900
+
+    Merge branch 'main' into jy_chatbot2
+
+[33mcommit ac1b89a83f9590ea2ec6bd1665401e0b43cad087[m
+Merge: 1a72732 a07eade
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Thu Jul 17 09:13:02 2025 +0900
+
+    Merge pull request #50 from Jaechoi2483/sh_little
+    
+    입양대기동물 사진관련 일부 수정, 인사말페이지 수정 등
+
+[33mcommit 301b0621e631c6a9061fc20bf73cd2339ed9578b[m
+Author: chcyij9914 <chcyij9914@naver.com>
+Date:   Thu Jul 17 09:10:02 2025 +0900
+
+    북마크 수정 및 신고하기 기능 구현
+
+[33mcommit c09083eed861db0f5c210391972ed3b8f48dd20d[m
+Author: chcyij9914 <chcyij9914@naver.com>
+Date:   Thu Jul 17 08:26:16 2025 +0900
+
+    fix: force rename casing issue
+
+[33mcommit 294496fd73f2a729d041acc3063598f2e9e67c71[m[33m ([m[1;31morigin/kh_snslogin[m[33m, [m[1;32mkh_snslogin[m[33m)[m
+Author: moai313 <moai313@naver.com>
+Date:   Wed Jul 16 18:36:48 2025 +0900
+
+    카카오 소셜 로그인 및 회원가입 구현 완료
+
+[33mcommit 15ce2ade5c18e26521ee01ce3d0c6e0e476e23bc[m
+Author: 준용 <wnsdyd1513@gmail.com>
+Date:   Wed Jul 16 17:23:20 2025 +0900
+
+    챗봇기능강화
+
+[33mcommit a07eadea1da2287f58be6171194ec9df1486657f[m
+Author: Starchatcher <snopia@naver.com>
+Date:   Wed Jul 16 17:10:08 2025 +0900
+
+    입양대기동물 사진관련 일부 수정, 인사말페이지 수정 등
+
+[33mcommit 1a727324d0eec3a6fb4bd51ab10afb5a1bc153ae[m
+Merge: bdcf0a9 ed6f5be
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Wed Jul 16 09:01:48 2025 +0900
+
+    Merge pull request #49 from Jaechoi2483/ch_Like_Bookmark2
+    
+    좋아요 기능 구현
+
+[33mcommit bdcf0a9cf66f96eb2318d56a3e05115cb849bc36[m
+Merge: afc15ef 69c4d6b
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Wed Jul 16 09:01:19 2025 +0900
+
+    Merge pull request #48 from Jaechoi2483/kh_socialLogin
+    
+    소셜로그인 구현중(카카오)
+
+[33mcommit afc15efcb33e25321e8e11a09cd264cf5d426f39[m
+Merge: 8d09e4a b737b77
+Author: Jaechoi2483 <jaechoi79@nate.com>
+Date:   Wed Jul 16 09:00:49 2025 +0900
+
+    Merge pull request #47 from Jaechoi2483/sh_adoption_detail
+    
+    입양정보 부분 및 동물병원 찾기 부분 �
