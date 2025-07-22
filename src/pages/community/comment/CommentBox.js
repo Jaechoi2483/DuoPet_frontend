@@ -7,7 +7,7 @@ import CommentForm from './CommentForm';
 import styles from './Comment.module.css';
 import { AuthContext } from '../../../AuthProvider'; // 로그인 상태 확인을 위해 import
 
-function CommentBox({ contentId }) {
+function CommentBox({ contentId, setReportProps, setIsReportOpen }) {
   const [comments, setComments] = useState([]);
   const [reload, setReload] = useState(false);
   const { isLoggedIn } = useContext(AuthContext); // 로그인 상태 가져오기
@@ -18,8 +18,17 @@ function CommentBox({ contentId }) {
 
   const fetchComments = async () => {
     try {
-      const res = await apiClient.get(`/comments/${contentId}`);
+      const res = await apiClient.get(`/comments/view/${contentId}`);
+      console.log('댓글 응답 데이터:', res.data);
       setComments(res.data);
+
+      if (Array.isArray(res.data)) {
+        setComments(res.data);
+      } else if (Array.isArray(res.data.comments)) {
+        setComments(res.data.comments);
+      } else {
+        setComments([]);
+      }
     } catch (err) {
       console.error('댓글 불러오기 실패', err);
     }
@@ -40,7 +49,14 @@ function CommentBox({ contentId }) {
 
       <div className={styles.commentList}>
         {comments.map((comment) => (
-          <CommentItem key={comment.commentId} comment={comment} allComments={comments} onReload={handleReload} />
+          <CommentItem
+            key={comment.commentId}
+            comment={comment}
+            allComments={comments}
+            onReload={handleReload}
+            setReportProps={setReportProps}
+            setIsReportOpen={setIsReportOpen}
+          />
         ))}
       </div>
     </div>

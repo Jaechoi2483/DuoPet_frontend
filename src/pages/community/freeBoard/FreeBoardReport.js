@@ -5,9 +5,11 @@ import apiClient from '../../../utils/axios';
 import Modal from '../../../components/common/Modal';
 import modalStyles from '../../../components/common/Modal.module.css';
 
-const FreeBoardReport = ({ postId, onClose }) => {
+const FreeBoardReport = ({ isOpen, targetId, targetType, onClose }) => {
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
+
+  if (!isOpen) return null;
 
   const handleReport = async () => {
     if (!reason) {
@@ -30,8 +32,8 @@ const FreeBoardReport = ({ postId, onClose }) => {
       const response = await apiClient.post(
         '/board/report', // 백엔드 API 경로
         {
-          targetId: postId, // 신고 대상 ID (게시글 ID)
-          targetType: 'content', // 신고 대상 유형 ("content"로 고정)
+          targetId,
+          targetType,
           reason,
           details,
         },
@@ -57,8 +59,8 @@ const FreeBoardReport = ({ postId, onClose }) => {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose}>
-      <h2 className={modalStyles.title}>게시물 신고하기</h2>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <h2 className={modalStyles.title}>{targetType === 'COMMENT' ? '댓글 신고하기' : '게시물 신고하기'}</h2>
       <p className={modalStyles.desc}>신고 사유를 선택해주세요. 검토 후 조치를 취하겠습니다.</p>
 
       <div className={modalStyles.formGroup}>
