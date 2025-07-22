@@ -3,14 +3,39 @@
 import React, { useState, useContext } from 'react';
 import apiClient from '../../../utils/axios';
 import CommentForm from './CommentForm';
+import FreeBoardReport from '../freeBoard/FreeBoardReport';
 import styles from './Comment.module.css';
 import { AuthContext } from '../../../AuthProvider';
 
-function CommentItem({ comment, allComments = [], onReload }) {
+function CommentItem({ comment, allComments = [], onReload, setReportProps, setIsReportOpen }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
-  const { accessToken, refreshToken } = useContext(AuthContext);
+  const { user, accessToken, refreshToken } = useContext(AuthContext);
 
   const replies = allComments.filter((c) => c.parentCommentId === comment.commentId);
+
+  // 댓글 좋아요
+  const handleLike = async (commentId) => {
+    if (!accessToken || accessToken === 'null') {
+      alert('로그인 후 이용 가능합니다.');
+      return;
+    }
+
+    try {
+      await apiClient.post(
+        `/comments/comment-like/${commentId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            RefreshToken: `Bearer ${refreshToken}`,
+          },
+        }
+      );
+      onReload(); // 좋아요 후 새로고침
+    } catch (err) {
+      alert('좋아요 중 오류 발생');
+    }
+  };
 
   const handleDelete = async () => {
     if (window.confirm('댓글을 삭제하시겠습니까?')) {
@@ -23,7 +48,7 @@ function CommentItem({ comment, allComments = [], onReload }) {
         });
         onReload();
       } catch (err) {
-        alert('삭제 실패');
+        alert('댓글 삭제 중 오류가 발생했습니다.');
       }
     }
   };
@@ -41,7 +66,26 @@ function CommentItem({ comment, allComments = [], onReload }) {
 
       <div className={styles.actions}>
         <button onClick={() => setShowReplyForm(!showReplyForm)}>답글</button>
-        <button onClick={handleDelete}>삭제</button>
+
+        {/* ❤️ 좋아요 버튼 */}
+        <button onClick={() => handleLike(comment.commentId)}>❤️ {comment.likeCount ?? 0}</button>
+
+        {/* 🚨 신고 버튼 */}
+        <button
+          onClick={() => {
+            if (!accessToken || accessToken === 'null') {
+              alert('로그인 후 이용 가능합니다.');
+              return;
+            }
+            setReportProps({ targetId: comment.commentId, targetType: 'COMMENT' });
+            setIsReportOpen(true);
+          }}
+        >
+          🚨 신고
+        </button>
+
+        {/* 현재 로그인한 유저와 댓글 작성자가 일치할 때만 삭제 버튼 노출 */}
+        {user?.userId === comment.userId && <button onClick={handleDelete}>삭제</button>}
       </div>
 
       {/* 대댓글 작성 폼 */}
@@ -62,7 +106,13 @@ function CommentItem({ comment, allComments = [], onReload }) {
       <div className={styles.replyList}>
         {replies.map((reply) => (
           <div key={reply.commentId} className={styles.replyIndent}>
-            <CommentItem comment={reply} allComments={allComments} onReload={onReload} />
+            <CommentItem
+              comment={reply}
+              allComments={allComments}
+              onReload={onReload}
+              setReportProps={setReportProps}
+              setIsReportOpen={setIsReportOpen}
+            />
           </div>
         ))}
       </div>
