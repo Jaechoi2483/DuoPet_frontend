@@ -4,7 +4,7 @@
   padding: 32px 24px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   margin-top: 24px;
 }
 .title {
@@ -37,17 +37,25 @@
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 16px;
+  table-layout: fixed;
 }
 .tableHeader th {
   background: #f5f7fa;
   font-weight: 600;
   padding: 10px 0;
   border-bottom: 2px solid #e5e7eb;
+  white-space: nowrap; /* 헤더는 줄바꿈 안 되게 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 너무 길면 ... 처리 */
+  vertical-align: middle;
 }
 .tableBody td {
   padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
   text-align: center;
+  word-break: break-word; /* 긴 단어 강제 줄바꿈 */
+  white-space: normal; /* 기본적으로 줄바꿈 허용 */
+  vertical-align: middle;
 }
 .noData {
   color: #aaa;
@@ -68,9 +76,12 @@
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
-.filterTabButton.active, .filterTabButton.active:focus {
+.filterTabButton.active,
+.filterTabButton.active:focus {
   background: #4e7cff;
   color: #fff;
 }
@@ -87,6 +98,8 @@
   transition: border 0.2s;
   height: 30px;
   min-width: 80px;
+  max-width: 100%; /* 부모 td 너비를 넘지 않도록 */
+  box-sizing: border-box;
 }
 .actionDropdown:focus {
   border: 1.5px solid #4e7cff;
@@ -110,7 +123,12 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border 0.2s;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .dangerButton:hover {
   background: #d32f2f;
@@ -124,8 +142,13 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border 0.2s;
   border: none;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .unblockButton {
@@ -177,4 +200,14 @@
   color: #c2185b;
   border: 1px solid #c2185b;
   font-weight: 700;
-} 
+}
+.actionsCell {
+  display: flex;
+  flex-direction: column; /* 세로로 정렬 */
+  gap: 4px; /* 요소들 간 간격 */
+  align-items: center; /* 가로 중앙 정렬 */
+  justify-content: center; /* 세로 중앙 정렬 */
+  height: 100%; /* 부모 td의 높이 채우기 */
+  box-sizing: border-box; /* 패딩 포함 */
+  padding: 5px; /* 셀 내부 패딩 */
+}
