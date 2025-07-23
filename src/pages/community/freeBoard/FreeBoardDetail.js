@@ -1,6 +1,6 @@
 // src/pages/community/freeBoard/FreeBoardDetail.js
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/axios';
 import { AuthContext } from '../../../AuthProvider';
@@ -130,17 +130,24 @@ function FreeBoardDetail() {
     fetchPost();
   }, [id]);
 
+  const hasFetchedVideo = useRef(false);
+
   useEffect(() => {
     if (!post || !post.tags) return;
+    if (hasFetchedVideo.current) return;
+
+    hasFetchedVideo.current = true;
 
     const fetchRecommendedVideos = async () => {
       try {
         const res = await apiClient.post('http://localhost:8000/api/v1/video-recommend/recommend', {
           contentId: post.contentId,
-          category: post.category,
-          maxResults: 5,
+          maxResults: 1,
         });
-        setVideos(res.data.videos);
+
+        console.log('AI 응답:', res.data.data);
+
+        setVideos(res.data.data.videos);
       } catch (error) {
         console.error('영상 추천 실패:', error);
       }
@@ -211,13 +218,19 @@ function FreeBoardDetail() {
         <div className={styles.videoList}>
           {Array.isArray(videos) &&
             videos.map((video) => (
-              <div key={video.videoId} className={styles.videoCard}>
+              <a
+                key={video.videoId}
+                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.videoCard}
+              >
                 <img src={video.thumbnailUrl} alt={video.title} className={styles.videoThumbnail} />
                 <p className={styles.videoTitle}>{video.title}</p>
                 <p className={styles.videoMeta}>
                   {video.channelName} · 조회수 {video.viewCount}
                 </p>
-              </div>
+              </a>
             ))}
         </div>
       </div>

@@ -248,3 +248,16 @@
   font-size: 12px;
   color: #888;
 }
+
+.videoCard {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 12px;
+  transition: transform 0.2s ease;
+}
+
+.videoCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
