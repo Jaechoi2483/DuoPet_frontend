@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../../AuthProvider';
 import styles from './MyPosts.module.css';
+import apiClient from '../../../../utils/axios';
 
 const MyPosts = () => {
   const navigate = useNavigate();
+  const { userNo } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -11,52 +14,26 @@ const MyPosts = () => {
 
   // 임시 데이터 (실제로는 API에서 가져와야 함)
   useEffect(() => {
-    const mockPosts = [
-      {
-        id: 1,
-        boardType: 'free',
-        title: '우리집 강아지가 너무 귀여워요',
-        content: '오늘 산책하다가 찍은 사진입니다...',
-        createdAt: '2024-06-20',
-        viewCount: 45,
-        commentCount: 3,
-        likeCount: 12
-      },
-      {
-        id: 2,
-        boardType: 'free',
-        title: '강아지 훈련 팁 공유합니다',
-        content: '제가 직접 해본 훈련 방법인데요...',
-        createdAt: '2024-06-18',
-        viewCount: 128,
-        commentCount: 8,
-        likeCount: 24
-      },
-      {
-        id: 3,
-        boardType: 'qna',
-        title: '고양이 사료 추천 부탁드려요',
-        content: '5살 된 고양이인데 어떤 사료가 좋을까요?',
-        createdAt: '2024-06-15',
-        viewCount: 67,
-        commentCount: 5,
-        likeCount: 3
-      },
-      {
-        id: 4,
-        boardType: 'free',
-        title: '반려동물과 함께하는 일상',
-        content: '매일이 행복해요',
-        createdAt: '2024-06-10',
-        viewCount: 92,
-        commentCount: 4,
-        likeCount: 18
+    if (!userNo) return;
+
+    const fetchMyPosts = async () => {
+      try {
+        const res = await apiClient.get('/mypage/posts', {
+          params: { userId: userNo },
+        });
+
+        const data = res.data || [];
+        console.log('실제 응답 데이터:', res.data);
+
+        setPosts(data);
+        setTotalPages(Math.ceil(data.length / postsPerPage));
+      } catch (error) {
+        console.error('게시글 불러오기 실패:', error);
       }
-    ];
-    
-    setPosts(mockPosts);
-    setTotalPages(Math.ceil(mockPosts.length / postsPerPage));
-  }, []);
+    };
+
+    fetchMyPosts();
+  }, [userNo]);
 
   const handlePostClick = (post) => {
     if (post.boardType === 'free') {
@@ -72,16 +49,22 @@ const MyPosts = () => {
 
   const getBoardTypeLabel = (type) => {
     switch (type) {
-      case 'free':
+      case '자유':
         return '자유게시판';
-      case 'qna':
-        return 'Q&A';
+      case '팁':
+        return '팁게시판';
+      case '후기':
+        return '후기게시판';
+      case '질문':
+        return '질문게시판';
       default:
         return '기타';
     }
   };
 
   const getCurrentPagePosts = () => {
+    if (!Array.isArray(posts)) return [];
+
     const startIndex = (currentPage - 1) * postsPerPage;
     const endIndex = startIndex + postsPerPage;
     return posts.slice(startIndex, endIndex);
@@ -96,16 +79,10 @@ const MyPosts = () => {
       ) : (
         <>
           <div className={styles.postList}>
-            {getCurrentPagePosts().map(post => (
-              <div 
-                key={post.id} 
-                className={styles.postItem}
-                onClick={() => handlePostClick(post)}
-              >
+            {getCurrentPagePosts().map((post) => (
+              <div key={post.id} className={styles.postItem} onClick={() => handlePostClick(post)}>
                 <div className={styles.postHeader}>
-                  <span className={styles.boardType}>
-                    [{getBoardTypeLabel(post.boardType)}]
-                  </span>
+                  <span className={styles.boardType}>[{getBoardTypeLabel(post.boardType)}]</span>
                   <h3 className={styles.postTitle}>{post.title}</h3>
                 </div>
                 <p className={styles.postContent}>{post.content}</p>
@@ -114,9 +91,6 @@ const MyPosts = () => {
                   <div className={styles.postStats}>
                     <span className={styles.statItem}>
                       <span className={styles.statIcon}>👁</span> {post.viewCount}
-                    </span>
-                    <span className={styles.statItem}>
-                      <span className={styles.statIcon}>💬</span> {post.commentCount}
                     </span>
                     <span className={styles.statItem}>
                       <span className={styles.statIcon}>❤️</span> {post.likeCount}
@@ -136,7 +110,7 @@ const MyPosts = () => {
               >
                 이전
               </button>
-              
+
               {[...Array(totalPages)].map((_, index) => (
                 <button
                   key={index + 1}
@@ -146,7 +120,7 @@ const MyPosts = () => {
                   {index + 1}
                 </button>
               ))}
-              
+
               <button
                 className={styles.pageButton}
                 onClick={() => handlePageChange(currentPage + 1)}
