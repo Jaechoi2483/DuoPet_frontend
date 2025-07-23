@@ -99,7 +99,7 @@ function NoticeList({ onNoticeClick }) {
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="제목 또는 내용 검색"
+              placeholder="제목 검색"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />

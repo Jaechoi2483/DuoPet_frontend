@@ -51,9 +51,6 @@ function Qna({ onQnaClick }) {
       }
     };
 
-    // ✅ 데이터 조회 조건을 명확하게 변경
-    // 인증 상태 확인이 완료되었고(isAuthLoading === false),
-    // 로그인 상태일 때만(isLoggedIn === true) 데이터를 조회합니다.
     if (!isAuthLoading && isLoggedIn) {
       fetchQnaData();
     }
