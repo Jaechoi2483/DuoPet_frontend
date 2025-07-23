@@ -9,12 +9,6 @@ import Modal from '../../../components/common/Modal';
 import CommentBox from '../comment/CommentBox';
 import styles from './FreeBoardDetail.module.css';
 
-const dummyVideos = [
-  { id: 'yt1', title: '강아지 배변 훈련, 이렇게 하면 성공합니다!', channel: '멍멍이 훈련소', views: '15,234회' },
-  { id: 'yt2', title: '초보 보호자를 위한 배변 패드 사용법', channel: '반려견 TV', views: '8,567회' },
-  { id: 'yt3', title: '수의사가 알려주는 배변 습관 훈련 팁', channel: '닥터펫', views: '12,890회' },
-];
-
 function FreeBoardDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -29,6 +23,7 @@ function FreeBoardDetail() {
   const [showToast, setShowToast] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportProps, setReportProps] = useState({ targetId: null, targetType: '' });
+  const [videos, setVideos] = useState([]);
 
   const contentId = Number(id);
 
@@ -135,6 +130,25 @@ function FreeBoardDetail() {
     fetchPost();
   }, [id]);
 
+  useEffect(() => {
+    if (!post || !post.tags) return;
+
+    const fetchRecommendedVideos = async () => {
+      try {
+        const res = await apiClient.post('http://localhost:8000/api/v1/video-recommend/recommend', {
+          contentId: post.contentId,
+          category: post.category,
+          maxResults: 5,
+        });
+        setVideos(res.data.videos);
+      } catch (error) {
+        console.error('영상 추천 실패:', error);
+      }
+    };
+
+    fetchRecommendedVideos();
+  }, [post]);
+
   if (!post) return <p>로딩 중...</p>;
 
   return (
@@ -195,15 +209,16 @@ function FreeBoardDetail() {
       <div className={styles.youtubeSection}>
         <h3>📺 관련 YouTube 영상</h3>
         <div className={styles.videoList}>
-          {dummyVideos.map((video) => (
-            <div key={video.id} className={styles.videoCard}>
-              <div className={styles.videoThumbnail}>🎬 썸네일</div>
-              <p className={styles.videoTitle}>{video.title}</p>
-              <p className={styles.videoMeta}>
-                {video.channel} · 조회수 {video.views}
-              </p>
-            </div>
-          ))}
+          {Array.isArray(videos) &&
+            videos.map((video) => (
+              <div key={video.videoId} className={styles.videoCard}>
+                <img src={video.thumbnailUrl} alt={video.title} className={styles.videoThumbnail} />
+                <p className={styles.videoTitle}>{video.title}</p>
+                <p className={styles.videoMeta}>
+                  {video.channelName} · 조회수 {video.viewCount}
+                </p>
+              </div>
+            ))}
         </div>
       </div>
 
