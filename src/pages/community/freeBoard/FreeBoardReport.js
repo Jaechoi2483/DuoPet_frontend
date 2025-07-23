@@ -60,7 +60,7 @@ const FreeBoardReport = ({ isOpen, targetId, targetType, onClose }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className={modalStyles.title}>{targetType === 'COMMENT' ? '댓글 신고하기' : '게시물 신고하기'}</h2>
+      <h2 className={modalStyles.title}>{targetType === 'comment' ? '댓글 신고하기' : '게시물 신고하기'}</h2>
       <p className={modalStyles.desc}>신고 사유를 선택해주세요. 검토 후 조치를 취하겠습니다.</p>
 
       <div className={modalStyles.formGroup}>

@@ -48,16 +48,18 @@ function CommentBox({ contentId, setReportProps, setIsReportOpen }) {
       )}
 
       <div className={styles.commentList}>
-        {comments.map((comment) => (
-          <CommentItem
-            key={comment.commentId}
-            comment={comment}
-            allComments={comments}
-            onReload={handleReload}
-            setReportProps={setReportProps}
-            setIsReportOpen={setIsReportOpen}
-          />
-        ))}
+        {comments
+          .filter((comment) => comment.parentCommentId === null)
+          .map((comment) => (
+            <CommentItem
+              key={comment.commentId}
+              comment={comment}
+              allComments={comments}
+              onReload={handleReload}
+              setReportProps={setReportProps}
+              setIsReportOpen={setIsReportOpen}
+            />
+          ))}
       </div>
     </div>
   );
