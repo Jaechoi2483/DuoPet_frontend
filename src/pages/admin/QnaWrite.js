@@ -63,9 +63,12 @@ function QnaWrite() {
     return (
       <div className={styles.container}>
         <h2 className={styles.title}>문의글 작성</h2>
-        <div style={{textAlign: 'center', color: '#888', fontSize: '1.1rem', margin: '40px 0'}}>
-          1:1 문의는 로그인 후 이용 가능합니다.<br />
-          <button className={styles.submitButton} style={{marginTop: '24px'}} onClick={() => navigate('/login')}>로그인 하러 가기</button>
+        <div style={{ textAlign: 'center', color: '#888', fontSize: '1.1rem', margin: '40px 0' }}>
+          1:1 문의는 로그인 후 이용 가능합니다.
+          <br />
+          <button className={styles.submitButton} style={{ marginTop: '24px' }} onClick={() => navigate('/login')}>
+            로그인 하러 가기
+          </button>
         </div>
       </div>
     );
@@ -85,9 +88,7 @@ function QnaWrite() {
             required
             className={styles.input}
           />
-          <div className={styles.charCount}>
-            {getUtf8Bytes(title)} / 1000 byte
-          </div>
+          <div className={styles.charCount}>{getUtf8Bytes(title)} / 1000 byte</div>
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="content">내용</label>
@@ -99,9 +100,7 @@ function QnaWrite() {
             className={styles.textarea}
             rows={8}
           />
-          <div className={styles.charCount}>
-            {content.length} 글자
-          </div>
+          <div className={styles.charCount}>{content.length} 글자</div>
         </div>
         <div className={styles.buttonBar}>
           <button type="submit" className={styles.submitButton}>

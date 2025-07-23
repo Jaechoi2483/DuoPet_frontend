@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from 'react';
 import styles from './ReportManagement.module.css'; // CSS 모듈 임포트
 import Modal from '../../components/common/Modal';
 import { AuthContext } from '../../AuthProvider'; // AuthContext 경로 확인
+import PagingView from '../../components/common/pagingView';
 
 // 탭 구성: PENDING, REVIEWED, PROCESSED, BLOCKED 상태 관리 (PROCESSED는 블라인드 액션 의미)
 const STATUS_TABS = [
@@ -40,6 +41,15 @@ function ReportManagement() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // [추가] 페이징 관련 상태
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagingData, setPagingData] = useState({
+    totalPage: 1,
+    startPage: 1,
+    endPage: 1,
+  });
+  const PAGE_GROUP_SIZE = 10; // 한 번에 보여줄 페이지 번호 개수
+
   // 게시글 관련 상태
   const [selectedPost, setSelectedPost] = useState(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -51,43 +61,78 @@ function ReportManagement() {
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentLoading, setCommentLoading] = useState(false);
 
-  const fetchAndMergeReports = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [reportsResponse, cumulativeResponse] = await Promise.all([
-        secureApiRequest('/admin/reports', { method: 'GET' }),
-        secureApiRequest('/admin/users/report-counts', { method: 'GET' }),
-      ]);
+  const fetchAndMergeReports = useCallback(
+    async (page, status) => {
+      setLoading(true);
+      setError(null);
+      try {
+        // [핵심] URLSearchParams를 사용하여 안전하게 쿼리 스트링을 생성합니다.
+        const params = new URLSearchParams();
+        params.append('page', page - 1);
+        params.append('size', 15);
 
-      const individualReports = reportsResponse.data || [];
-      const cumulativeData = cumulativeResponse.data || [];
-
-      const cumulativeMap = new Map();
-      cumulativeData.forEach((item) => {
-        if (item.username) {
-          cumulativeMap.set(item.username, item.cumulativeReportCount);
+        if (status !== 'ALL') {
+          params.append('status', status);
         }
-      });
 
-      const mergedReports = individualReports.map((report) => ({
-        ...report,
-        accumulatedReports: cumulativeMap.get(report.targetLoginId) || 0,
-      }));
+        // 완성된 URL: /admin/reports?page=0&status=PENDING
+        const reportUrl = `/admin/reports?${params.toString()}`;
 
-      setReports(mergedReports);
-    } catch (err) {
-      setError('신고 목록을 불러오지 못했습니다.');
-      setReports([]);
-      console.error('Fetch reports error:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [secureApiRequest]);
+        // [핵심] 완성된 URL을 secureApiRequest에 직접 전달합니다.
+        const reportsResponse = await secureApiRequest(reportUrl, { method: 'GET' });
+
+        const individualReports = reportsResponse.data || [];
+        const totalPage = parseInt(reportsResponse.headers['x-total-pages'], 10) || 1;
+
+        const currentGroup = Math.ceil(page / PAGE_GROUP_SIZE);
+        const endPage = Math.min(currentGroup * PAGE_GROUP_SIZE, totalPage);
+        const startPage = (currentGroup - 1) * PAGE_GROUP_SIZE + 1;
+        setPagingData({ totalPage, startPage, endPage });
+
+        const cumulativeMap = new Map();
+        try {
+          // 누적 신고 횟수는 파라미터가 없으므로 그대로 호출합니다.
+          const cumulativeResponse = await secureApiRequest('/admin/users/report-counts', { method: 'GET' });
+          const cumulativeData = cumulativeResponse.data || [];
+          cumulativeData.forEach((item) => {
+            if (item.username) {
+              cumulativeMap.set(item.username, item.cumulativeReportCount);
+            }
+          });
+        } catch (cumulativeError) {
+          console.error('누적 신고 횟수를 불러오는 데 실패했습니다:', cumulativeError);
+        }
+
+        const mergedReports = individualReports.map((report) => ({
+          ...report,
+          accumulatedReports: cumulativeMap.get(report.targetLoginId) || 0,
+        }));
+
+        setReports(mergedReports);
+      } catch (err) {
+        setError('신고 목록을 불러오지 못했습니다.');
+        setReports([]);
+        console.error('Fetch reports error:', err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [secureApiRequest] // secureApiRequest에 대한 의존성 복원
+  );
 
   useEffect(() => {
-    fetchAndMergeReports();
-  }, [fetchAndMergeReports]);
+    fetchAndMergeReports(currentPage, activeStatusKey);
+  }, [currentPage, activeStatusKey, fetchAndMergeReports]);
+
+  const handleTabClick = (key) => {
+    setActiveStatusKey(key);
+    setCurrentPage(1);
+  };
+
+  // [추가] 페이지 변경 핸들러
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleUpdateStatus = async (reportId, newStatus) => {
     if (!window.confirm(`이 작업은 되돌릴 수 없습니다. 정말 실행하시겠습니까?`)) {
@@ -111,7 +156,7 @@ function ReportManagement() {
         body: { status: finalStatusToSend },
       });
 
-      fetchAndMergeReports();
+      fetchAndMergeReports(currentPage, activeStatusKey);
       alert('작업이 완료되었습니다.');
     } catch (err) {
       alert('작업에 실패했습니다.');
@@ -125,7 +170,7 @@ function ReportManagement() {
     }
     try {
       await secureApiRequest(`/admin/reports/${reportId}/unblock`, { method: 'PUT' });
-      fetchAndMergeReports();
+      fetchAndMergeReports(currentPage, activeStatusKey);
       alert('정지 해제 작업이 완료되었습니다.');
     } catch (err) {
       alert('정지 해제에 실패했습니다.');
@@ -203,8 +248,6 @@ function ReportManagement() {
     setSelectedComment(null);
   };
 
-  const filteredReports = activeStatusKey === 'ALL' ? reports : reports.filter((r) => r.status === activeStatusKey);
-
   return (
     <div className={styles.container}>
       {' '}
@@ -219,7 +262,7 @@ function ReportManagement() {
             className={
               tab.key === activeStatusKey ? `${styles.filterTabButton} ${styles.active}` : styles.filterTabButton
             }
-            onClick={() => setActiveStatusKey(tab.key)}
+            onClick={() => handleTabClick(tab.key)}
             type="button"
           >
             {tab.label}
@@ -231,148 +274,159 @@ function ReportManagement() {
       ) : error ? (
         <div style={{ textAlign: 'center', padding: '40px 0', color: 'red' }}>{error}</div>
       ) : (
-        <table className={styles.reportTable}>
-          {/* .reportTable 클래스 적용 */}
-          <thead className={styles.tableHeader}>
-            {/* .tableHeader 클래스 적용 */}
-            <tr>
-              <th>신고번호</th>
-              <th>신고유형</th>
-              <th>신고자 ID</th>
-              <th>신고대상 ID</th>
-              <th>누적신고</th>
-              <th>신고내용</th>
-              <th>신고사유</th>
-              <th>신고일</th>
-              <th>관리</th>
-              <th>블라인드</th>
-            </tr>
-          </thead>
-          <tbody className={styles.tableBody}>
-            {/* .tableBody 클래스 적용 */}
-            {filteredReports.length > 0 ? (
-              filteredReports.map((report) => {
-                const isContentDeleted = report.targetLoginId === '알 수 없음'; // targetLoginId 사용
-
-                return (
-                  <tr
-                    key={report.reportId}
-                    onClick={() => handleRowClick(report)}
-                    style={{ cursor: isContentDeleted ? 'default' : 'pointer' }}
-                  >
-                    <td>{report.reportId}</td>
-                    <td>{report.targetType}</td>
-                    <td>{report.userLoginId}</td>
-                    <td>
-                      {isContentDeleted ? (
-                        <span className={styles.deletedText}>삭제된 대상</span>
-                      ) : (
-                        report.targetLoginId
-                      )}
-                    </td>
-                    <td className={styles.accumulatedReports}>
-                      <span className={`${styles.reportCount} ${getReportCountClass(report.accumulatedReports)}`}>
-                        {report.accumulatedReports}회
-                      </span>
-                    </td>
-                    <td title={report.details}>{report.reason}</td>
-                    <td>{report.details || '-'}</td>
-                    <td>{report.createdAt ? new Date(report.createdAt).toLocaleDateString() : '날짜 정보 없음'}</td>
-                    <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
-                      {report.status === 'PENDING' ? (
-                        <select
-                          className={styles.actionDropdown}
-                          defaultValue=""
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              if (e.target.value === 'BLOCK_ACCUMULATED') {
-                                const blockPeriod = getAccumulatedBlockPeriod(report.accumulatedReports);
-                                handleUpdateStatus(report.reportId, blockPeriod);
-                              } else {
-                                handleUpdateStatus(report.reportId, e.target.value);
-                              }
-                            }
-                            e.target.value = '';
-                          }}
-                        >
-                          <option value="" disabled>
-                            처리 선택
-                          </option>
-                          <option value="REVIEWED">보류</option>
-                          <option value="BLOCK_3DAYS">3일 정지</option>
-                          <option value="BLOCK_7DAYS">7일 정지</option>
-                          <option value="BLOCK_1MONTH">1개월 정지</option>
-                          <option value="BLOCK_PERMANENT">영구 정지</option>
-                        </select>
-                      ) : report.status === 'BLOCKED' ? (
-                        (() => {
-                          const suspensionDate = createDateFromSuspendedUntil(report.suspendedUntil);
-                          return (
-                            <div>
-                              {suspensionDate ? (
-                                <div>
-                                  <span className={styles.blockedText}>
-                                    해제: {suspensionDate.toLocaleDateString('ko-KR')}
-                                  </span>
-                                  <button
-                                    onClick={() => handleUnblock(report.reportId)}
-                                    className={`${styles.actionButton} ${styles.unblockButton}`}
-                                    style={{ marginTop: '4px' }}
-                                  >
-                                    정지 해제
-                                  </button>
-                                </div>
-                              ) : (
-                                <div>
-                                  <span className={styles.blockedText}>영구정지</span>
-                                  <button
-                                    onClick={() => handleUnblock(report.reportId)}
-                                    className={`${styles.actionButton} ${styles.unblockButton}`}
-                                    style={{ marginTop: '4px' }}
-                                  >
-                                    정지 해제
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()
-                      ) : (
-                        <span>
-                          {report.status === 'REVIEWED'
-                            ? '보류'
-                            : report.status === 'PROCESSED'
-                              ? '처리완료'
-                              : '알 수 없음'}
-                        </span>
-                      )}
-                    </td>
-                    <td onClick={(e) => e.stopPropagation()}>
-                      {report.targetContentStatus !== 'INACTIVE' && report.status !== 'PROCESSED' ? (
-                        <button
-                          onClick={() => handleUpdateStatus(report.reportId, 'PROCESSED')}
-                          className={`${styles.actionButton} ${styles.dangerButton}`}
-                        >
-                          블라인드
-                        </button>
-                      ) : (
-                        <span className={styles.disabledActionText}>
-                          {report.targetContentStatus === 'INACTIVE' ? '블라인드됨' : '처리완료'}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
+        <>
+          <table className={styles.reportTable}>
+            {/* .reportTable 클래스 적용 */}
+            <thead className={styles.tableHeader}>
+              {/* .tableHeader 클래스 적용 */}
               <tr>
-                <td colSpan={10} className={styles.noData}>
-                  신고 내역이 없습니다.
-                </td>
+                <th>신고번호</th>
+                <th>신고유형</th>
+                <th>신고자 ID</th>
+                <th>신고대상 ID</th>
+                <th>누적신고</th>
+                <th>신고내용</th>
+                <th>신고사유</th>
+                <th>신고일</th>
+                <th>관리</th>
+                <th>블라인드</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className={styles.tableBody}>
+              {/* .tableBody 클래스 적용 */}
+              {reports.length > 0 ? (
+                reports.map((report) => {
+                  const isContentDeleted = report.targetLoginId === '알 수 없음'; // targetLoginId 사용
+
+                  return (
+                    <tr
+                      key={report.reportId}
+                      onClick={() => handleRowClick(report)}
+                      style={{ cursor: isContentDeleted ? 'default' : 'pointer' }}
+                    >
+                      <td>{report.reportId}</td>
+                      <td>{report.targetType}</td>
+                      <td>{report.userLoginId}</td>
+                      <td>
+                        {isContentDeleted ? (
+                          <span className={styles.deletedText}>삭제된 대상</span>
+                        ) : (
+                          report.targetLoginId
+                        )}
+                      </td>
+                      <td className={styles.accumulatedReports}>
+                        <span className={`${styles.reportCount} ${getReportCountClass(report.accumulatedReports)}`}>
+                          {report.accumulatedReports}회
+                        </span>
+                      </td>
+                      <td title={report.details}>{report.reason}</td>
+                      <td>{report.details || '-'}</td>
+                      <td>{report.createdAt ? new Date(report.createdAt).toLocaleDateString() : '날짜 정보 없음'}</td>
+                      <td className={styles.actionsCell} onClick={(e) => e.stopPropagation()}>
+                        {report.status === 'PENDING' ? (
+                          <select
+                            className={styles.actionDropdown}
+                            defaultValue=""
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                if (e.target.value === 'BLOCK_ACCUMULATED') {
+                                  const blockPeriod = getAccumulatedBlockPeriod(report.accumulatedReports);
+                                  handleUpdateStatus(report.reportId, blockPeriod);
+                                } else {
+                                  handleUpdateStatus(report.reportId, e.target.value);
+                                }
+                              }
+                              e.target.value = '';
+                            }}
+                          >
+                            <option value="" disabled>
+                              처리 선택
+                            </option>
+                            <option value="REVIEWED">보류</option>
+                            <option value="BLOCK_3DAYS">3일 정지</option>
+                            <option value="BLOCK_7DAYS">7일 정지</option>
+                            <option value="BLOCK_1MONTH">1개월 정지</option>
+                            <option value="BLOCK_PERMANENT">영구 정지</option>
+                          </select>
+                        ) : report.status === 'BLOCKED' ? (
+                          (() => {
+                            const suspensionDate = createDateFromSuspendedUntil(report.suspendedUntil);
+                            return (
+                              <div>
+                                {suspensionDate ? (
+                                  <div>
+                                    <span className={styles.blockedText}>
+                                      해제: {suspensionDate.toLocaleDateString('ko-KR')}
+                                    </span>
+                                    <button
+                                      onClick={() => handleUnblock(report.reportId)}
+                                      className={`${styles.actionButton} ${styles.unblockButton}`}
+                                      style={{ marginTop: '4px' }}
+                                    >
+                                      정지 해제
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <span className={styles.blockedText}>영구정지</span>
+                                    <button
+                                      onClick={() => handleUnblock(report.reportId)}
+                                      className={`${styles.actionButton} ${styles.unblockButton}`}
+                                      style={{ marginTop: '4px' }}
+                                    >
+                                      정지 해제
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })()
+                        ) : (
+                          <span>
+                            {report.status === 'REVIEWED'
+                              ? '보류'
+                              : report.status === 'PROCESSED'
+                                ? '처리완료'
+                                : '알 수 없음'}
+                          </span>
+                        )}
+                      </td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        {report.targetContentStatus !== 'INACTIVE' && report.status !== 'PROCESSED' ? (
+                          <button
+                            onClick={() => handleUpdateStatus(report.reportId, 'PROCESSED')}
+                            className={`${styles.actionButton} ${styles.dangerButton}`}
+                          >
+                            블라인드
+                          </button>
+                        ) : (
+                          <span className={styles.disabledActionText}>
+                            {report.targetContentStatus === 'INACTIVE' ? '블라인드됨' : '처리완료'}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={10} className={styles.noData}>
+                    신고 내역이 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          {reports.length > 0 && pagingData && (
+            <PagingView
+              currentPage={currentPage}
+              totalPage={pagingData.totalPage}
+              startPage={pagingData.startPage}
+              endPage={pagingData.endPage}
+              onPageChange={handlePageChange}
+            />
+          )}
+        </>
       )}
       {/* 게시글 상세 모달 */}
       <Modal isOpen={isPostModalOpen} onClose={handleClosePostModal}>

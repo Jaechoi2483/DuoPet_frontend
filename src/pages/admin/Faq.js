@@ -223,7 +223,10 @@ function Faq() {
                           onChange={(e) => setEditQuestion(e.target.value)}
                           placeholder="질문을 입력하세요"
                         />
-                        <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                        <div
+                          className={styles.charCount}
+                          style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}
+                        >
                           {getUtf8Bytes(editQuestion)} / 1000 byte
                         </div>
                       </>
@@ -252,7 +255,10 @@ function Faq() {
                           onChange={(e) => setEditAnswer(e.target.value)}
                           placeholder="답변을 입력하세요"
                         />
-                        <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+                        <div
+                          className={styles.charCount}
+                          style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}
+                        >
                           {getUtf8Bytes(editAnswer)} / 4000 byte
                         </div>
                         <div className={styles.editButtonBar}>
@@ -311,7 +317,10 @@ function Faq() {
                 onChange={(e) => setNewQuestion(e.target.value)}
                 placeholder="질문을 입력하세요"
               />
-              <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+              <div
+                className={styles.charCount}
+                style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}
+              >
                 {getUtf8Bytes(newQuestion)} / 1000 byte
               </div>
             </div>
@@ -329,7 +338,10 @@ function Faq() {
                 onChange={(e) => setNewAnswer(e.target.value)}
                 placeholder="답변을 입력하세요"
               />
-              <div className={styles.charCount} style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}>
+              <div
+                className={styles.charCount}
+                style={{ textAlign: 'right', color: '#888', fontSize: '12px', marginTop: '2px' }}
+              >
                 {getUtf8Bytes(newAnswer)} / 4000 byte
               </div>
               <div className={styles.editButtonBar}>
