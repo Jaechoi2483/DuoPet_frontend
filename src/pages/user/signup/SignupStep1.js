@@ -126,11 +126,15 @@ function SignupStep1() {
           onChange={(e) => setUserPwd(e.target.value)}
         />
         <ul className={styles.pwdChecklist}>
-          <li className={userPwd.length >= 8 && userPwd.length <= 20 ? styles.pass : styles.fail}>8~20자</li>
-          <li className={/[A-Z]/.test(userPwd) ? styles.pass : styles.fail}>대문자 포함</li>
-          <li className={/[a-z]/.test(userPwd) ? styles.pass : styles.fail}>소문자 포함</li>
-          <li className={/\d/.test(userPwd) ? styles.pass : styles.fail}>숫자 포함</li>
-          <li className={/[@$!%*?#&]/.test(userPwd) ? styles.pass : styles.fail}>특수문자 포함</li>
+          <li className={userPwd.length >= 8 && userPwd.length <= 20 ? styles.pass : styles.fail}>
+            - 비밀번호 길이: 8~20자
+          </li>
+          <li className={/[A-Z]/.test(userPwd) ? styles.pass : styles.fail}>- 대문자(A~Z) 1자 이상 포함</li>
+          <li className={/[a-z]/.test(userPwd) ? styles.pass : styles.fail}>- 소문자(a~z) 1자 이상 포함</li>
+          <li className={/\d/.test(userPwd) ? styles.pass : styles.fail}>- 숫자(0~9) 1자 이상 포함</li>
+          <li className={/[@$!%*?#&]/.test(userPwd) ? styles.pass : styles.fail}>
+            - 특수문자(@, $, !, %, *, ?, #, &) 1자 이상 포함
+          </li>
         </ul>
       </div>
 
