@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styles from './ActivityList.module.css';
 import MyPosts from './MyPosts';
-import MyConsultations from './MyConsultations';
+import MyComments from './MyComments';
+import MyLikedPosts from './MyLikedPosts';
+import MyBookmarkedPosts from './MyBookmarkedPosts';
 
 const ActivityList = () => {
   const [activeSection, setActiveSection] = useState('posts');
@@ -22,17 +24,31 @@ const ActivityList = () => {
             작성한 글
           </button>
           <button
-            className={`${styles.tabButton} ${activeSection === 'consultations' ? styles.active : ''}`}
-            onClick={() => handleSectionChange('consultations')}
+            className={`${styles.tabButton} ${activeSection === 'comments' ? styles.active : ''}`}
+            onClick={() => handleSectionChange('comments')}
           >
-            상담 내역
+            댓글단 글
+          </button>
+          <button
+            className={`${styles.tabButton} ${activeSection === 'likes' ? styles.active : ''}`}
+            onClick={() => handleSectionChange('likes')}
+          >
+            좋아요
+          </button>
+          <button
+            className={`${styles.tabButton} ${activeSection === 'bookmarks' ? styles.active : ''}`}
+            onClick={() => handleSectionChange('bookmarks')}
+          >
+            북마크
           </button>
         </div>
       </div>
 
       <div className={styles.sectionContent}>
         {activeSection === 'posts' && <MyPosts />}
-        {activeSection === 'consultations' && <MyConsultations />}
+        {activeSection === 'comments' && <MyComments />}
+        {activeSection === 'likes' && <MyLikedPosts />}
+        {activeSection === 'bookmarks' && <MyBookmarkedPosts />}
       </div>
     </div>
   );

@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import styles from './SettingsList.module.css';
 import AccountSettings from './AccountSettings';
 import PasswordChange from './PasswordChange';
-import NotificationSettings from './NotificationSettings';
-import PrivacySettings from './PrivacySettings';
+import RoleSettings from './RoleSettings';
+import FaceSettings from './FaceSettings';
 
 const SettingsList = () => {
   const navigate = useNavigate();
@@ -16,29 +16,29 @@ const SettingsList = () => {
       title: '계정 설정',
       description: '이메일, 전화번호 등 계정 정보를 관리합니다',
       icon: '👤',
-      component: AccountSettings
+      component: AccountSettings,
     },
     {
       id: 'password',
       title: '비밀번호 변경',
       description: '계정 보안을 위해 비밀번호를 변경합니다',
       icon: '🔐',
-      component: PasswordChange
+      component: PasswordChange,
     },
     {
-      id: 'notification',
-      title: '알림 설정',
-      description: '이메일, 푸시 알림 수신 설정을 관리합니다',
-      icon: '🔔',
-      component: NotificationSettings
+      id: 'role',
+      title: '가입 유형 등록/변경',
+      description: '전문가, 보호소 운영자 등의 역할을 추가/변경합니다',
+      icon: '🧑‍⚕️',
+      component: RoleSettings,
     },
     {
-      id: 'privacy',
-      title: '개인정보 보호',
-      description: '개인정보 공개 범위와 보호 설정을 관리합니다',
-      icon: '🛡️',
-      component: PrivacySettings
-    }
+      id: 'face',
+      title: '얼굴 인증 관리',
+      description: '등록된 얼굴 이미지로 로그인 설정을 관리합니다',
+      icon: '📸',
+      component: FaceSettings,
+    },
   ];
 
   const handleMenuClick = (sectionId) => {
@@ -70,7 +70,7 @@ const SettingsList = () => {
 
   // 선택된 섹션의 컴포넌트 렌더링
   if (activeSection) {
-    const ActiveComponent = settingsMenu.find(menu => menu.id === activeSection)?.component;
+    const ActiveComponent = settingsMenu.find((menu) => menu.id === activeSection)?.component;
     return <ActiveComponent onBack={handleBack} />;
   }
 
@@ -83,12 +83,8 @@ const SettingsList = () => {
       </div>
 
       <div className={styles.settingsMenu}>
-        {settingsMenu.map(menu => (
-          <div 
-            key={menu.id}
-            className={styles.menuItem}
-            onClick={() => handleMenuClick(menu.id)}
-          >
+        {settingsMenu.map((menu) => (
+          <div key={menu.id} className={styles.menuItem} onClick={() => handleMenuClick(menu.id)}>
             <div className={styles.menuIcon}>{menu.icon}</div>
             <div className={styles.menuContent}>
               <h3 className={styles.menuTitle}>{menu.title}</h3>
@@ -101,19 +97,13 @@ const SettingsList = () => {
 
       <div className={styles.dangerZone}>
         <h3 className={styles.dangerTitle}>기타 설정</h3>
-        
-        <button 
-          className={styles.logoutButton}
-          onClick={handleLogout}
-        >
+
+        <button className={styles.logoutButton} onClick={handleLogout}>
           <span className={styles.buttonIcon}>🚪</span>
           로그아웃
         </button>
 
-        <button 
-          className={styles.deleteAccountButton}
-          onClick={handleDeleteAccount}
-        >
+        <button className={styles.deleteAccountButton} onClick={handleDeleteAccount}>
           <span className={styles.buttonIcon}>⚠️</span>
           회원 탈퇴
         </button>
