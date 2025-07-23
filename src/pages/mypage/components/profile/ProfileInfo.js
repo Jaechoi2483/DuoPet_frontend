@@ -2,12 +2,15 @@ import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../../AuthProvider';
 import apiClient from '../../../../utils/axios';
+import OnlineStatusToggle from '../vet/OnlineStatusToggle';
 import styles from './ProfileInfo.module.css';
 
 const ProfileInfo = () => {
   const navigate = useNavigate();
-  const { username, userid } = useContext(AuthContext);
+  const { username, userid, role } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [vetId, setVetId] = useState(null);
+  const [initialOnlineStatus, setInitialOnlineStatus] = useState(null);
   
   // 날짜 포맷 함수
   const formatDate = (dateString) => {
@@ -72,6 +75,31 @@ const ProfileInfo = () => {
           profileImage: userData.userProfileRenameFilename ? 
             `http://localhost:8080/upload/userprofile/${userData.userProfileRenameFilename}` : null
         });
+        
+        // 수의사인 경우 vetId 가져오기
+        if (role === 'vet' || role === 'VET') {
+          console.log('전문가 역할 확인됨, vetId 조회 시작');
+          console.log('userId:', userData.userId);
+          try {
+            const vetResponse = await apiClient.get(`/users/${userData.userId}/vet`);
+            console.log('수의사 정보 응답:', vetResponse.data);
+            if (vetResponse.data && vetResponse.data.vetId) {
+              setVetId(vetResponse.data.vetId);
+              console.log('vetId 설정됨:', vetResponse.data.vetId);
+              
+              // 온라인 상태도 함께 설정
+              if (vetResponse.data.isOnline) {
+                setInitialOnlineStatus(vetResponse.data.isOnline);
+                console.log('초기 온라인 상태:', vetResponse.data.isOnline);
+              }
+            } else {
+              console.log('vetId가 응답에 없음');
+            }
+          } catch (error) {
+            console.error('수의사 정보 조회 실패:', error);
+            console.error('에러 상세:', error.response?.data);
+          }
+        }
       } catch (error) {
         console.error('사용자 정보 가져오기 실패:', error);
         // 에러 발생 시 기본값 유지
@@ -145,6 +173,14 @@ const ProfileInfo = () => {
 
   return (
     <div className={styles.profileContainer}>
+      {/* 수의사인 경우 온라인 상태 토글 표시 */}
+      {console.log('렌더링 시 role:', role, 'vetId:', vetId)}
+      {(role === 'vet' || role === 'VET') && vetId ? (
+        <OnlineStatusToggle vetId={vetId} initialStatus={initialOnlineStatus} />
+      ) : (
+        console.log('토글 표시 안됨 - role:', role, 'vetId:', vetId)
+      )}
+      
       <div className={styles.profileHeader}>
         <h2 className={styles.sectionTitle}>상세 정보</h2>
         <button className={styles.editButton} onClick={handleEditClick}>

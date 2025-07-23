@@ -191,11 +191,13 @@
 }
 
 .uploadArea {
+  width: 100%;
   border: 2px dashed #d1d5db;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .uploadArea:hover {
@@ -255,6 +257,7 @@
   font-size: 1rem;
   font-family: inherit;
   resize: vertical;
+  box-sizing: border-box;
 }
 
 .textArea:focus {

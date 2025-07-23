@@ -7,6 +7,7 @@ import PetList from './components/pets/PetList';
 import ActivityList from './components/activity/ActivityList';
 import BookmarkList from './components/bookmark/BookmarkList';
 import SettingsList from './components/settings/SettingsList';
+import ConsultationHistory from './components/consultation/ConsultationHistory';
 import styles from './MypagePage.module.css';
 
 const MypagePage = () => {
@@ -43,6 +44,8 @@ const MypagePage = () => {
         return <PetList />;
       case 'activity':
         return <ActivityList />;
+      case 'consultations':
+        return <ConsultationHistory />;
       case 'bookmark':
         return <BookmarkList />;
       case 'settings':

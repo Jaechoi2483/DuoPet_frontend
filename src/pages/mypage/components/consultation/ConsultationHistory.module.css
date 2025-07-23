@@ -1,0 +1,323 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.error {
+  text-align: center;
+  color: #f44336;
+  padding: 50px;
+  font-size: 1.1rem;
+}
+
+.empty {
+  text-align: center;
+  padding: 100px 20px;
+  color: #666;
+}
+
+.empty p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.newConsultationBtn {
+  padding: 12px 30px;
+  background: #FF9800;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.newConsultationBtn:hover {
+  background: #F57C00;
+}
+
+.consultationList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.consultationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.consultationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.consultationHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.vetInfo h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.specialty {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.scheduled {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.inProgress {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.completed {
+  background: #e8f5e9;
+  color: #388e3c;
+}
+
+.cancelled {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.noShow {
+  background: #f5f5f5;
+  color: #616161;
+}
+
+.consultationBody {
+  margin-bottom: 15px;
+}
+
+.infoRow {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.label {
+  color: #666;
+  min-width: 100px;
+  margin-right: 10px;
+}
+
+.consultationFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.reviewBtn, .enterBtn {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reviewBtn {
+  background: #4CAF50;
+  color: white;
+}
+
+.reviewBtn:hover {
+  background: #45a049;
+}
+
+.enterBtn {
+  background: #FF9800;
+  color: white;
+}
+
+.enterBtn:hover {
+  background: #F57C00;
+}
+
+/* 상담 상세 모달 */
+.consultationDetail {
+  padding: 20px;
+}
+
+.detailSection {
+  margin-bottom: 25px;
+}
+
+.detailSection h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+.detailSection p {
+  color: #666;
+  margin-bottom: 5px;
+  line-height: 1.6;
+}
+
+/* 후기 작성 모달 */
+.reviewModal {
+  padding: 20px;
+}
+
+.reviewSection {
+  margin-bottom: 25px;
+}
+
+.reviewSection label {
+  display: block;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.starRating {
+  display: flex;
+  gap: 5px;
+  font-size: 2rem;
+}
+
+.starFilled, .starEmpty {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.starFilled {
+  color: #FFC107;
+}
+
+.starEmpty {
+  color: #ddd;
+}
+
+.starEmpty:hover {
+  color: #FFC107;
+}
+
+.scoreGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.scoreItem label {
+  display: block;
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.scoreItem select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+.reviewTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.reviewTextarea:focus {
+  outline: none;
+  border-color: #FF9800;
+}
+
+.reviewButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.cancelBtn, .submitBtn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cancelBtn {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.cancelBtn:hover {
+  background: #e0e0e0;
+}
+
+.submitBtn {
+  background: #4CAF50;
+  color: white;
+}
+
+.submitBtn:hover {
+  background: #45a049;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .consultationHeader {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .scoreGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .infoRow {
+    flex-direction: column;
+  }
+
+  .label {
+    min-width: auto;
+    margin-bottom: 3px;
+  }
+}
