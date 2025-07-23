@@ -1,0 +1,208 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  padding: 4px 8px;
+  transition: color 0.2s;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+.content {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.section h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.2rem;
+  color: #444;
+}
+
+.modelList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modelItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+}
+
+.modelName {
+  font-weight: 500;
+  color: #555;
+}
+
+.status {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.loaded {
+  color: #4CAF50;
+}
+
+.notLoaded {
+  color: #f44336;
+}
+
+.gpuInfo {
+  background-color: #f0f7ff;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.errorStats {
+  background-color: #fff8f0;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.errorList {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.errorItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  padding: 4px 0;
+}
+
+.errorTime {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.noErrors {
+  color: #4CAF50;
+  font-style: italic;
+}
+
+.message {
+  padding: 12px;
+  background-color: #e3f2fd;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #1976d2;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.resetButton,
+.clearButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.resetButton {
+  background-color: #ff5722;
+  color: white;
+}
+
+.resetButton:hover:not(:disabled) {
+  background-color: #e64a19;
+}
+
+.resetButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.clearButton {
+  background-color: #2196F3;
+  color: white;
+}
+
+.clearButton:hover {
+  background-color: #1976D2;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+  
+  .content {
+    padding: 16px;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+}
