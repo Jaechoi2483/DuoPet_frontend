@@ -1,0 +1,118 @@
+.progressContainer {
+  width: 100%;
+  margin: 20px 0;
+}
+
+.progressWrapper {
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.progressBar {
+  height: 24px;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50 0%, #66BB6A 100%);
+  transition: width 0.5s ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 30px 30px;
+  animation: move 1s linear infinite;
+}
+
+@keyframes move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 30px 30px;
+  }
+}
+
+.progressFill.pending {
+  background: linear-gradient(90deg, #2196F3 0%, #42A5F5 100%);
+}
+
+.progressFill.active {
+  background: linear-gradient(90deg, #4CAF50 0%, #66BB6A 100%);
+}
+
+.progressFill.complete {
+  background: linear-gradient(90deg, #4CAF50 0%, #43A047 100%);
+}
+
+.progressFill.complete::after {
+  display: none;
+}
+
+.progressText {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  position: relative;
+}
+
+.progressTextOutside {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusMessage {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .progressBar {
+    height: 20px;
+  }
+  
+  .progressText,
+  .progressTextOutside {
+    font-size: 11px;
+  }
+  
+  .statusMessage {
+    font-size: 13px;
+  }
+}
