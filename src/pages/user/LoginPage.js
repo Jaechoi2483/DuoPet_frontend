@@ -32,10 +32,15 @@ function LoginPage() {
     setError('');
 
     try {
-      const response = await apiClient.post('/login', {
-        loginId,
-        userPwd,
-      });
+      const response = await apiClient.post(
+        '/login',
+        { loginId, userPwd },
+        {
+          headers: {
+            ExtendLogin: autoLogin.toString(), // 'true' 또는 'false'
+          },
+        }
+      );
 
       const data = response.data;
 

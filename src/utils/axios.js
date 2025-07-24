@@ -50,11 +50,66 @@ apiClient.interceptors.request.use(
 // 응답 인터셉터
 apiClient.interceptors.response.use(
   (response) => {
-    // 요청이 성공해서, ok 가 전송왔을 때 공통 처리 내용 작성함
+    // ✅ 응답 헤더에 새 토큰이 있으면 저장 (옵션)
+    const newAccessToken = response.headers['authorization']?.split(' ')[1];
+    const newRefreshToken = response.headers['refresh-token']?.split(' ')[1];
+
+    if (newAccessToken) {
+      localStorage.setItem('accessToken', newAccessToken);
+      console.log('[axios] AccessToken 갱신됨');
+    }
+    if (newRefreshToken) {
+      localStorage.setItem('refreshToken', newRefreshToken);
+      console.log('[axios] RefreshToken 갱신됨');
+    }
+
     return response;
   },
-  (error) => {
-    // 요청이 실패해서, fail 코드가 전송왔을 때 공통 처리 내용 작성함
+
+  async (error) => {
+    const originalRequest = error.config;
+
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    const isAccessExpired =
+      error?.response?.status === 401 && error?.response?.headers['token-expired'] === 'AccessToken';
+
+    // ✅ AccessToken 만료 → 재발급 시도
+    if (isAccessExpired && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        const res = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/reissue`, null, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            RefreshToken: `Bearer ${refreshToken}`,
+            ExtendLogin: 'true',
+          },
+          withCredentials: true,
+        });
+
+        const newAccessToken = res.headers['authorization']?.split(' ')[1];
+        const newRefreshToken = res.headers['refresh-token']?.split(' ')[1];
+
+        if (newAccessToken) {
+          localStorage.setItem('accessToken', newAccessToken);
+          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+        }
+
+        if (newRefreshToken) {
+          localStorage.setItem('refreshToken', newRefreshToken);
+        }
+
+        // 재요청
+        return apiClient(originalRequest);
+      } catch (reissueError) {
+        console.error('🔴 리이슈 실패:', reissueError);
+        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
+      }
+    }
+
     return Promise.reject(error);
   }
 );

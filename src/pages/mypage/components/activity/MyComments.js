@@ -1,5 +1,6 @@
 // src/pages/mypage/components/activity/MyComments.js
 
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
 import styles from './MyPosts.module.css'; // 공통 CSS
 import { AuthContext } from '../../../../AuthProvider';
@@ -7,6 +8,7 @@ import apiClient from '../../../../utils/axios';
 
 const MyComments = () => {
   const { userNo } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [comments, setComments] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -24,6 +26,18 @@ const MyComments = () => {
       })
       .catch((err) => console.error('댓글 불러오기 실패:', err));
   }, [userNo]);
+
+  const handlePostClick = (postId, boardType) => {
+    // 나중에 커뮤니티 완성되면 그때 추가
+    const boardTypePathMap = {
+      자유: '/community/freeBoard',
+      팁: '/community/tipBoard',
+      후기: '/community/reviewBoard',
+      질문: '/community/qna',
+    };
+    const basePath = boardTypePathMap[boardType] || '/community/freeBoard';
+    navigate(`${basePath}?postId=${postId}`);
+  };
 
   const getCurrentPageComments = () => {
     const start = (currentPage - 1) * commentsPerPage;
@@ -56,7 +70,12 @@ const MyComments = () => {
         <>
           <div className={styles.postList}>
             {getCurrentPageComments().map((comment) => (
-              <div key={comment.commentId} className={styles.postItem}>
+              <div
+                key={comment.commentId}
+                className={styles.postItem}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handlePostClick(comment.postId, comment.boardType)}
+              >
                 <div className={styles.postHeader}>
                   <span className={styles.boardType}>[{getBoardTypeLabel(comment.boardType)}]</span>
                   <h3 className={styles.postTitle}>{comment.postTitle}</h3>
