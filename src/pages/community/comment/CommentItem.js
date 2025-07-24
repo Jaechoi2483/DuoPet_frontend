@@ -9,13 +9,22 @@ import { AuthContext } from '../../../AuthProvider';
 
 function CommentItem({ comment, allComments = [], onReload, setReportProps, setIsReportOpen }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
-  const { user, accessToken, refreshToken } = useContext(AuthContext);
+  const { user } = useContext(AuthContext); // user만 AuthContext에서 사용 (accessToken은 직접 가져옴)
 
+  // ✅ 공통 AuthProvider에서 accessToken을 제공하지 않기 때문에 localStorage에서 직접 가져와야 함
+  const accessToken = localStorage.getItem('accessToken');
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  // ✅ "null" 문자열이나 null 값을 정제
+  const validAccessToken = accessToken && accessToken !== 'null' ? accessToken : null;
+  const validRefreshToken = refreshToken && refreshToken !== 'null' ? refreshToken : null;
+
+  // 대댓글 필터링
   const replies = allComments.filter((c) => c.parentCommentId === comment.commentId);
 
-  // 댓글 좋아요
+  // 댓글 좋아요 핸들러
   const handleLike = async (commentId) => {
-    if (!accessToken || accessToken === 'null') {
+    if (!validAccessToken) {
       alert('로그인 후 이용 가능합니다.');
       return;
     }
@@ -26,8 +35,8 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
         {},
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
-            RefreshToken: `Bearer ${refreshToken}`,
+            Authorization: `Bearer ${validAccessToken}`,
+            RefreshToken: `Bearer ${validRefreshToken}`,
           },
         }
       );
@@ -37,13 +46,14 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
     }
   };
 
+  // 댓글 삭제 핸들러
   const handleDelete = async () => {
     if (window.confirm('댓글을 삭제하시겠습니까?')) {
       try {
         await apiClient.delete(`/comments/delete/${comment.commentId}`, {
           headers: {
-            Authorization: `Bearer ${accessToken}`,
-            RefreshToken: `Bearer ${refreshToken}`,
+            Authorization: `Bearer ${validAccessToken}`,
+            RefreshToken: `Bearer ${validRefreshToken}`,
           },
         });
         onReload();
@@ -65,6 +75,7 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
       <p className={styles.content}>{comment.content}</p>
 
       <div className={styles.actions}>
+        {/* 답글 버튼 */}
         <button onClick={() => setShowReplyForm(!showReplyForm)}>답글</button>
 
         {/* ❤️ 좋아요 버튼 */}
@@ -73,8 +84,7 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
         {/* 🚨 신고 버튼 */}
         <button
           onClick={() => {
-            const token = localStorage.getItem('accessToken');
-            if (!token || token === 'null') {
+            if (!validAccessToken) {
               alert('로그인 후 이용 가능합니다.');
               return;
             }
@@ -85,17 +95,17 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
           🚨 신고
         </button>
 
-        {/* 현재 로그인한 유저와 댓글 작성자가 일치할 때만 삭제 버튼 노출 */}
+        {/* 댓글 작성자와 로그인 유저가 같을 경우 삭제 버튼 노출 */}
         {user?.userId === comment.userId && <button onClick={handleDelete}>삭제</button>}
       </div>
 
-      {/* 대댓글 작성 폼 */}
+      {/* 대댓글 입력 폼 */}
       {showReplyForm && (
         <CommentForm
           contentId={comment.contentId}
           parentCommentId={comment.commentId}
-          accessToken={accessToken}
-          refreshToken={refreshToken}
+          accessToken={validAccessToken}
+          refreshToken={validRefreshToken}
           onSuccess={() => {
             setShowReplyForm(false);
             onReload();
@@ -103,7 +113,7 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
         />
       )}
 
-      {/* 대댓글 렌더링 */}
+      {/* 대댓글 리스트 렌더링 */}
       <div className={styles.replyList}>
         {replies.map((reply) => (
           <div key={reply.commentId} className={styles.replyIndent}>
