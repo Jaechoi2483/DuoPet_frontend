@@ -11,11 +11,11 @@ function CommentItem({ comment, allComments = [], onReload, setReportProps, setI
   const [showReplyForm, setShowReplyForm] = useState(false);
   const { user } = useContext(AuthContext); // user만 AuthContext에서 사용 (accessToken은 직접 가져옴)
 
-  // ✅ 공통 AuthProvider에서 accessToken을 제공하지 않기 때문에 localStorage에서 직접 가져와야 함
+  // 공통 AuthProvider에서 accessToken을 제공하지 않기 때문에 localStorage에서 직접 가져와야 함
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
 
-  // ✅ "null" 문자열이나 null 값을 정제
+  // "null" 문자열이나 null 값을 정제
   const validAccessToken = accessToken && accessToken !== 'null' ? accessToken : null;
   const validRefreshToken = refreshToken && refreshToken !== 'null' ? refreshToken : null;
 
