@@ -256,16 +256,18 @@ function FreeBoardDetail() {
           {Array.isArray(videos) &&
             videos.map((video) => (
               <a
-                key={video.videoId}
-                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                key={video.video_id}
+                href={`https://www.youtube.com/watch?v=${video.video_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.videoCard}
               >
-                <img src={video.thumbnailUrl} alt={video.title} className={styles.videoThumbnail} />
+                <div className={styles.videoThumbnail}>
+                  <img src={video.thumbnail_url} alt={video.title} />
+                </div>
                 <p className={styles.videoTitle}>{video.title}</p>
                 <p className={styles.videoMeta}>
-                  {video.channelName} · 조회수 {video.viewCount}
+                  {video.channel_name} · 조회수 {video.view_count}
                 </p>
               </a>
             ))}
