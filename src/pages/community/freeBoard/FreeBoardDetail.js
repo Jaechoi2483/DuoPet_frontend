@@ -48,18 +48,23 @@ function FreeBoardDetail() {
   const handleLike = async () => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
-    if (!accessToken || !refreshToken) {
-      alert('로그인이 필요한 기능입니다.');
+
+    const validAccessToken = accessToken && accessToken !== 'null' ? accessToken : null;
+    const validRefreshToken = refreshToken && refreshToken !== 'null' ? refreshToken : null;
+
+    if (!validAccessToken) {
+      alert('로그인 후 이용 가능합니다.');
       return;
     }
+
     try {
       const res = await apiClient.post(`/board/like/${id}`, null, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          RefreshToken: `Bearer ${refreshToken}`,
+          Authorization: `Bearer ${validAccessToken}`,
+          RefreshToken: `Bearer ${validRefreshToken}`,
         },
-        withCredentials: true,
       });
+
       setLiked(res.data.liked);
       setLikeCount((prev) => (res.data.liked ? prev + 1 : prev - 1));
       triggerToast(res.data.liked ? '좋아요를 눌렀습니다.' : '좋아요를 취소했습니다.');
@@ -109,24 +114,56 @@ function FreeBoardDetail() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
+        // 1. 조회수 증가 요청
         await apiClient.get(`/board/view-count`, { params: { id } });
+
+        // 2. 게시글 상세 정보 가져오기
         const res = await apiClient.get(`/board/detail/${id}`);
         setPost(res.data);
         setLikeCount(res.data.likeCount);
 
+        // 3. 로컬스토리지에서 토큰 불러오기
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-        const likeRes = await apiClient.get(`/like/${id}/status`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            RefreshToken: `Bearer ${refreshToken}`,
-          },
-        });
-        setLiked(likeRes.data.liked);
+
+        const validAccessToken = accessToken && accessToken !== 'null' ? accessToken : null;
+        const validRefreshToken = refreshToken && refreshToken !== 'null' ? refreshToken : null;
+
+        // 4. 로그인 상태일 때만 좋아요/북마크 상태 확인
+        if (validAccessToken && validRefreshToken) {
+          try {
+            const likeRes = await apiClient.get(`/like/${id}/status`, {
+              headers: {
+                Authorization: `Bearer ${validAccessToken}`,
+                RefreshToken: `Bearer ${validRefreshToken}`,
+              },
+            });
+            setLiked(likeRes.data.liked);
+          } catch (err) {
+            setLiked(false);
+          }
+
+          try {
+            const bookmarkRes = await apiClient.get(`/bookmark/${id}/status`, {
+              headers: {
+                Authorization: `Bearer ${validAccessToken}`,
+                RefreshToken: `Bearer ${validRefreshToken}`,
+              },
+            });
+            setBookmarked(bookmarkRes.data.bookmarked);
+          } catch (err) {
+            setBookmarked(false);
+          }
+        } else {
+          // 5. 비로그인 상태일 경우 초기값 설정
+          setLiked(false);
+          setBookmarked(false);
+        }
       } catch (err) {
-        console.error('상세글 조회 실패', err);
+        console.error('❌ 상세글 조회 실패', err);
       }
     };
+
     fetchPost();
   }, [id]);
 
