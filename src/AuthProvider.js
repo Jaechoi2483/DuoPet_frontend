@@ -70,7 +70,18 @@ export const AuthProvider = ({ children }) => {
         if (accessToken && refreshToken) {
           console.log('토큰 발견, 파싱 시작');
           const parsedToken = parseAccessToken(accessToken);
+
           if (parsedToken) {
+            const now = Date.now();
+            const exp = parsedToken.exp * 1000;
+
+            if (now > exp) {
+              console.warn('accessToken 만료됨! 로그인 상태로 만들지 않음');
+              setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
+              localStorage.clear(); // 만료된 토큰 제거
+              return;
+            }
+
             console.log('파싱된 토큰 정보:', parsedToken);
             // 토큰이 유효하면 로그인 상태로 설정
             const authData = {
@@ -88,7 +99,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.clear();
           }
         } else {
-          // ✨ [수정 #2] 토큰이 없는 경우에도, 명시적으로 로그아웃 상태임을 확정해줍니다.
+          // ✨ 토큰이 없는 경우에도 명시적으로 로그아웃 상태임을 확정해줍니다.
           setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
         }
       } catch (error) {
@@ -107,7 +118,9 @@ export const AuthProvider = ({ children }) => {
 
   // 로그아웃 함수
   const logoutAndRedirect = async () => {
-    if (!authInfo.isLoggedIn) return;
+    if (!authInfo.isLoggedIn) {
+      return;
+    }
 
     const accessToken = localStorage.getItem('accessToken');
 

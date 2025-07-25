@@ -169,11 +169,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
   pointer-events: none;
 }
 
@@ -219,12 +215,7 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transition: left 0.5s;
 }
 
@@ -317,7 +308,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background-color: #4A9FF3; /* 메인 파란색 배경 */
+  background-color: #4a9ff3; /* 메인 파란색 배경 */
   color: #ffffff; /* 흰색 글자 */
   display: flex;
   justify-content: center;
@@ -415,4 +406,42 @@
 .adminIconButton:hover {
   transform: scale(1.15);
   background: none;
+}
+
+/* 세션 타이머 영역 */
+.sessionTimer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 12px;
+  font-size: 0.9rem;
+  color: #334155;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background-color: #f1f5f9; /* 연한 회색 배경만 */
+  box-shadow: none; /* 기존 그림자 제거 */
+  border: none; /* 테두리 제거 */
+}
+
+.timerIcon {
+  font-size: 1rem;
+}
+
+.timeText {
+  font-weight: 600;
+}
+
+.extendBtn {
+  background-color: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+  color: #1e3a8a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.extendBtn:hover {
+  background-color: #eff6ff;
 }
