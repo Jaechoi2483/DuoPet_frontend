@@ -1,0 +1,57 @@
+.toastContainer {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  pointer-events: none;
+}
+
+.toastItem {
+  pointer-events: all;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(calc(100% + 20px));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* 스크롤바 스타일링 */
+.toastContainer::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toastContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toastContainer::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+}
+
+.toastContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* 모바일 대응 */
+@media (max-width: 480px) {
+  .toastContainer {
+    top: 60px;
+    right: 10px;
+    left: 10px;
+    max-width: calc(100vw - 20px);
+  }
+}

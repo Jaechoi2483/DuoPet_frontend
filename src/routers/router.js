@@ -18,6 +18,11 @@ import adoptionRoutes from './adoptionRoutes';
 import infoRoutes from './infoRoutes';
 import qnaRoutes from './qnaRoutes';
 
+// 상담 관련 페이지 import
+import ConsultationWaitingPage from '../pages/consultation/ConsultationWaitingPage';
+import ConsultationChat from '../pages/consultation/ConsultationChat';
+
+
 const AppRouter = () => {
   return (
     <Routes>
@@ -33,6 +38,10 @@ const AppRouter = () => {
       {adoptionRoutes}
       {infoRoutes}
       {qnaRoutes}
+      
+      {/* 상담 관련 라우트 */}
+      <Route path="/consultation/waiting/:roomId" element={<ConsultationWaitingPage />} />
+      <Route path="/consultation/chat/:roomId" element={<ConsultationChat />} />
     </Routes>
   );
 };

@@ -83,6 +83,11 @@ export const AuthProvider = ({ children }) => {
             }
 
             console.log('파싱된 토큰 정보:', parsedToken);
+            // localStorage에 필요한 정보 저장 (WebSocket 연결 등을 위해)
+            localStorage.setItem('role', parsedToken.role);
+            localStorage.setItem('userId', parsedToken.sub);
+            localStorage.setItem('userNo', parsedToken.userNo);
+            
             // 토큰이 유효하면 로그인 상태로 설정
             const authData = {
               isLoggedIn: true,
@@ -155,6 +160,11 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthProvider updateTokens : ', parsedToken);
 
         if (parsedToken) {
+          // localStorage에 필요한 정보 저장 (WebSocket 연결 등을 위해)
+          localStorage.setItem('role', parsedToken.role);
+          localStorage.setItem('userId', parsedToken.sub);
+          localStorage.setItem('userNo', parsedToken.userNo);
+          
           setAuthInfo({
             isLoggedIn: true,
             role: parsedToken.role,
