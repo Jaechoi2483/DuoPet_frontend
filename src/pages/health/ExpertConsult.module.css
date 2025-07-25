@@ -166,8 +166,14 @@
   text-overflow: ellipsis;
 }
 
-.selectButton {
+.expertActions {
+  display: flex;
+  gap: 10px;
   width: 100%;
+}
+
+.selectButton {
+  flex: 1;
   padding: 12px;
   background: #FF9800;
   color: white;
@@ -180,6 +186,23 @@
 
 .selectButton:hover {
   background: #F57C00;
+}
+
+.instantButton {
+  flex: 1;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-weight: 600;
+}
+
+.instantButton:hover {
+  background: #45a049;
 }
 
 .expertStatus {
@@ -385,6 +408,24 @@
 
 .bookingButton:hover {
   background: #F57C00;
+}
+
+.bookingButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.formActions {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.formHelperText {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #4caf50;
+  font-weight: 500;
 }
 
 .infoSection {
@@ -675,6 +716,28 @@
   font-size: 0.95rem;
 }
 
+.petManagementActions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addPetButton {
+  padding: 8px 16px;
+  background: transparent;
+  color: #FF9800;
+  border: 1px solid #FF9800;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.addPetButton:hover {
+  background: #FF9800;
+  color: white;
+}
+
 .paymentInfo {
   margin-bottom: 30px;
 }
@@ -737,4 +800,82 @@
 .confirmButton:disabled {
   background: #ccc;
   cursor: not-allowed;
+}
+
+/* 새로운 날짜/시간 선택 UI 스타일 */
+.dateTimeSection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.datePickerWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.timeSlotWrapper {
+  margin-top: 20px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dateTimeSection {
+    grid-template-columns: 1fr 1.5fr;
+    gap: 40px;
+  }
+  
+  .timeSlotWrapper {
+    margin-top: 0;
+  }
+}
+
+/* 개발 도구 스타일 */
+.devTools {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.generateScheduleButton {
+  background-color: #fdcb6e;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.generateScheduleButton:hover:not(:disabled) {
+  background-color: #f39c12;
+  transform: translateY(-1px);
+}
+
+.generateScheduleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.devToolsInfo {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #856404;
 }

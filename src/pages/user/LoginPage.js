@@ -41,6 +41,9 @@ function LoginPage() {
 
       // 토큰 저장 및 전역 상태 업데이트
       updateTokens(data.accessToken, data.refreshToken);
+      
+      // loginId를 항상 저장 (WebSocket 연결을 위해)
+      localStorage.setItem('loginId', loginId);
 
       // ID 저장/삭제
       if (rememberId) {

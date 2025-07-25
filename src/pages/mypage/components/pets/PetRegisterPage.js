@@ -8,6 +8,9 @@ const PetRegisterPage = () => {
   const navigate = useNavigate();
   const { userNo, isAuthLoading } = useContext(AuthContext);
   
+  // localStorage에서 직접 userId 가져오기 (fallback)
+  const userId = userNo || localStorage.getItem('userId');
+  
   const [formData, setFormData] = useState({
     name: '',
     species: '',
@@ -53,9 +56,9 @@ const PetRegisterPage = () => {
       return;
     }
 
-    console.log('userNo:', userNo);
+    console.log('userNo:', userNo, 'userId:', userId);
     
-    if (!userNo) {
+    if (!userId) {
       alert('로그인 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
       navigate('/login');
       return;
@@ -66,7 +69,7 @@ const PetRegisterPage = () => {
     try {
       // 백엔드 형식으로 데이터 변환
       const petData = {
-        userId: userNo,
+        userId: userId,
         petName: formData.name,
         animalType: formData.species,
         breed: formData.breed || null,
@@ -93,6 +96,17 @@ const PetRegisterPage = () => {
   const handleCancel = () => {
     navigate('/mypage', { state: { activeTab: 'pets' } });
   };
+
+  // 인증 정보 로딩 중이면 로딩 표시
+  if (isAuthLoading) {
+    return (
+      <div className={styles.contentWrapper}>
+        <div className={styles.loadingContainer}>
+          <p>로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.contentWrapper}>

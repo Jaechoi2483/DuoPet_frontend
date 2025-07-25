@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8080/api/consultation';
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL 
+    ? `${process.env.REACT_APP_API_BASE_URL}/api/consultation`
+    : 'http://localhost:8080/api/consultation';
+
+console.log('[consultationApi] API_BASE_URL:', API_BASE_URL);
 
 // Axios 인스턴스 생성
 const api = axios.create({
@@ -14,10 +18,15 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
+    const userRole = localStorage.getItem('role');
+    const userId = localStorage.getItem('userId');
     
     console.log('[consultationApi] 인터셉터 실행 - accessToken:', accessToken ? '있음' : '없음');
     console.log('[consultationApi] 인터셉터 실행 - refreshToken:', refreshToken ? '있음' : '없음');
+    console.log('[consultationApi] 인터셉터 실행 - role:', userRole);
+    console.log('[consultationApi] 인터셉터 실행 - userId:', userId);
     console.log('[consultationApi] 요청 URL:', config.url);
+    console.log('[consultationApi] 현재 포트:', window.location.port);
     
     if (accessToken && refreshToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -99,37 +108,55 @@ export const vetProfileApi = {
 export const consultationRoomApi = {
     // 상담 신청
     createConsultation: async (consultationData) => {
-        const response = await api.post('/consultation-rooms', consultationData);
+        const response = await api.post('/rooms', consultationData);
+        return response.data;
+    },
+
+    // 즉시 상담 신청 (일반 상담 생성 API 사용)
+    createInstantConsultation: async (consultationData) => {
+        const response = await api.post('/rooms', consultationData);
         return response.data;
     },
 
     // 내 상담 목록 조회
     getMyConsultations: async () => {
-        const response = await api.get('/consultation-rooms/my');
+        const response = await api.get('/rooms/my-consultations');
         return response.data;
     },
 
     // 상담 상세 조회
     getConsultationDetail: async (roomId) => {
-        const response = await api.get(`/consultation-rooms/${roomId}`);
+        const response = await api.get(`/rooms/${roomId}`);
         return response.data;
     },
 
     // 상담 시작
     startConsultation: async (roomId) => {
-        const response = await api.put(`/consultation-rooms/${roomId}/start`);
+        const response = await api.put(`/rooms/${roomId}/start`);
         return response.data;
     },
 
     // 상담 종료
     endConsultation: async (roomId) => {
-        const response = await api.put(`/consultation-rooms/${roomId}/end`);
+        const response = await api.put(`/rooms/${roomId}/end`);
         return response.data;
     },
 
     // 상담 취소
     cancelConsultation: async (roomId) => {
-        const response = await api.put(`/consultation-rooms/${roomId}/cancel`);
+        const response = await api.put(`/rooms/${roomId}/cancel`);
+        return response.data;
+    },
+
+    // 상담 승인 (전문가용)
+    approveConsultation: async (roomId) => {
+        const response = await api.put(`/rooms/${roomId}/approve`);
+        return response.data;
+    },
+
+    // 상담 거절 (전문가용)
+    rejectConsultation: async (roomId) => {
+        const response = await api.put(`/rooms/${roomId}/reject`);
         return response.data;
     },
 };
@@ -155,6 +182,12 @@ export const vetScheduleApi = {
     // 일정 예약
     bookSchedule: async (scheduleId) => {
         const response = await api.post(`/vet-schedules/${scheduleId}/book`);
+        return response.data;
+    },
+
+    // 수의사 일정 일괄 생성 (개발용)
+    createScheduleBatch: async (batchData) => {
+        const response = await api.post('/vet-schedules/batch', batchData);
         return response.data;
     },
 };
@@ -223,10 +256,12 @@ export const consultationReviewApi = {
     },
 };
 
-export default {
+const consultationApi = {
     vetProfileApi,
     consultationRoomApi,
     vetScheduleApi,
     chatMessageApi,
     consultationReviewApi,
 };
+
+export default consultationApi;

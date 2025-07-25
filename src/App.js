@@ -1,6 +1,6 @@
 // src/App.js
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useContext } from 'react';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import './App.css';
 import AppRouter from './routers/router';
@@ -10,14 +10,75 @@ import { SignupProvider } from './components/context/SignupContext';
 import ChatBot from './components/common/ChatBot';
 import ChatbotModal from './components/common/ChatbotModal';
 import chatbotStyles from './components/common/Chatbot.module.css';
+import NotificationToast from './components/consultation/NotificationToast';
+import websocketService from './services/websocketService';
+import { AuthContext } from './AuthProvider';
+import apiClient from './utils/axios';
 
 // 상세페이지에서만 Footer 제거용 래퍼 컴포넌트
 function AppWrapper() {
   const location = useLocation();
+  const { isAuthenticated, role, userNo } = useContext(AuthContext);
   const [isChatOpen, setIsChatOpen] = React.useState(false);
   const footerRef = useRef(null);
   const [footerVisible, setFooterVisible] = useState(false);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationData, setNotificationData] = useState(null);
+  
+  // WebSocket 연결 관리
+  useEffect(() => {
+    if (isAuthenticated && (role === 'VET' || role === 'vet')) {
+      // 전문가로 로그인한 경우 WebSocket 연결
+      console.log('전문가로 로그인됨, WebSocket 연결 중...');
+      
+      // loginId를 가져오거나, 없으면 JWT의 subject (userid) 사용
+      let userIdentifier = localStorage.getItem('loginId');
+      
+      if (!userIdentifier) {
+        // OAuth 로그인의 경우 loginId가 없으므로 JWT의 sub 필드 사용
+        const accessToken = localStorage.getItem('accessToken');
+        if (accessToken) {
+          try {
+            // JWT 토큰 디코딩 (간단한 방법)
+            const payload = JSON.parse(atob(accessToken.split('.')[1]));
+            userIdentifier = payload.sub; // JWT의 subject 필드
+            console.log('JWT subject 사용:', userIdentifier);
+          } catch (e) {
+            console.error('JWT 파싱 실패:', e);
+          }
+        }
+      }
+      
+      console.log('사용할 식별자:', userIdentifier);
+      
+      if (userIdentifier) {
+        // WebSocket 연결
+        websocketService.connect('VET', userIdentifier)
+          .then(() => {
+            console.log('WebSocket 연결 성공 (identifier:', userIdentifier, ')');
+            // 전역 함수로 알림 표시 함수 등록
+            window.showConsultationRequestNotification = (notification) => {
+              console.log('상담 요청 알림:', notification);
+              setNotificationData(notification);
+              setShowNotification(true);
+            };
+          })
+          .catch(err => {
+            console.error('WebSocket 연결 실패:', err);
+          });
+      } else {
+        console.error('사용자 식별자를 찾을 수 없습니다.');
+      }
+    }
+    
+    return () => {
+      // 컴포넌트 언마운트 시 WebSocket 연결 해제
+      if (websocketService.isConnected()) {
+        websocketService.disconnect();
+      }
+    };
+  }, [isAuthenticated, role]);
 
   useEffect(() => {
     if (!footerRef.current) return;
@@ -56,6 +117,14 @@ function AppWrapper() {
       <Menubar />
       <AppRouter />
       {!isFreeBoardDetail && <Footer ref={footerRef} />}
+      
+      {/* 전문가 알림 시스템 */}
+      {showNotification && notificationData && (
+        <NotificationToast 
+          notification={notificationData}
+          onClose={() => setShowNotification(false)}
+        />
+      )}
 
       {/* 챗봇 플로팅 버튼 */}
       <button

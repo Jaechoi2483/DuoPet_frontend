@@ -1,0 +1,221 @@
+.visualizerContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 메인 점수 섹션 */
+.mainScoreSection {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.circularProgress {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.scoreText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.scoreValue {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.scoreLabel {
+  font-size: 14px;
+  color: #666;
+}
+
+.scoreTitle {
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+}
+
+/* 패턴 섹션 */
+.patternsSection {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  color: #333;
+  margin: 0 0 20px 0;
+  font-weight: 600;
+}
+
+.patternsList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.patternItem {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.patternHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.patternName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.patternValue {
+  font-size: 14px;
+  font-weight: bold;
+  color: #666;
+}
+
+.progressBar {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progressFill {
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 4px;
+}
+
+.patternStatus {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.patternStatus.우수 {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.patternStatus.정상,
+.patternStatus.양호 {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.patternStatus.낮음,
+.patternStatus.주의,
+.patternStatus.개선필요,
+.patternStatus.보통,
+.patternStatus.부족,
+.patternStatus.확인필요 {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* 시간적 분석 섹션 */
+.temporalSection {
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.activityChart {
+  margin-bottom: 20px;
+}
+
+.activityBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.activityLabel {
+  width: 50px;
+  font-size: 14px;
+  color: #666;
+}
+
+.activityProgress {
+  flex: 1;
+  height: 20px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.activityFill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.activityPercent {
+  width: 45px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* 메트릭 그리드 */
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.metricCard {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.metricValue {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .visualizerContainer {
+    padding: 15px;
+  }
+
+  .patternsSection,
+  .temporalSection {
+    padding: 15px;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+}

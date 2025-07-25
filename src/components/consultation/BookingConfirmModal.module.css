@@ -1,0 +1,376 @@
+.modalContent {
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.modalHeader {
+  padding: 30px 30px 20px;
+  text-align: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modalTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.modalSubtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.bookingDetails {
+  padding: 20px 30px;
+}
+
+.section {
+  margin-bottom: 25px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+.sectionIcon {
+  font-size: 20px;
+}
+
+/* 전문가 정보 */
+.expertInfo {
+  display: flex;
+  gap: 15px;
+}
+
+.expertImageWrapper {
+  flex-shrink: 0;
+}
+
+.expertImage {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.expertImagePlaceholder {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.expertDetails h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.expertDetails p {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 3px 0;
+}
+
+.specialty {
+  color: #4299e1 !important;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* 상담 일정 */
+.scheduleInfo {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.infoRow:not(:last-child) {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.label {
+  font-size: 14px;
+  color: #666;
+}
+
+.value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 반려동물 정보 */
+.petInfo {
+  display: flex;
+  gap: 15px;
+}
+
+.petImageWrapper {
+  flex-shrink: 0;
+}
+
+.petImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.petImagePlaceholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.petDetails h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.petDetails p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+/* 증상 */
+.symptomsBox {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.6;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+/* 결제 정보 */
+.paymentInfo {
+  background-color: #fff8e1;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ffe082;
+}
+
+.feeRow, .totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.feeLabel, .totalLabel {
+  font-size: 14px;
+  color: #666;
+}
+
+.feeAmount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.totalRow {
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 1px solid #ffe082;
+}
+
+.totalLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.totalAmount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f57c00;
+}
+
+/* 안내사항 */
+.notice {
+  background-color: #e3f2fd;
+  padding: 20px 30px;
+  margin: 0 -30px;
+}
+
+.noticeTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1976d2;
+  margin: 0 0 10px 0;
+}
+
+.noticeList {
+  margin: 0;
+  padding: 0 0 0 20px;
+  list-style: disc;
+}
+
+.noticeList li {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+/* 액션 버튼 */
+.modalActions {
+  display: flex;
+  gap: 12px;
+  padding: 20px 30px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cancelButton {
+  flex: 1;
+  padding: 14px 24px;
+  background-color: #f3f4f6;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
+.confirmButton {
+  flex: 2;
+  padding: 14px 24px;
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background-color: #3182ce;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.cancelButton:disabled, .confirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 스크롤바 스타일 */
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+  .modalContent {
+    max-width: 100%;
+    max-height: 100vh;
+  }
+
+  .modalHeader {
+    padding: 20px 20px 15px;
+  }
+
+  .bookingDetails {
+    padding: 15px 20px;
+  }
+
+  .notice {
+    padding: 15px 20px;
+    margin: 0 -20px;
+  }
+
+  .modalActions {
+    padding: 15px 20px;
+    flex-direction: column;
+  }
+
+  .cancelButton, .confirmButton {
+    width: 100%;
+  }
+}
