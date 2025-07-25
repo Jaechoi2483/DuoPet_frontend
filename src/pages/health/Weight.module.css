@@ -17,6 +17,7 @@
   grid-template-columns: 2fr 1fr;
   gap: 24px;
   margin-bottom: 32px;
+  align-items: stretch;
 }
 
 .chartSection .chartPlaceholder {
@@ -39,7 +40,14 @@
 .infoSection {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  height: 100%;
+}
+
+.infoCardContainer {
+  flex-grow: 1; /* 남는 공간을 모두 차지하도록 설정 (가장 중요!) */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 컨테이너 안에서 카드들을 균등 분배 */
 }
 
 .infoCard {
@@ -68,6 +76,87 @@
 
 .statusNormal {
   color: #10b981 !important;
+}
+
+.statusUnderweight {
+  color: #f59e0b !important;
+}
+
+.statusOverweight {
+  color: #ef4444 !important;
+}
+
+.statusObese {
+  color: #dc2626 !important;
+  font-weight: 700 !important;
+}
+
+.statusUnknown {
+  color: #6b7280 !important;
+}
+
+/* Line Chart Styles */
+.chartContainer {
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  justify-content: flex-start;
+  padding: 10px 0;
+}
+
+.lineChart {
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.dataPoint {
+  cursor: pointer;
+  transition: r 0.2s ease;
+}
+
+.dataPoint:hover {
+  r: 6;
+}
+
+/* Pagination Styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.pageButton {
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 50px;
+}
+
+.pageButton:hover:not(:disabled) {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
+  padding: 0 12px;
 }
 
 /* --- 하단 섹션 (히스토리) --- */
@@ -100,9 +189,10 @@
 }
 
 .historyItem {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
+  gap: 16px;
   padding: 16px;
   background-color: #f9fafb;
   border-radius: 8px;
@@ -129,6 +219,8 @@
 .weightChange {
   font-size: 0.875rem;
   font-weight: 600;
+  text-align: center;
+  min-width: 70px;
 }
 .weightChange.increase {
   color: #ef4444; /* 빨간색 (증가) */
@@ -205,4 +297,111 @@
 }
 .submitButton:hover {
   background: #2563eb;
+}
+
+/* 로딩 및 빈 상태 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.emptyState p {
+  margin: 8px 0;
+  font-size: 0.875rem;
+}
+
+/* 체중 메모 스타일 */
+.weightMemo {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* 상세보기 모달 스타일 */
+.detailGroup {
+  margin-bottom: 20px;
+}
+
+.detailLabel {
+  display: block;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detailValue {
+  font-size: 16px;
+  color: #333;
+}
+
+.detailContent {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* 버튼 스타일 */
+.editButton {
+  padding: 10px 24px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.editButton:hover {
+  background-color: #45a049;
+}
+
+.deleteButton {
+  padding: 10px 24px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.deleteButton:hover {
+  background-color: #da190b;
+}
+
+.cancelButton {
+  padding: 10px 24px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancelButton:hover {
+  background-color: #d0d0d0;
+}
+
+/* modalFooter position relative 추가 */
+.modalFooter {
+  padding: 30px 24px 20px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
 }

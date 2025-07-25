@@ -1,0 +1,270 @@
+.timeSlotContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.legend {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: #666;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legendDot.available {
+  background-color: #48bb78;
+}
+
+.legendDot.moderate {
+  background-color: #ed8936;
+}
+
+.legendDot.almostFull {
+  background-color: #e53e3e;
+}
+
+.loadingContainer {
+  text-align: center;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #4299e1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+}
+
+.emptyMessage {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.emptySubMessage {
+  font-size: 14px;
+  color: #999;
+}
+
+.periodSection {
+  margin-bottom: 25px;
+}
+
+.periodSection:last-child {
+  margin-bottom: 0;
+}
+
+.periodTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px 0;
+}
+
+.periodIcon {
+  font-size: 20px;
+}
+
+.slotsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.slotCard {
+  background-color: #f7fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.slotCard:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.slotCard.hovered {
+  border-color: #4299e1;
+}
+
+.slotCard.selected {
+  background-color: #ebf8ff;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+}
+
+.slotCard.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background-color: #f3f4f6;
+}
+
+.slotCard.available {
+  border-color: #48bb78;
+}
+
+.slotCard.moderate {
+  border-color: #ed8936;
+}
+
+.slotCard.almostFull {
+  border-color: #e53e3e;
+}
+
+.slotTime {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.slotAvailability {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.availableCount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4299e1;
+  display: block;
+}
+
+.availableText {
+  font-size: 12px;
+  color: #666;
+}
+
+.fullText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #e53e3e;
+}
+
+.progressBar {
+  height: 4px;
+  background-color: #e2e8f0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #cbd5e0;
+  transition: width 0.3s ease;
+}
+
+.slotCard.available .progressFill {
+  background-color: #68d391;
+}
+
+.slotCard.moderate .progressFill {
+  background-color: #f6ad55;
+}
+
+.slotCard.almostFull .progressFill {
+  background-color: #fc8181;
+}
+
+.selectedInfo {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #ebf8ff;
+  border: 1px solid #4299e1;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.selectedIcon {
+  font-size: 24px;
+}
+
+.selectedText {
+  font-size: 14px;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.selectedText strong {
+  color: #4299e1;
+}
+
+.selectedSubText {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .slotsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 10px;
+  }
+
+  .slotCard {
+    padding: 10px;
+  }
+}

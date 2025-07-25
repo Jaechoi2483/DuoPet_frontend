@@ -237,10 +237,12 @@
   min-height: 100px;
 }
 .modalFooter {
-  padding: 20px 24px;
+  padding: 30px 24px 20px 24px;
   border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  position: relative;
 }
 .submitButton {
   padding: 10px 24px;
@@ -255,4 +257,89 @@
 }
 .submitButton:hover {
   background: #2563eb;
+}
+
+/* 상세보기 모달 스타일 */
+.detailGroup {
+  margin-bottom: 20px;
+}
+
+.detailLabel {
+  display: block;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.detailValue {
+  font-size: 16px;
+  color: #333;
+}
+
+.detailContent {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fileItem {
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* 버튼 스타일 추가 */
+.editButton {
+  padding: 10px 24px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.editButton:hover {
+  background-color: #45a049;
+}
+
+.deleteButton {
+  padding: 10px 24px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.deleteButton:hover {
+  background-color: #da190b;
+}
+
+.cancelButton {
+  padding: 10px 24px;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cancelButton:hover {
+  background-color: #d0d0d0;
 }

@@ -1,0 +1,207 @@
+.accountSettingsContainer {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.backButton {
+  padding: 8px 16px;
+  background-color: #f0f0f0;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+  background-color: #e0e0e0;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.settingsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.infoSection,
+.editableSection,
+.verificationSection {
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.infoItem,
+.editableItem {
+  margin-bottom: 20px;
+}
+
+.infoItem:last-child,
+.editableItem:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.valueRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.value {
+  font-size: 1rem;
+  color: #333;
+}
+
+.notice {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.editRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #4A9FF3;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.editButton,
+.saveButton,
+.cancelButton {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.editButton {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.editButton:hover {
+  background-color: #e0e0e0;
+}
+
+.saveButton {
+  background-color: #4A9FF3;
+  color: white;
+}
+
+.saveButton:hover {
+  background-color: #3a8fe3;
+}
+
+.cancelButton {
+  background-color: #fff;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.cancelButton:hover {
+  background-color: #f9fafb;
+}
+
+.verificationItem {
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.verificationItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.verificationInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.verificationLabel {
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.verificationStatus {
+  font-size: 0.9rem;
+  color: #16a34a;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .editRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .buttonGroup {
+    width: 100%;
+  }
+  
+  .saveButton,
+  .cancelButton {
+    flex: 1;
+  }
+}

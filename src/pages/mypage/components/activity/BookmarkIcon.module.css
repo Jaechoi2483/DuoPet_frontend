@@ -1,0 +1,21 @@
+/* components/common/BookmarkIcon.module.css */
+.bookmarkIcon {
+  font-size: 22px;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
+}
+
+.bookmarkIcon:hover {
+  transform: scale(1.15);
+  color: #f39c12; /* 노란색 강조 */
+}
+
+.bookmarkActive {
+  color: #f39c12;
+}
+
+.bookmarkInactive {
+  color: #ccc;
+}

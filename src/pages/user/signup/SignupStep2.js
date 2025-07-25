@@ -112,18 +112,26 @@ function SignupStep2() {
 
       <div className={styles.formGroup}>
         <label>닉네임 *</label>
-        <input
-          type="text"
-          name="nickname"
-          placeholder="닉네임을 입력하세요"
-          value={signupData.nickname}
-          onChange={(e) => {
-            setSignupData({ ...signupData, nickname: e.target.value });
-            setNicknameAvailable(null);
-            setError('');
-          }}
-        />
 
+        <div className={styles.inlineGroup}>
+          <input
+            type="text"
+            name="nickname"
+            placeholder="닉네임을 입력하세요"
+            className={styles.inputField}
+            value={signupData.nickname}
+            onChange={(e) => {
+              setSignupData({ ...signupData, nickname: e.target.value });
+              setNicknameAvailable(null);
+              setError('');
+            }}
+          />
+          <button type="button" onClick={checkNickname} className={styles.checkButton}>
+            중복 확인
+          </button>
+        </div>
+
+        {/* 상태 메시지 */}
         {signupData.nickname === '' && error === '닉네임을 입력해주세요.' && (
           <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
         )}
@@ -133,10 +141,6 @@ function SignupStep2() {
         {signupData.nickname && nicknameAvailable === true && (
           <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 닉네임입니다.</div>
         )}
-
-        <button type="button" onClick={checkNickname}>
-          중복 확인
-        </button>
       </div>
 
       <div className={styles.formGroup}>
@@ -192,18 +196,26 @@ function SignupStep2() {
 
       <div className={styles.formGroup}>
         <label>이메일 *</label>
-        <input
-          type="email"
-          name="userEmail"
-          placeholder="이메일을 입력하세요"
-          value={signupData.userEmail}
-          onChange={(e) => {
-            setSignupData({ ...signupData, userEmail: e.target.value });
-            setEmailAvailable(null);
-            setError('');
-          }}
-        />
 
+        <div className={styles.inlineGroup}>
+          <input
+            type="email"
+            name="userEmail"
+            placeholder="이메일을 입력하세요"
+            className={styles.inputField}
+            value={signupData.userEmail}
+            onChange={(e) => {
+              setSignupData({ ...signupData, userEmail: e.target.value });
+              setEmailAvailable(null);
+              setError('');
+            }}
+          />
+          <button type="button" onClick={checkEmail} className={styles.checkButton}>
+            중복 확인
+          </button>
+        </div>
+
+        {/* 상태 메시지 */}
         {signupData.userEmail === '' && error === '이메일을 입력해주세요.' && (
           <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
         )}
@@ -213,10 +225,6 @@ function SignupStep2() {
         {signupData.userEmail && emailAvailable === true && (
           <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 이메일입니다.</div>
         )}
-
-        <button type="button" onClick={checkEmail}>
-          중복 확인
-        </button>
       </div>
 
       <div className={styles.formGroup}>

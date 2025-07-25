@@ -1,0 +1,153 @@
+.notificationContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 380px;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.timeLeft {
+  font-weight: bold;
+  font-size: 16px;
+  color: #ffd700;
+}
+
+.content {
+  padding: 20px;
+}
+
+.userInfo {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.infoRow:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-weight: 600;
+  color: #495057;
+  min-width: 80px;
+  font-size: 14px;
+}
+
+.value {
+  color: #212529;
+  font-size: 14px;
+}
+
+.symptomSection {
+  margin-bottom: 20px;
+}
+
+.symptomTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 8px;
+}
+
+.symptomText {
+  background: #f8f9fa;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: #495057;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 20px;
+}
+
+.rejectButton,
+.acceptButton {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rejectButton {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.rejectButton:hover:not(:disabled) {
+  background: #dee2e6;
+  transform: translateY(-1px);
+}
+
+.acceptButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.acceptButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.rejectButton:disabled,
+.acceptButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

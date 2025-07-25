@@ -1,0 +1,54 @@
+.expiredContainer {
+  text-align: center;
+  padding: 120px 20px;
+  background-color: #fff;
+  font-family: 'Pretendard', sans-serif;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #222;
+}
+
+.sub {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.desc {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.buttonGroup {
+  margin-top: 40px;
+}
+
+.homeBtn,
+.loginBtn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin: 0 10px;
+  cursor: pointer;
+  border: none;
+  transition: 0.2s ease;
+}
+
+.homeBtn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.loginBtn {
+  background-color: #5b7fff;
+  color: white;
+}
+
+.loginBtn:hover {
+  background-color: #3d5af1;
+}

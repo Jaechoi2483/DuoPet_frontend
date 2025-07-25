@@ -1,12 +1,16 @@
 // src/pages/user/pet/PetRegister.js
 
 import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from '../signup/SignupStep1.module.css';
 import axios from 'axios';
 
 const PetRegister = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const rawUserId = location.state?.userId || localStorage.getItem('userId');
+  const userId = rawUserId ? parseInt(rawUserId, 10) : null;
   const [petList, setPetList] = useState([]);
   const [pet, setPet] = useState({
     name: '',
@@ -77,9 +81,6 @@ const PetRegister = () => {
       return;
     }
 
-    const rawUserId = localStorage.getItem('userId');
-    const userId = rawUserId ? parseInt(rawUserId, 10) : null;
-
     if (!userId) {
       alert('유저 정보가 없습니다. 로그인 후 다시 시도해주세요.');
       navigate('/login');
@@ -117,8 +118,7 @@ const PetRegister = () => {
       }
 
       alert('반려동물 등록이 완료되었습니다.');
-      localStorage.removeItem('userId');
-      navigate('/login');
+      navigate('/signup/face-register');
     } catch (error) {
       console.error(error);
       alert('등록 중 오류가 발생했습니다.');

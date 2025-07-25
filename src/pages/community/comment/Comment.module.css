@@ -1,0 +1,155 @@
+/* 전체 댓글 영역 컨테이너 */
+.commentContainer {
+  margin-top: 2rem;
+  border-top: 1px solid #ccc;
+  padding-top: 2rem;
+  font-family: 'Noto Sans KR', sans-serif; /* 깔끔한 한글 폰트 적용 */
+}
+
+/* 댓글 리스트 영역 */
+.commentList {
+  margin-top: 1.5rem;
+}
+
+/* 댓글/대댓글 공통 카드 스타일 */
+.commentItem {
+  background: #ffffff;
+  border: 1px solid #e1e1e1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s;
+}
+
+/* 대댓글 들여쓰기 스타일 */
+.replyIndent {
+  margin-left: 1.5rem; /* 기존보다 살짝 줄임 */
+  border-left: 1px solid #dee2e6;
+  padding: 12px 16px;
+  background: #f9f9f9;
+  font-size: 0.9rem; /* 글씨 크기 소폭 축소 */
+  border-radius: 10px;
+  max-width: 95%;
+}
+
+/* 댓글 상단 - 닉네임과 날짜 */
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #495057;
+  margin-bottom: 0.6rem;
+}
+
+.nickname {
+  font-weight: 600;
+  color: #212529;
+}
+
+.date {
+  font-style: italic;
+  font-size: 0.875rem;
+  color: #868e96;
+}
+
+/* 댓글 본문 */
+.content {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #343a40;
+  margin-bottom: 12px;
+  white-space: pre-wrap;
+}
+
+/* 댓글 기능 버튼 영역 */
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 0.5rem;
+}
+
+.actions button {
+  background-color: #f1f3f5;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actions button:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+/* ❤️ 좋아요 숫자 색상 강조 */
+.likeCount {
+  color: #d6336c;
+  font-weight: 500;
+  margin-left: 4px;
+}
+
+/* 댓글 작성 카드 스타일 */
+.commentCard {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 2rem;
+}
+
+/* 댓글 작성 라벨 */
+.label {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #212529;
+}
+
+/* 댓글 입력창 */
+.textarea {
+  width: 95%;
+  min-height: 90px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  resize: vertical;
+  line-height: 1.5;
+  transition: 0.2s;
+  margin-top: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.textarea:focus {
+  border-color: #339af0;
+  outline: none;
+}
+
+/* 버튼 정렬 영역 */
+.buttonArea {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+/* 등록 버튼 */
+.submitButton {
+  background-color: #339af0;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #228be6;
+}

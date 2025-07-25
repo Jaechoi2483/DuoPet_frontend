@@ -18,8 +18,7 @@ function SignupStep1() {
   const [error, setError] = useState('');
 
   const isPasswordValid = (pwd) => {
-    const regex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,20}$/;
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,20}$/;
     return regex.test(pwd);
   };
 
@@ -76,9 +75,7 @@ function SignupStep1() {
   return (
     <div className={styles.wrapper}>
       <h2 className={styles.title}>회원가입</h2>
-      <p className={styles.subtitle}>
-        DuoPet 서비스를 이용하기 위한 회원가입입니다
-      </p>
+      <p className={styles.subtitle}>DuoPet 서비스를 이용하기 위한 회원가입입니다</p>
 
       <div className={styles.stepHeader}>
         <div className={styles.stepItemActive}>기본 정보</div>
@@ -89,37 +86,35 @@ function SignupStep1() {
 
       <div className={styles.formGroup}>
         <label>아이디 *</label>
-        <input
-          type="text"
-          placeholder="아이디를 입력하세요"
-          value={loginId}
-          onChange={(e) => {
-            setLoginId(e.target.value);
-            setIdAvailable(null);
-            setError('');
-          }}
-        />
 
-        {/* 메시지 영역 - 깔끔하게 아래로 분리 */}
+        {/* input + 버튼 한 줄 정렬 */}
+        <div className={styles.inputRow}>
+          <input
+            type="text"
+            className={styles.inputField}
+            placeholder="아이디를 입력하세요"
+            value={loginId}
+            onChange={(e) => {
+              setLoginId(e.target.value);
+              setIdAvailable(null);
+              setError('');
+            }}
+          />
+          <button type="button" className={styles.checkButton} onClick={checkLoginId}>
+            중복 확인
+          </button>
+        </div>
+
+        {/* 메시지 영역 */}
         {loginId === '' && error === '아이디를 입력해주세요.' && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            ❗ {error}
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
         )}
         {loginId && idAvailable === false && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>
-            ❌ 이미 사용 중인 아이디입니다.
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❌ 이미 사용 중인 아이디입니다.</div>
         )}
         {loginId && idAvailable === true && (
-          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>
-            ✅ 사용 가능한 아이디입니다.
-          </div>
+          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 아이디입니다.</div>
         )}
-
-        <button type="button" onClick={checkLoginId}>
-          중복 확인
-        </button>
       </div>
 
       <div className={styles.formGroup}>
@@ -131,28 +126,14 @@ function SignupStep1() {
           onChange={(e) => setUserPwd(e.target.value)}
         />
         <ul className={styles.pwdChecklist}>
-          <li
-            className={
-              userPwd.length >= 8 && userPwd.length <= 20
-                ? styles.pass
-                : styles.fail
-            }
-          >
-            8~20자
+          <li className={userPwd.length >= 8 && userPwd.length <= 20 ? styles.pass : styles.fail}>
+            - 비밀번호 길이: 8~20자
           </li>
-          <li className={/[A-Z]/.test(userPwd) ? styles.pass : styles.fail}>
-            대문자 포함
-          </li>
-          <li className={/[a-z]/.test(userPwd) ? styles.pass : styles.fail}>
-            소문자 포함
-          </li>
-          <li className={/\d/.test(userPwd) ? styles.pass : styles.fail}>
-            숫자 포함
-          </li>
-          <li
-            className={/[@$!%*?#&]/.test(userPwd) ? styles.pass : styles.fail}
-          >
-            특수문자 포함
+          <li className={/[A-Z]/.test(userPwd) ? styles.pass : styles.fail}>- 대문자(A~Z) 1자 이상 포함</li>
+          <li className={/[a-z]/.test(userPwd) ? styles.pass : styles.fail}>- 소문자(a~z) 1자 이상 포함</li>
+          <li className={/\d/.test(userPwd) ? styles.pass : styles.fail}>- 숫자(0~9) 1자 이상 포함</li>
+          <li className={/[@$!%*?#&]/.test(userPwd) ? styles.pass : styles.fail}>
+            - 특수문자(@, $, !, %, *, ?, #, &) 1자 이상 포함
           </li>
         </ul>
       </div>
@@ -165,9 +146,7 @@ function SignupStep1() {
           value={confirmPwd}
           onChange={(e) => setConfirmPwd(e.target.value)}
         />
-        {confirmPwd && confirmPwd !== userPwd && (
-          <small className={styles.error}>비밀번호가 일치하지 않습니다.</small>
-        )}
+        {confirmPwd && confirmPwd !== userPwd && <small className={styles.error}>비밀번호가 일치하지 않습니다.</small>}
       </div>
 
       {error &&

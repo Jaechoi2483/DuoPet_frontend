@@ -6,7 +6,24 @@ import PagingView from '../../components/common/pagingView';
 
 import styles from './NoticeList.module.css';
 
-function NoticeList() {
+const formatDate = (dateString) => {
+  // 1. 날짜 데이터가 없는 경우 처리
+  if (!dateString) {
+    return '날짜 없음';
+  }
+  // 2. Date 객체로 변환
+  const date = new Date(dateString);
+
+  // 3. 유효하지 않은 날짜인 경우 처리 (Invalid Date 방지)
+  if (isNaN(date.getTime())) {
+    return '날짜 형식 오류';
+  }
+
+  // 4. 'YYYY. MM. DD.' 형식으로 변환하여 반환
+  return date.toLocaleDateString('ko-KR');
+};
+
+function NoticeList({ onNoticeClick }) {
   // 1. 데이터를 관리할 state 변수들
   const [notices, setNotices] = useState([]); // 게시물 목록
   const [pageInfo, setPageInfo] = useState({ totalPages: 1, number: 0 }); // 페이징 정보
@@ -40,10 +57,7 @@ function NoticeList() {
           number: response.data.number,
         });
       } catch (error) {
-        console.error(
-          '공지사항 목록을 불러오는 중 오류가 발생했습니다.',
-          error
-        );
+        console.error('공지사항 목록을 불러오는 중 오류가 발생했습니다.', error);
       } finally {
         setLoading(false); // 데이터 요청 완료 후 로딩 상태 해제
       }
@@ -85,7 +99,7 @@ function NoticeList() {
             <input
               className={styles.searchInput}
               type="text"
-              placeholder="제목 또는 내용 검색"
+              placeholder="제목 검색"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
@@ -97,12 +111,15 @@ function NoticeList() {
             </button>
           </form>
         </div>
-        <button
-          className={styles.writeButton}
-          onClick={() => navigate('/notice/write')}
-        >
+        <button className={styles.writeButton} onClick={() => navigate('/notice/write')}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M12 5V19M5 12H19"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
           글쓰기
         </button>
@@ -139,15 +156,19 @@ function NoticeList() {
                 <td>{notice.contentId}</td>
                 <td
                   className={styles.noticeTitle}
-                  onClick={() => navigate(`/notice/${notice.contentId}`)}
+                  onClick={() => {
+                    if (onNoticeClick) {
+                      onNoticeClick(notice.contentId);
+                    } else {
+                      navigate(`/notice/${notice.contentId}`);
+                    }
+                  }}
                 >
                   {notice.title}
                 </td>
                 <td>{notice.userId}</td>
-                <td>{new Date(notice.createdAt).toLocaleDateString()}</td>
-                <td>
-                  {notice.viewCount !== undefined ? notice.viewCount : '-'}
-                </td>
+                <td>{formatDate(notice.createdAt)}</td>
+                <td>{notice.viewCount !== undefined ? notice.viewCount : '-'}</td>
               </tr>
             ))
           )}

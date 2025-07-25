@@ -1,57 +1,39 @@
 // src/pages/community/freeBoard/FreeBoardDetail.js
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/axios';
 import { AuthContext } from '../../../AuthProvider';
+import FreeBoardReport from './FreeBoardReport';
+import Modal from '../../../components/common/Modal';
+import CommentBox from '../comment/CommentBox';
 import styles from './FreeBoardDetail.module.css';
-
-const dummyVideos = [
-  {
-    id: 'yt1',
-    title: '강아지 배변 훈련, 이렇게 하면 성공합니다!',
-    channel: '멍멍이 훈련소',
-    views: '15,234회',
-  },
-  {
-    id: 'yt2',
-    title: '초보 보호자를 위한 배변 패드 사용법',
-    channel: '반려견 TV',
-    views: '8,567회',
-  },
-  {
-    id: 'yt3',
-    title: '수의사가 알려주는 배변 습관 훈련 팁',
-    channel: '닥터펫',
-    views: '12,890회',
-  },
-];
 
 function FreeBoardDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { secureApiRequest } = useContext(AuthContext);
-  const { isLoggedIn, userNo } = useContext(AuthContext);
+  const { secureApiRequest, isLoggedIn, userNo } = useContext(AuthContext);
+
   const [post, setPost] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
+  const [bookmarkCount, setBookmarkCount] = useState(0);
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [reportProps, setReportProps] = useState({ targetId: null, targetType: '' });
+  const [videos, setVideos] = useState([]);
+  const BACKEND_URL = 'http://localhost:8080';
 
-  const handleEdit = () => {
-    navigate(`/community/freeBoard/edit/${id}`);
-  };
+  const contentId = Number(id);
+
+  const handleEdit = () => navigate(`/community/freeBoard/edit/${id}`);
 
   const handleDelete = async () => {
-    const confirmed = window.confirm('정말로 이 게시글을 삭제하시겠습니까?');
-    if (!confirmed) return;
-
+    if (!window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
     try {
-      const response = await secureApiRequest(`/board/free/${id}`, {
-        method: 'DELETE',
-      });
-
+      const response = await secureApiRequest(`/board/free/${id}`, { method: 'DELETE' });
       if (response.status === 200) {
         alert('게시글이 삭제되었습니다.');
         navigate('/community/freeBoard');
@@ -68,23 +50,21 @@ function FreeBoardDetail() {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
 
-    // 로그인 안 했을 경우 메시지 출력
-    if (!accessToken || !refreshToken) {
-      alert('로그인이 필요한 기능입니다.');
+    const validAccessToken = accessToken && accessToken !== 'null' ? accessToken : null;
+    const validRefreshToken = refreshToken && refreshToken !== 'null' ? refreshToken : null;
+
+    if (!validAccessToken) {
+      alert('로그인 후 이용 가능합니다.');
       return;
     }
+
     try {
       const res = await apiClient.post(`/board/like/${id}`, null, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          RefreshToken: `Bearer ${refreshToken}`,
+          Authorization: `Bearer ${validAccessToken}`,
+          RefreshToken: `Bearer ${validRefreshToken}`,
         },
-        withCredentials: true, // CORS 쿠키 인증 허용
       });
-
-      console.log('accessToken:', accessToken);
-      console.log('refreshToken:', refreshToken);
-      console.log('서버 응답 데이터:', res.data);
 
       setLiked(res.data.liked);
       setLikeCount((prev) => (res.data.liked ? prev + 1 : prev - 1));
@@ -95,20 +75,23 @@ function FreeBoardDetail() {
   };
 
   const handleBookmark = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!accessToken || !refreshToken) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const refreshToken = localStorage.getItem('refreshToken');
-
-      const res = await apiClient.post(`/bookmark/${id}`, null, {
+      const res = await apiClient.post(`/board/bookmark/${id}`, null, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           RefreshToken: `Bearer ${refreshToken}`,
         },
         withCredentials: true,
       });
-
       setBookmarked(res.data.bookmarked);
-      triggerToast(res.data.bookmarked ? '북마크에 추가되었습니다.' : '북마크가 해제되었습니다.');
+      setBookmarkCount((prev) => (res.data.bookmarked ? prev + 1 : prev - 1));
+      triggerToast(res.data.bookmarked ? '북마크가 등록되었습니다.' : '북마크가 해제되었습니다.');
     } catch (err) {
       console.error('북마크 실패', err);
     }
@@ -120,46 +103,103 @@ function FreeBoardDetail() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  // 조회수 증가 & 좋아요 수 증가
+  const openReportModal = () => {
+    if (!isLoggedIn) {
+      alert('로그인 후 이용 가능합니다.');
+      return;
+    }
+    setReportProps({ targetId: contentId, targetType: 'content' });
+    setIsReportOpen(true);
+  };
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        // 조회수 증가 요청 (비회원도 접근 가능)
+        // 1. 조회수 증가 요청
         await apiClient.get(`/board/view-count`, { params: { id } });
 
-        // 게시글 상세 정보 가져오기
+        // 2. 게시글 상세 정보 가져오기
         const res = await apiClient.get(`/board/detail/${id}`);
         setPost(res.data);
         setLikeCount(res.data.likeCount);
 
-        // accessToken, refreshToken 정의 추가
+        // 3. 로컬스토리지에서 토큰 불러오기
         const accessToken = localStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
 
-        // 좋아요 상태 확인 API 호출
-        const likeRes = await apiClient.get(`/like/${id}/status`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            RefreshToken: `Bearer ${refreshToken}`,
-          },
-        });
-        setLiked(likeRes.data.liked);
+        const validAccessToken = accessToken && accessToken !== 'null' ? accessToken : null;
+        const validRefreshToken = refreshToken && refreshToken !== 'null' ? refreshToken : null;
+
+        // 4. 로그인 상태일 때만 좋아요/북마크 상태 확인
+        if (validAccessToken && validRefreshToken) {
+          try {
+            const likeRes = await apiClient.get(`/like/${id}/status`, {
+              headers: {
+                Authorization: `Bearer ${validAccessToken}`,
+                RefreshToken: `Bearer ${validRefreshToken}`,
+              },
+            });
+            setLiked(likeRes.data.liked);
+          } catch (err) {
+            setLiked(false);
+          }
+
+          try {
+            const bookmarkRes = await apiClient.get(`/bookmark/${id}/status`, {
+              headers: {
+                Authorization: `Bearer ${validAccessToken}`,
+                RefreshToken: `Bearer ${validRefreshToken}`,
+              },
+            });
+            setBookmarked(bookmarkRes.data.bookmarked);
+          } catch (err) {
+            setBookmarked(false);
+          }
+        } else {
+          // 5. 비로그인 상태일 경우 초기값 설정
+          setLiked(false);
+          setBookmarked(false);
+        }
       } catch (err) {
-        console.error('상세글 조회 실패', err);
+        console.error('❌ 상세글 조회 실패', err);
       }
     };
 
     fetchPost();
-  }, [id]); // id 변경 시 재실행
+  }, [id]);
+
+  const hasFetchedVideo = useRef(false);
+
+  useEffect(() => {
+    if (!post || !post.tags) return;
+    if (hasFetchedVideo.current) return;
+
+    hasFetchedVideo.current = true;
+
+    const fetchRecommendedVideos = async () => {
+      try {
+        const res = await apiClient.post('http://localhost:8000/api/v1/video-recommend/recommend', {
+          contentId: post.contentId,
+          maxResults: 1,
+        });
+
+        console.log('AI 응답:', res.data.data);
+
+        setVideos(res.data.data.videos);
+      } catch (error) {
+        console.error('영상 추천 실패:', error);
+      }
+    };
+
+    fetchRecommendedVideos();
+  }, [post]);
 
   if (!post) return <p>로딩 중...</p>;
 
   return (
     <div className={styles.container}>
-      {/* 토스트 메시지 출력 */}
       {showToast && <div className={styles.toast}>{toastMessage}</div>}
 
-      {/* 게시판 뱃지 + 태그 */}
       <div className={styles.tagHeader}>
         <span className={styles.badge}>자유게시판</span>
         <div className={styles.tagList}>
@@ -172,7 +212,6 @@ function FreeBoardDetail() {
         </div>
       </div>
 
-      {/* 제목 + 작성자 + 날짜 */}
       <div className={styles.titleWrapper}>
         <div className={styles.titleRow}>
           <h2 className={styles.title}>{post.title}</h2>
@@ -195,38 +234,55 @@ function FreeBoardDetail() {
         </div>
       </div>
 
-      {/* 본문 내용 */}
       <div className={styles.contentBox}>
         <p className={styles.content}>{post.contentBody}</p>
       </div>
 
-      {/* 좋아요/북마크/신고하기 */}
+      {post.imageUrl && (
+        <div className={styles.imageWrapper}>
+          <img src={`${BACKEND_URL}${post.imageUrl}`} alt="첨부 이미지" className={styles.attachedImage} />
+        </div>
+      )}
+
       <div className={styles.actions}>
         <button onClick={handleLike}>{liked ? '❤️ 좋아요 취소' : '🤍 좋아요'}</button>
         <button onClick={handleBookmark}>{bookmarked ? '🔖 북마크 해제' : '📌 북마크'}</button>
-        <button className={styles.report}>🚩 신고하기</button>
+        <button onClick={openReportModal}>🚩 신고하기</button>
       </div>
 
-      {/* 관련 YouTube 영상 */}
+      <FreeBoardReport
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+        targetId={reportProps.targetId}
+        targetType={reportProps.targetType}
+      />
+
       <div className={styles.youtubeSection}>
         <h3>📺 관련 YouTube 영상</h3>
         <div className={styles.videoList}>
-          {dummyVideos.map((video) => (
-            <div key={video.id} className={styles.videoCard}>
-              <div className={styles.videoThumbnail}>🎬 썸네일</div>
-              <p className={styles.videoTitle}>{video.title}</p>
-              <p className={styles.videoMeta}>
-                {video.channel} · 조회수 {video.views}
-              </p>
-            </div>
-          ))}
+          {Array.isArray(videos) &&
+            videos.map((video) => (
+              <a
+                key={video.video_id}
+                href={`https://www.youtube.com/watch?v=${video.video_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.videoCard}
+              >
+                <div className={styles.videoThumbnail}>
+                  <img src={video.thumbnail_url} alt={video.title} />
+                </div>
+                <p className={styles.videoTitle}>{video.title}</p>
+                <p className={styles.videoMeta}>
+                  {video.channel_name} · 조회수 {video.view_count}
+                </p>
+              </a>
+            ))}
         </div>
       </div>
 
-      {/* 댓글 영역은 아직 미연동 상태 */}
       <div className={styles.commentSection}>
-        <h4>💬 댓글</h4>
-        <p>댓글 기능은 준비 중입니다.</p>
+        <CommentBox contentId={id} setReportProps={setReportProps} setIsReportOpen={setIsReportOpen} />
       </div>
     </div>
   );

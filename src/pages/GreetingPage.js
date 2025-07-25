@@ -1,62 +1,203 @@
-import React from 'react';
-import logo from '../assets/images/logo3.png';
-import logo1 from '../assets/images/logo1.png';
+import React, { useEffect } from 'react';
+import greetingPhoto from '../assets/images/greeting/greeting-photo.png';
 
 const GreetingPage = () => {
-  return (
-    <div style={{
-      minHeight: '70vh',
+  useEffect(() => {
+    // Google Fonts 동적 로드
+    const fontLink = document.createElement('link');
+    fontLink.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap';
+    fontLink.rel = 'stylesheet';
+    document.head.appendChild(fontLink);
+    
+    return () => {
+      // cleanup: 컴포넌트 언마운트 시 폰트 링크 제거
+      if (document.head.contains(fontLink)) {
+        document.head.removeChild(fontLink);
+      }
+    };
+  }, []);
+
+  // 스타일 객체들
+  const styles = {
+    greetingContainer: {
+      minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
+      justifyContent: 'flex-start',
+      backgroundColor: '#ffffff',
       padding: '2rem',
-      background: '#fff'
-    }}>
-      {/* 인사말 이미지 및 텍스트 */}
-      <img src={logo} alt="Duopet 로고" style={{ width: '180px', marginBottom: '2rem' }} />
-      <h1 style={{ fontWeight: 700, fontSize: '2.2rem', color: '#1597bb', marginBottom: '1.2rem' }}>
-        듀오펫에 오신 것을 진심으로 환영합니다!
-      </h1>
-      <p style={{ fontSize: '1.1rem', color: '#333', marginBottom: '0.7rem' }}>
-        듀오펫은 반려동물과 반려주인 모두의 행복한 삶을 위해 만들어진 플랫폼입니다.<br/>
-        여러분의 소중한 반려동물과 함께하는 일상에 듀오펫이 든든한 동반자가 되어드리겠습니다.
-      </p>
-      <p style={{ fontSize: '1.1rem', color: '#333', marginBottom: '0.7rem' }}>
-        건강 관리, 커뮤니티, 전문가 상담 등 다양한 서비스를 통해<br/>
-        반려동물과의 특별한 추억을 만들어보세요.
-      </p>
-      <p style={{ fontSize: '1.1rem', color: '#333', marginBottom: '0.7rem' }}>
-        앞으로도 듀오펫은 여러분과 반려동물의 행복을 위해 최선을 다하겠습니다.<br/>
-        많은 관심과 사랑 부탁드립니다.
-      </p>
+      paddingTop: '120px',
+    },
+    mainTitle: {
+      fontFamily: "'Noto Sans KR', sans-serif",
+      fontSize: '3.1rem',
+      fontWeight: 700,
+      color: '#333',
+      textAlign: 'center',
+      marginBottom: '3.75rem',
+      letterSpacing: '-1px',
+    },
+    contentWrapper: {
+      maxWidth: '1500px',
+      width: '100%',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '5rem',
+      alignItems: 'flex-start',
+      backgroundColor: '#ffffff',
+      padding: '3.75rem',
+      borderRadius: '20px',
+      boxShadow: '0 12px 38px rgba(0, 0, 0, 0.05)',
+    },
+    imageSection: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      justifyContent: 'center',
+    },
+    greetingImage: {
+      width: '100%',
+      maxWidth: '625px',
+      height: 'auto',
+      borderRadius: '15px',
+      boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+      transition: 'transform 0.3s ease',
+    },
+    greetingImageHover: {
+      transform: 'scale(1.02)',
+    },
+    textSection: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.9rem',
+      paddingTop: 0,
+    },
+    title: {
+      fontFamily: "'Noto Sans KR', sans-serif",
+      fontSize: '2.25rem',
+      fontWeight: 600,
+      color: '#333',
+      margin: 0,
+      lineHeight: 1.4,
+      letterSpacing: '-0.8px',
+    },
+    messageContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.9rem',
+      marginTop: '1.25rem',
+    },
+    message: {
+      fontFamily: "'Noto Sans KR', sans-serif",
+      fontSize: '1.31rem',
+      fontWeight: 400,
+      color: '#555',
+      lineHeight: 1.8,
+      margin: 0,
+      letterSpacing: '-0.3px',
+    },
+    signature: {
+      fontFamily: "'Noto Sans KR', sans-serif",
+      fontSize: '1.5rem',
+      fontWeight: 600,
+      color: '#4285F4',
+      marginTop: '1.9rem',
+      letterSpacing: '-0.5px',
+    },
+  };
 
-      {/* 사이트 소개 섹션 */}
-      <div style={{ marginTop: '3rem', width: '100%', maxWidth: 500, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <img src={logo1} alt="Duopet 소개 로고" style={{ width: '120px', marginBottom: '1.5rem' }} />
-        <h2 style={{ fontWeight: 600, fontSize: '1.5rem', color: '#1597bb', marginBottom: '1rem' }}>사이트 소개</h2>
-        <div style={{ fontSize: '1.05rem', color: '#444', lineHeight: 1.7 }}>
-          <p style={{ marginBottom: '0.7rem' }}>
-            듀오펫은 반려동물과 반려주인 모두의 행복한 삶을 위해 만들어진 플랫폼입니다.<br/>
-            여러분의 소중한 반려동물과 함께하는 일상에 듀오펫이 든든한 동반자가 되어드리겠습니다.
-          </p>
-          <p style={{ marginBottom: '0.7rem' }}>
-            건강 관리, 커뮤니티, 전문가 상담 등 다양한 서비스를 통해<br/>
-            반려동물과의 특별한 추억을 만들어보세요.
-          </p>
-          <p style={{ marginBottom: '0.7rem' }}>
-            앞으로도 듀오펫은 여러분과 반려동물의 행복을 위해 최선을 다하겠습니다.<br/>
-            많은 관심과 사랑 부탁드립니다.
-          </p>
-          <p style={{ marginBottom: '0.7rem' }}>
-            듀오펫은 단순한 정보 제공을 넘어, 반려동물과 보호자가 함께 성장하고 소통할 수 있는 공간을 지향합니다.<br/>
-            앞으로도 다양한 기능과 서비스를 지속적으로 확장하여, 모두가 만족할 수 있는 플랫폼이 되겠습니다.
-          </p>
-          <p style={{ marginBottom: '0.7rem' }}>
-            듀오펫과 함께라면, 반려동물과의 매일이 더욱 특별해집니다.<br/>
-            언제나 여러분 곁에서 든든한 친구가 되어드릴 것을 약속드립니다.
-          </p>
+  // 이미지 호버 상태 관리
+  const [isImageHovered, setIsImageHovered] = React.useState(false);
+
+  // 화면 크기에 따른 반응형 스타일 적용
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // 모바일 스타일 오버라이드
+  const mobileStyles = {
+    mainTitle: {
+      fontSize: '2rem',
+    },
+    contentWrapper: {
+      gridTemplateColumns: '1fr',
+      gap: '3rem',
+      padding: '2rem',
+    },
+    greetingImage: {
+      maxWidth: '100%',
+    },
+    title: {
+      fontSize: '1.5rem',
+    },
+    message: {
+      fontSize: '1rem',
+    },
+    signature: {
+      fontSize: '1.2rem',
+    },
+  };
+
+  // 스타일 병합 함수
+  const getStyle = (styleName) => {
+    return isMobile && mobileStyles[styleName] 
+      ? { ...styles[styleName], ...mobileStyles[styleName] }
+      : styles[styleName];
+  };
+
+  return (
+    <div style={styles.greetingContainer}>
+      <h1 style={getStyle('mainTitle')}>
+        DuoPet, 반려동물과 보호자의 건강한 동행을 위한 플랫폼
+      </h1>
+      
+      <div style={getStyle('contentWrapper')}>
+        <div style={styles.imageSection}>
+          <img 
+            src={greetingPhoto} 
+            alt="듀오펫 가족" 
+            style={{
+              ...getStyle('greetingImage'),
+              ...(isImageHovered ? styles.greetingImageHover : {})
+            }}
+            onMouseEnter={() => setIsImageHovered(true)}
+            onMouseLeave={() => setIsImageHovered(false)}
+          />
+        </div>
+        
+        <div style={styles.textSection}>
+          <h2 style={getStyle('title')}>
+            당신의 반려동물, 어떤 하루를 보내고 있을까요?
+          </h2>
+          
+          <div style={styles.messageContainer}>
+            <p style={getStyle('message')}>
+              DuoPet은 반려동물의 건강, 감정, 일상을 더 똑똑하게 돌볼 수 있도록<br/>
+              AI 기술과 따뜻한 사람들의 마음을 담아 만든 플랫폼입니다.
+            </p>
+            
+            <p style={getStyle('message')}>
+              사진 한 장으로 건강을 진단하고, 이상행동을 실시간으로 감지하며,<br/>
+              새로운 가족을 기다리는 친구들도 소개 해 드립니다.<br/>
+              전문가 상담, 챗봇, 커뮤니티까지<br/>
+              이제 반려생활의 모든 순간을 DuoPet이 함께합니다.
+            </p>
+            
+            <p style={getStyle('message')}>
+              DuoPet은 단순한 서비스가 아닌, 반려인들의 삶을 함께 설계하는 파트너입니다.
+            </p>
+            
+            <p style={getStyle('signature')}>
+              지금, DuoPet과 함께 하세요.
+            </p>
+          </div>
         </div>
       </div>
     </div>

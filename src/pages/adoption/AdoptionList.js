@@ -203,11 +203,11 @@ const AdoptionList = () => {
             >
               <div className={styles.imageWrapper}>
                 <img
-                  src={animal.imageUrl || '/default-animal.svg'}
-                  alt={animal.kindCd}
+                  src={animal.displayImageUrl || animal.imageUrl || '/images/default-animal.png'}
+                  alt={animal.kindCd || '보호동물'}
                   className={styles.animalImage}
                   onError={(e) => {
-                    e.target.src = '/default-animal.svg';
+                    e.target.src = '/images/default-animal.png';
                   }}
                 />
                 <div className={styles.statusBadge}>

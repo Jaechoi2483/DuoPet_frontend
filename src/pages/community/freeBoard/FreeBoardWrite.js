@@ -47,9 +47,7 @@ function FreeBoardWrite() {
   };
 
   const handleGoBack = () => {
-    const confirmed = window.confirm(
-      '작성 중인 내용이 사라집니다. 정말 목록으로 이동할까요?'
-    );
+    const confirmed = window.confirm('작성 중인 내용이 사라집니다. 정말 목록으로 이동할까요?');
     if (confirmed) {
       navigate('/community/freeBoard');
     }
@@ -72,6 +70,15 @@ function FreeBoardWrite() {
 
     if (formData.files.length > 0) {
       data.append('ofile', formData.files[0]); // 첫 파일만 첨부
+    }
+
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (!accessToken || !refreshToken) {
+      alert('로그인 정보가 없습니다. 다시 로그인해주세요.');
+      navigate('/login');
+      return;
     }
 
     try {
@@ -97,12 +104,7 @@ function FreeBoardWrite() {
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
           <label>카테고리</label>
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className={styles.select}
-          >
+          <select name="category" value={formData.category} onChange={handleChange} className={styles.select}>
             <option value="">카테고리 선택</option>
             <option value="자유">자유</option>
             <option value="후기">후기</option>
@@ -128,7 +130,7 @@ function FreeBoardWrite() {
           <label>내용</label>
           <textarea
             name="contentBody"
-            value={formData.content}
+            value={formData.contentBody}
             onChange={handleChange}
             className={styles.textarea}
             placeholder="내용을 입력하세요"
@@ -151,15 +153,8 @@ function FreeBoardWrite() {
         <div className={styles.formGroup}>
           <label>첨부파일 (선택사항)</label>
           <div className={styles.fileBox}>
-            <input
-              type="file"
-              multiple
-              onChange={handleFileChange}
-              className={styles.fileInput}
-            />
-            <p className={styles.fileGuide}>
-              PNG, JPG, PDF, DOC 파일 (최대 10MB, 5개까지)
-            </p>
+            <input type="file" multiple onChange={handleFileChange} className={styles.fileInput} />
+            <p className={styles.fileGuide}>PNG, JPG, PDF, DOC 파일 (최대 10MB, 5개까지)</p>
           </div>
         </div>
 
@@ -167,11 +162,7 @@ function FreeBoardWrite() {
           <button type="submit" className={styles.submitBtn}>
             게시글 등록
           </button>
-          <button
-            type="button"
-            className={styles.secondaryBtn}
-            onClick={handleGoBack}
-          >
+          <button type="button" className={styles.secondaryBtn} onClick={handleGoBack}>
             목록으로
           </button>
         </div>

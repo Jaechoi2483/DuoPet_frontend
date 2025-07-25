@@ -12,7 +12,7 @@ const FILTER_TABS = [
   { label: '답변대기', status: 'PENDING' },
 ];
 
-function Qna() {
+function Qna({ onQnaClick }) {
   // --- 상태 관리 (State) ---
   const [qnaList, setQnaList] = useState([]);
   const [pageInfo, setPageInfo] = useState({ totalPages: 0, number: 0 });
@@ -51,9 +51,6 @@ function Qna() {
       }
     };
 
-    // ✅ 데이터 조회 조건을 명확하게 변경
-    // 인증 상태 확인이 완료되었고(isAuthLoading === false),
-    // 로그인 상태일 때만(isLoggedIn === true) 데이터를 조회합니다.
     if (!isAuthLoading && isLoggedIn) {
       fetchQnaData();
     }
@@ -70,7 +67,13 @@ function Qna() {
   };
 
   const handleWriteClick = () => navigate('/admin/qna/write');
-  const handleQnaClick = (qnaId) => navigate(`/admin/qna/${qnaId}`);
+  const handleQnaClick = (qnaId) => {
+    if (onQnaClick) {
+      onQnaClick(qnaId);
+    } else {
+      navigate(`/admin/qna/${qnaId}`);
+    }
+  };
 
   // --- 유틸리티 함수 ---
   const formatDate = (dateString) =>

@@ -32,15 +32,23 @@ function LoginPage() {
     setError('');
 
     try {
-      const response = await apiClient.post('/login', {
-        loginId,
-        userPwd,
-      });
+      const response = await apiClient.post(
+        '/login',
+        { loginId, userPwd },
+        {
+          headers: {
+            ExtendLogin: autoLogin.toString(), // 'true' 또는 'false'
+          },
+        }
+      );
 
       const data = response.data;
 
       // 토큰 저장 및 전역 상태 업데이트
       updateTokens(data.accessToken, data.refreshToken);
+      
+      // loginId를 항상 저장 (WebSocket 연결을 위해)
+      localStorage.setItem('loginId', loginId);
 
       // ID 저장/삭제
       if (rememberId) {
@@ -57,7 +65,7 @@ function LoginPage() {
       }
 
       alert(`${data.nickname}님 환영합니다!`);
-      navigate('/mypage');
+      navigate('/');
     } catch (err) {
       console.error('로그인 에러:', err);
       if (err.response?.data?.error) {
@@ -68,18 +76,26 @@ function LoginPage() {
     }
   };
 
-  const handleSocialLogin = () => {
+  const handleKakaoLogin = () => {
     window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
   };
 
+  const handleNaverLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/naver';
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  };
+
   const handleFaceLogin = () => {
-    alert('얼굴 인식 로그인은 현재 준비 중입니다.');
+    navigate('/face-login');
   };
 
   return (
     <div className={styles.loginContainer}>
-      <h2>로그인</h2>
-      <p className={styles.subtext}>DuoPet 서비스를 이용하려면 로그인해주세요</p>
+      <h2 className={styles.title}>로그인</h2>
+      <p className={styles.subtitle}>DuoPet 서비스를 이용하려면 로그인해주세요</p>
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -115,13 +131,13 @@ function LoginPage() {
         </button>
 
         <div className={styles.snsLogin}>
-          <button type="button" className={`${styles.sns} ${styles.kakao}`} onClick={handleSocialLogin}>
+          <button type="button" className={`${styles.sns} ${styles.kakao}`} onClick={handleKakaoLogin}>
             카카오
           </button>
-          <button type="button" className={`${styles.sns} ${styles.naver}`} onClick={handleSocialLogin}>
+          <button type="button" className={`${styles.sns} ${styles.naver}`} onClick={handleNaverLogin}>
             네이버
           </button>
-          <button type="button" className={`${styles.sns} ${styles.google}`} onClick={handleSocialLogin}>
+          <button type="button" className={`${styles.sns} ${styles.google}`} onClick={handleGoogleLogin}>
             구글
           </button>
         </div>

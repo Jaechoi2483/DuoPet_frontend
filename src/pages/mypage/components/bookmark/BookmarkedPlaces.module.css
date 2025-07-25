@@ -1,0 +1,189 @@
+.bookmarkedPlacesContainer {
+  width: 100%;
+}
+
+.filterSection {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.filterButton {
+  padding: 8px 20px;
+  background-color: #f0f0f0;
+  color: #666;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filterButton:hover {
+  background-color: #e0e0e0;
+}
+
+.filterButton.active {
+  background-color: #4A9FF3;
+  color: white;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.emptyMessage {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0 0 8px 0;
+}
+
+.emptySubMessage {
+  font-size: 0.95rem;
+  color: #999;
+  margin: 0;
+}
+
+.placeList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.placeCard {
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.placeCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.placeHeader {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.placeTypeIcon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.placeInfo {
+  flex: 1;
+}
+
+.placeName {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.placeAddress {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 4px 0;
+}
+
+.placePhone {
+  font-size: 0.9rem;
+  color: #555;
+  margin: 0;
+}
+
+.bookmarkButton {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 4px;
+  align-self: flex-start;
+}
+
+.bookmarkButton:hover {
+  transform: scale(1.2);
+}
+
+.placeDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 56px;
+}
+
+.placeRating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  font-size: 1rem;
+}
+
+.ratingText {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.placeServices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.serviceTag {
+  padding: 4px 12px;
+  background-color: #f0f0f0;
+  color: #555;
+  border-radius: 16px;
+  font-size: 0.85rem;
+}
+
+.bookmarkDate {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 8px;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .filterSection {
+    flex-wrap: wrap;
+  }
+  
+  .filterButton {
+    flex: 1;
+    min-width: 80px;
+  }
+  
+  .placeCard {
+    padding: 16px;
+  }
+  
+  .placeHeader {
+    flex-direction: column;
+  }
+  
+  .placeDetails {
+    padding-left: 0;
+  }
+}

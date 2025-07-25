@@ -1,0 +1,212 @@
+.datePickerContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px 10px;
+  color: #333;
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+
+.navButton:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  color: #4299e1;
+}
+
+.navButton:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.monthTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 10px;
+}
+
+.weekDay {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  padding: 10px 0;
+}
+
+.weekDay.sunday {
+  color: #e74c3c;
+}
+
+.weekDay.saturday {
+  color: #3498db;
+}
+
+.calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dateCell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.dateCell:hover:not(.disabled) {
+  background-color: #f7fafc;
+  border-color: #4299e1;
+}
+
+.dateNumber {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.otherMonth .dateNumber {
+  color: #cbd5e0;
+}
+
+.today {
+  background-color: #edf2f7;
+  font-weight: 600;
+}
+
+.todayLabel {
+  position: absolute;
+  bottom: 2px;
+  font-size: 10px;
+  color: #4299e1;
+  font-weight: 600;
+}
+
+.selected {
+  background-color: #4299e1 !important;
+  color: white;
+}
+
+.selected .dateNumber {
+  color: white;
+}
+
+.selected .todayLabel {
+  color: white;
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.disabled:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.weekend .dateNumber {
+  color: #666;
+}
+
+.weekend.sunday .dateNumber {
+  color: #e74c3c;
+}
+
+.weekend.saturday .dateNumber {
+  color: #3498db;
+}
+
+.hovered {
+  transform: scale(1.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.availableIndicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  font-size: 12px;
+  color: #48bb78;
+}
+
+.footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.todayButton {
+  background-color: #4299e1;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.todayButton:hover {
+  background-color: #3182ce;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selectedDateText {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+  .datePickerContainer {
+    padding: 15px;
+  }
+
+  .dateCell {
+    font-size: 12px;
+  }
+
+  .monthTitle {
+    font-size: 16px;
+  }
+
+  .navButton {
+    font-size: 20px;
+  }
+}

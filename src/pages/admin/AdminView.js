@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import styles from './AdminView.module.css';
 import NoticeList from '../notice/NoticeList';
+import NoticeDetail from '../notice/NoticeDetail';
 import Qna from './Qna';
 import Faq from './Faq';
 import MemberList from './MemberList';
 import AdminMain from './AdminMain';
 import ReportManagement from './ReportManagement';
+import QnaDetail from './QnaDetail';
 
 const TABS = [
   { label: '관리자 메인' },
@@ -18,6 +20,8 @@ const TABS = [
 
 function AdminView() {
   const [activeTab, setActiveTab] = useState(0);
+  const [activeNoticeId, setActiveNoticeId] = useState(null);
+  const [activeQnaId, setActiveQnaId] = useState(null);
 
   // 탭별로 렌더링할 컴포넌트/내용
   const renderTabContent = () => {
@@ -27,9 +31,25 @@ function AdminView() {
       case 1:
         return <MemberList />;
       case 2:
-        return <NoticeList />;
+        return activeNoticeId ? (
+          <NoticeDetail
+            contentId={activeNoticeId}
+            onBack={() => setActiveNoticeId(null)}
+            isAdminView={true}
+          />
+        ) : (
+          <NoticeList onNoticeClick={setActiveNoticeId} />
+        );
       case 3:
-        return <Qna />;
+        return activeQnaId ? (
+          <QnaDetail
+            contentId={activeQnaId}
+            onBack={() => setActiveQnaId(null)}
+            isAdminView={true}
+          />
+        ) : (
+          <Qna onQnaClick={setActiveQnaId} />
+        );
       case 4:
         return <Faq />;
       case 5:
