@@ -4,7 +4,7 @@
   padding: 32px 16px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .title {
   font-size: 2rem;
@@ -33,6 +33,7 @@
   background: none;
   border-radius: 0;
   box-shadow: none;
+  white-space: pre-wrap;
 }
 
 .answerSection {
@@ -125,7 +126,10 @@
   cursor: pointer;
   box-shadow: none;
   margin-top: 4px;
-  transition: background 0.18s, color 0.18s, border 0.18s;
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border 0.18s;
 }
 .submitButton:hover {
   background: #f4f8fd;
@@ -177,7 +181,9 @@
   margin: 0 2px;
   cursor: pointer;
   border-bottom: 2.5px solid transparent;
-  transition: color 0.18s, border-bottom 0.18s;
+  transition:
+    color 0.18s,
+    border-bottom 0.18s;
   box-shadow: none;
 }
 
@@ -261,4 +267,4 @@
     font-size: 12px;
     padding: 6px 8px 5px 8px;
   }
-} 
+}

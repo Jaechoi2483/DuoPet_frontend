@@ -305,11 +305,6 @@ function Menubar({
             </button>
           </>
         )}
-        {/* 알림 아이콘 */}
-        <div className={styles.notificationIcon}>
-          <span className={styles.badge}>1</span>
-          🔔
-        </div>
       </div>
     </header>
   );

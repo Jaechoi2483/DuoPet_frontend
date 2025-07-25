@@ -32,6 +32,7 @@ function NoticeList({ onNoticeClick }) {
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const navigate = useNavigate();
+  const { isLoggedIn, isAuthLoading, role } = useContext(AuthContext);
 
   // 2. API를 호출하여 데이터를 가져오는 로직
   useEffect(() => {
@@ -111,18 +112,20 @@ function NoticeList({ onNoticeClick }) {
             </button>
           </form>
         </div>
-        <button className={styles.writeButton} onClick={() => navigate('/notice/write')}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M12 5V19M5 12H19"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          글쓰기
-        </button>
+        {role === 'admin' && (
+          <button className={styles.writeButton} onClick={() => navigate('/notice/write')}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M12 5V19M5 12H19"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            글쓰기
+          </button>
+        )}
       </div>
 
       {/* 공지사항 테이블 */}

@@ -35,6 +35,7 @@ function Qna({ onQnaClick }) {
       try {
         const params = { page: currentPage, size: 10, sort: 'createdAt,desc' };
         if (status) params.status = status;
+        console.log('🚀 API 요청 파라미터:', params);
         const response = await apiClient.get('/qna', { params });
         setQnaList(response.data.content);
         setPageInfo(response.data);
@@ -186,9 +187,31 @@ function Qna({ onQnaClick }) {
         </tbody>
       </table>
 
-      {pageInfo.totalPages > 1 && !dataLoading && (
-        <PagingView currentPage={pageInfo.number + 1} totalPage={pageInfo.totalPages} onPageChange={handlePageChange} />
-      )}
+      {(() => {
+        // pageInfo가 유효하고, 총 페이지가 1보다 클 때만 페이징을 렌더링
+        if (pageInfo.totalPages > 1 && !dataLoading) {
+          // 1. startPage와 endPage를 계산하는 로직 추가
+          const pageBlock = 5; // 한 번에 보여줄 페이지 번호 개수 (예: 1-5, 6-10)
+          const currentBlock = Math.ceil((pageInfo.number + 1) / pageBlock);
+          const startPage = (currentBlock - 1) * pageBlock + 1;
+          let endPage = startPage + pageBlock - 1;
+          if (endPage > pageInfo.totalPages) {
+            endPage = pageInfo.totalPages;
+          }
+
+          // 2. 계산된 값을 PagingView에 props로 전달
+          return (
+            <PagingView
+              currentPage={pageInfo.number + 1}
+              totalPage={pageInfo.totalPages}
+              startPage={startPage}
+              endPage={endPage}
+              onPageChange={handlePageChange}
+            />
+          );
+        }
+        return null; // 조건에 맞지 않으면 아무것도 렌더링하지 않음
+      })()}
     </div>
   );
 }

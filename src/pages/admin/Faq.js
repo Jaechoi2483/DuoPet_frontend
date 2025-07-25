@@ -36,6 +36,14 @@ function getUtf8Bytes(str) {
   return bytes;
 }
 
+const MAX_QUESTION_BYTES = 1000;
+const MAX_ANSWER_BYTES = 4000;
+
+// 바이트 길이 유효성 검사 함수
+const isByteLengthValid = (str, maxLength) => {
+  return getUtf8Bytes(str) <= maxLength;
+};
+
 function Faq() {
   // 1. 서버사이드 페이징을 위한 state 구조로 변경
   const [faqs, setFaqs] = useState([]);
@@ -220,7 +228,11 @@ function Faq() {
                         <input
                           className={styles.editInput}
                           value={editQuestion}
-                          onChange={(e) => setEditQuestion(e.target.value)}
+                          onChange={(e) => {
+                            if (isByteLengthValid(e.target.value, MAX_QUESTION_BYTES)) {
+                              setNewQuestion(e.target.value);
+                            }
+                          }}
                           placeholder="질문을 입력하세요"
                         />
                         <div
@@ -252,7 +264,11 @@ function Faq() {
                         <textarea
                           className={styles.editTextarea}
                           value={editAnswer}
-                          onChange={(e) => setEditAnswer(e.target.value)}
+                          onChange={(e) => {
+                            if (isByteLengthValid(e.target.value, MAX_ANSWER_BYTES)) {
+                              setNewAnswer(e.target.value);
+                            }
+                          }}
                           placeholder="답변을 입력하세요"
                         />
                         <div
@@ -314,7 +330,11 @@ function Faq() {
               <input
                 className={styles.editInput}
                 value={newQuestion}
-                onChange={(e) => setNewQuestion(e.target.value)}
+                onChange={(e) => {
+                  if (isByteLengthValid(e.target.value, MAX_QUESTION_BYTES)) {
+                    setNewQuestion(e.target.value);
+                  }
+                }}
                 placeholder="질문을 입력하세요"
               />
               <div
@@ -335,7 +355,11 @@ function Faq() {
               <textarea
                 className={styles.editTextarea}
                 value={newAnswer}
-                onChange={(e) => setNewAnswer(e.target.value)}
+                onChange={(e) => {
+                  if (isByteLengthValid(e.target.value, MAX_ANSWER_BYTES)) {
+                    setNewAnswer(e.target.value);
+                  }
+                }}
                 placeholder="답변을 입력하세요"
               />
               <div
