@@ -36,11 +36,7 @@ const MyPosts = () => {
   }, [userNo]);
 
   const handlePostClick = (post) => {
-    if (post.boardType === 'free') {
-      navigate(`/community/free-board/${post.id}`);
-    } else if (post.boardType === 'qna') {
-      navigate(`/community/qna/${post.id}`);
-    }
+    navigate(`/community/freeBoard/${post.id}`); //나중에 커뮤니티 다 완성하면 그때 추가
   };
 
   const handlePageChange = (page) => {

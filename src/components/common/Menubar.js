@@ -1,8 +1,10 @@
 // src/components/common/Menubar.js
 
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
+import apiClient from '../../utils/axios';
+import { jwtDecode } from 'jwt-decode';
 
 import logo from '../../assets/images/logo3.png';
 import adminIcon from '../../assets/images/adminIcon.png';
@@ -84,8 +86,98 @@ function Menubar({
 
   const navigate = useNavigate();
 
+  const [remainingTime, setRemainingTime] = useState('');
+  const intervalRef = useRef(null);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      updateSessionTimer();
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      intervalRef.current = setInterval(updateSessionTimer, 1000);
+    }
+    return () => clearInterval(intervalRef.current);
+  }, [isLoggedIn]);
+
+  const updateSessionTimer = () => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return;
+
+    try {
+      const decoded = jwtDecode(token);
+      const exp = decoded.exp * 1000;
+      const now = Date.now();
+      const diff = exp - now;
+
+      if (diff <= 0) {
+        setRemainingTime('만료됨');
+
+        // 세션 만료 시 자동 로그아웃 처리
+        localStorage.clear();
+        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
+        return;
+      } else {
+        const minutes = Math.floor(diff / 60000);
+        const seconds = Math.floor((diff % 60000) / 1000);
+        setRemainingTime(`${minutes}분 ${seconds < 10 ? '0' : ''}${seconds}초`);
+      }
+    } catch (e) {
+      console.error('토큰 디코딩 실패', e);
+      setRemainingTime('-');
+    }
+  };
+
   const handleLogout = () => {
     logoutAndRedirect();
+  };
+
+  const handleExtendSession = async () => {
+    try {
+      const accessToken = localStorage.getItem('accessToken');
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      const res = await apiClient.post('/reissue', null, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          RefreshToken: `Bearer ${refreshToken}`,
+          ExtendLogin: 'true',
+        },
+        withCredentials: true,
+      });
+
+      const newAccessToken = res.headers['authorization']?.split(' ')[1];
+      const newRefreshToken = res.headers['refresh-token']?.split(' ')[1];
+
+      if (newAccessToken) {
+        localStorage.setItem('accessToken', newAccessToken);
+        console.log('🟢 accessToken 갱신됨');
+        console.log('🧠 디코딩된 accessToken 만료:', new Date(jwtDecode(newAccessToken).exp * 1000).toLocaleString());
+      }
+
+      if (newRefreshToken) {
+        localStorage.setItem('refreshToken', newRefreshToken);
+        console.log('🟢 refreshToken 갱신됨');
+      }
+
+      // 약간의 시간차를 주고 타이머 재시작
+      setTimeout(() => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+
+        intervalRef.current = setInterval(() => {
+          updateSessionTimer();
+        }, 1000);
+
+        updateSessionTimer(); // 바로 한 번 반영해서 UI 갱신
+      }, 50); // 딜레이 50ms
+
+      alert('로그인 시간이 연장되었습니다.');
+    } catch (e) {
+      console.error('연장 실패', e);
+      alert('세션 연장에 실패했습니다. 다시 로그인해주세요.');
+      navigate('/login');
+    }
   };
 
   const handleSignup = () => {
@@ -144,6 +236,15 @@ function Menubar({
       <div className={styles.rightSection}>
         {isLoggedIn ? (
           <div className={styles.userSection}>
+            {isLoggedIn && (
+              <div className={styles.sessionTimer}>
+                <span className={styles.timerIcon}>⏰</span>
+                <span className={styles.timeText}>{remainingTime}</span>
+                <button className={styles.extendBtn} onClick={handleExtendSession}>
+                  시간연장
+                </button>
+              </div>
+            )}
             {role && getRoleBadge(role) ? (
               <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
             ) : (
@@ -168,10 +269,7 @@ function Menubar({
               </button>
             )}
             <div className={styles.mypageDropdown}>
-              <span 
-                className={styles.myPage}
-                onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}
-              >
+              <span className={styles.myPage} onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>
                 마이페이지 ▼
               </span>
               <ul className={styles.mypageSubmenu}>

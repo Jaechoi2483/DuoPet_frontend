@@ -6,6 +6,7 @@ import { Routes, Route } from 'react-router-dom';
 import AboutPage from '../pages/AboutPage';
 import HomePage from '../pages/HomePage';
 import GreetingPage from '../pages/GreetingPage';
+import SessionExpired from '../pages/SessionExpired';
 
 import noticeRoutes from './noticeRoutes';
 import userRoutes from './userRoutes';
@@ -21,12 +22,14 @@ import qnaRoutes from './qnaRoutes';
 import ConsultationWaitingPage from '../pages/consultation/ConsultationWaitingPage';
 import ConsultationChat from '../pages/consultation/ConsultationChat';
 
+
 const AppRouter = () => {
   return (
     <Routes>
       <Route path="/about" element={<AboutPage />} />
       <Route path="/" element={<HomePage />} />
       <Route path="/greeting" element={<GreetingPage />} />
+      <Route path="/session-expired" element={<SessionExpired />} />
       {userRoutes}
       {noticeRoutes}
       {freeBoardRoutes}
