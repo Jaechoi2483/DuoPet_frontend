@@ -24,6 +24,7 @@ function FreeBoardDetail() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportProps, setReportProps] = useState({ targetId: null, targetType: '' });
   const [videos, setVideos] = useState([]);
+  const BACKEND_URL = 'http://localhost:8080';
 
   const contentId = Number(id);
 
@@ -236,6 +237,12 @@ function FreeBoardDetail() {
       <div className={styles.contentBox}>
         <p className={styles.content}>{post.contentBody}</p>
       </div>
+
+      {post.imageUrl && (
+        <div className={styles.imageWrapper}>
+          <img src={`${BACKEND_URL}${post.imageUrl}`} alt="첨부 이미지" className={styles.attachedImage} />
+        </div>
+      )}
 
       <div className={styles.actions}>
         <button onClick={handleLike}>{liked ? '❤️ 좋아요 취소' : '🤍 좋아요'}</button>

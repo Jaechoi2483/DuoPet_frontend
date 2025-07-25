@@ -272,3 +272,21 @@
   font-size: 12px;
   color: #888;
 }
+
+/* 게시글 첨부 이미지 wrapper */
+.imageWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  margin-bottom: 20px;
+}
+
+/* 게시글 첨부 이미지 스타일 */
+.attachedImage {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
