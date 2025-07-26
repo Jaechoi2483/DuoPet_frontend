@@ -102,6 +102,7 @@
   font-size: 1rem;
   background: white;
   transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
 .select:focus {
@@ -118,6 +119,7 @@
   font-family: inherit;
   resize: vertical;
   transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
 .textarea:focus {

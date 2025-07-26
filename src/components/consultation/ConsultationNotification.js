@@ -26,9 +26,9 @@ const ConsultationNotification = ({ notification, onClose }) => {
     try {
       // 상담 승인 API 호출
       await consultationRoomApi.approveConsultation(notification.roomId);
-      
+
       // 채팅 페이지로 이동
-      window.location.href = `/consultation/chat/${notification.roomId}`;
+      window.location.href = `/consultation/chat/${notification.roomUuid}`;
     } catch (err) {
       console.error('Error approving consultation:', err);
       alert('상담 승인 처리 중 오류가 발생했습니다.');
@@ -68,7 +68,7 @@ const ConsultationNotification = ({ notification, onClose }) => {
           <div className={styles.infoRow}>
             <span className={styles.label}>반려동물:</span>
             <span className={styles.value}>
-              {notification.petName || '정보 없음'} 
+              {notification.petName || '정보 없음'}
               {notification.petInfo && ` (${notification.petInfo})`}
             </span>
           </div>
@@ -76,25 +76,15 @@ const ConsultationNotification = ({ notification, onClose }) => {
 
         <div className={styles.symptomSection}>
           <h4 className={styles.symptomTitle}>증상</h4>
-          <p className={styles.symptomText}>
-            {notification.chiefComplaint || '증상 정보가 없습니다.'}
-          </p>
+          <p className={styles.symptomText}>{notification.chiefComplaint || '증상 정보가 없습니다.'}</p>
         </div>
       </div>
 
       <div className={styles.actions}>
-        <button 
-          className={styles.rejectButton}
-          onClick={handleReject}
-          disabled={isProcessing}
-        >
+        <button className={styles.rejectButton} onClick={handleReject} disabled={isProcessing}>
           거절
         </button>
-        <button 
-          className={styles.acceptButton}
-          onClick={handleAccept}
-          disabled={isProcessing}
-        >
+        <button className={styles.acceptButton} onClick={handleAccept} disabled={isProcessing}>
           {isProcessing ? '처리 중...' : '수락'}
         </button>
       </div>
