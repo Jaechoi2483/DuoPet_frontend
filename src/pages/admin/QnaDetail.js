@@ -151,22 +151,15 @@ function QnaDetail({ contentId: propContentId, onBack, isAdminView }) {
 
       {!hasAnswer && isAdmin && (
         <div className={styles.answerSection}>
-          <form
-            className={`${styles.answerWriteBox} ${styles.answerWriteBoxReset}`}
-            onSubmit={handleAnswerSubmit}
-          >
-            <div
-              className={`${styles.answerWriteTitle} ${styles.answerWriteTitleReset}`}
-            >
-              답변 작성
-            </div>
+          <form className={`${styles.answerWriteBox} ${styles.answerWriteBoxReset}`} onSubmit={handleAnswerSubmit}>
+            <div className={`${styles.answerWriteTitle} ${styles.answerWriteTitleReset}`}>답변 작성</div>
             <textarea
               className={`${styles.answerTextarea} ${styles.answerTextareaReset}`}
               value={newAnswer}
               onChange={(e) => {
                 let val = e.target.value;
                 let bytes = getUtf8Bytes(val);
-                while (bytes > 255) {
+                while (bytes > 4000) {
                   val = val.slice(0, -1);
                   bytes = getUtf8Bytes(val);
                 }
@@ -175,13 +168,8 @@ function QnaDetail({ contentId: propContentId, onBack, isAdminView }) {
               placeholder="답변을 입력하세요..."
               required
             />
-            <div className={styles.answerByteInfo}>
-              {getUtf8Bytes(newAnswer)} / 255 byte
-            </div>
-            <button
-              type="submit"
-              className={`${styles.submitButton} ${styles.submitButtonReset}`}
-            >
+            <div className={styles.answerByteInfo}>{getUtf8Bytes(newAnswer)} / 4000 byte</div>
+            <button type="submit" className={`${styles.submitButton} ${styles.submitButtonReset}`}>
               답변 등록
             </button>
           </form>

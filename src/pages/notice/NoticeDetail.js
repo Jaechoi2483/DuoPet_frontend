@@ -119,7 +119,7 @@ function NoticeDetail({ contentId: propContentId, onBack, isAdminView }) {
             } else if (location.pathname.includes('admin')) {
               navigate('/admin');
             } else {
-              navigate('/notice');
+              navigate(-1);
             }
           }}
         >

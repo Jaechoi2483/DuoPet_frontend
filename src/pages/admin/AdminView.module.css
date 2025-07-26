@@ -1,7 +1,7 @@
 /* src/pages/admin/AdminView.module.css */
 
 .container {
-  max-width: 1200px;
+  max-width: 1282px;
   margin: 0 auto;
   padding: 32px 16px;
 }
@@ -36,7 +36,9 @@
   margin: 0 2px;
   cursor: pointer;
   border-bottom: 2.5px solid transparent;
-  transition: color 0.18s, border-bottom 0.18s;
+  transition:
+    color 0.18s,
+    border-bottom 0.18s;
   box-shadow: none;
 }
 
@@ -59,7 +61,7 @@
   background: #fff;
   border: 1px solid #eee;
   border-radius: 0 0 12px 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   padding: 36px 24px;
   text-align: center;
   font-size: 18px;
@@ -81,4 +83,4 @@
   .title {
     font-size: 18px;
   }
-} 
+}
