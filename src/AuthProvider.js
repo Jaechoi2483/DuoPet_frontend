@@ -9,6 +9,9 @@
 
 import { createContext, useState, useEffect } from 'react';
 import apiClient from './utils/axios';
+// 💡 1. 필요한 서비스와 컴포넌트를 import 합니다. (경로는 실제 위치에 맞게 수정해주세요)
+import websocketService from './services/websocketService';
+import NotificationToast from './components/consultation/NotificationToast';
 
 // 전역(global) 사용을 위해 함수 밖에서 선언함
 // Context 생성 : 외부 컴포넌트가 import 해서 사용할 수 있도록 export 지정함
@@ -59,6 +62,9 @@ export const AuthProvider = ({ children }) => {
   // 처리 기능 : 마운트시 토큰 검사
   const [isAuthLoading, setIsAuthLoading] = useState(true);
 
+  // 💡 2. 새로운 상담 요청 알림을 관리할 상태를 추가합니다.
+  const [notification, setNotification] = useState(null);
+
   useEffect(() => {
     // 페이지 로드 시 인증 상태를 확인하는 로직
     const checkAuthStatus = () => {
@@ -87,7 +93,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('role', parsedToken.role);
             localStorage.setItem('userId', parsedToken.sub);
             localStorage.setItem('userNo', parsedToken.userNo);
-            
+
             // 토큰이 유효하면 로그인 상태로 설정
             const authData = {
               isLoggedIn: true,
@@ -120,6 +126,14 @@ export const AuthProvider = ({ children }) => {
 
     checkAuthStatus();
   }, []); //useEffect
+
+  // 💡 3. WebSocket 연결은 App.js에서 관리하므로 여기서는 제거
+  // AuthProvider에서는 인증 관련 기능만 담당
+
+  // 💡 4. 알림 팝업을 닫는 함수를 만듭니다.
+  const handleCloseNotification = () => {
+    setNotification(null);
+  };
 
   // 로그아웃 함수
   const logoutAndRedirect = async () => {
@@ -164,7 +178,7 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem('role', parsedToken.role);
           localStorage.setItem('userId', parsedToken.sub);
           localStorage.setItem('userNo', parsedToken.userNo);
-          
+
           setAuthInfo({
             isLoggedIn: true,
             role: parsedToken.role,
@@ -345,6 +359,8 @@ export const AuthProvider = ({ children }) => {
       }}
     >
       {children}
+      {/* 💡 5. 알림 상태가 존재할 때만 NotificationToast 컴포넌트를 렌더링합니다. */}
+      <NotificationToast notification={notification} onClose={handleCloseNotification} />
     </AuthContext.Provider>
   );
 }; // AuthProvider

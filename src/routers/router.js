@@ -40,8 +40,8 @@ const AppRouter = () => {
       {qnaRoutes}
       
       {/* 상담 관련 라우트 */}
-      <Route path="/consultation/waiting/:roomId" element={<ConsultationWaitingPage />} />
-      <Route path="/consultation/chat/:roomId" element={<ConsultationChat />} />
+      <Route path="/consultation/waiting/:roomUuid" element={<ConsultationWaitingPage />} />
+      <Route path="/consultation/chat/:roomUuid" element={<ConsultationChat />} />
     </Routes>
   );
 };

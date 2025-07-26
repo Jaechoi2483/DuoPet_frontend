@@ -2,58 +2,126 @@
 // src/pages/health/AiDiagnosis.js
 import React, { useState } from 'react';
 import styles from './AiDiagnosis.module.css';
+import { analyzeHealthComprehensive } from '../../api/healthApi';
 
 const AiDiagnosis = ({ pet }) => {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null); // 실제 파일 객체 저장
   const [diagnosisResult, setDiagnosisResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [symptomsDescription, setSymptomsDescription] = useState('');
+  const [error, setError] = useState(null);
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
+      // 파일 크기 체크 (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('파일 크기는 5MB 이하여야 합니다.');
+        return;
+      }
+      
+      setSelectedFile(file); // 실제 파일 객체 저장
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target.result);
+        setError(null);
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleDiagnosis = async () => {
-    if (!selectedImage || !symptomsDescription.trim()) {
+    if (!selectedFile || !symptomsDescription.trim()) {
       alert('이미지와 증상 설명을 모두 입력해주세요.');
       return;
     }
 
     setIsLoading(true);
+    setError(null);
     
-    // AI 진단 시뮬레이션
-    setTimeout(() => {
-      setDiagnosisResult({
-        confidence: 85,
-        diagnosis: '경미한 상부 호흡기 감염',
-        severity: 'mild',
-        description: 'AI 분석 결과, 반려동물이 경미한 상부 호흡기 감염 증상을 보일 가능성이 높습니다.',
-        recommendations: [
-          '따뜻한 환경 유지 및 충분한 휴식 제공',
-          '수분 섭취 권장 (신선한 물 제공)',
-          '증상 악화 시 즉시 동물병원 방문'
-        ],
-        nextSteps: [
-          '2-3일 관찰 후 개선되지 않으면 병원 방문',
-          '식욕 부진이 지속될 경우 즉시 상담',
-          '호흡 곤란 증상 시 응급 처치'
-        ]
-      });
+    try {
+      // 펫 정보 구성
+      const petInfo = pet ? {
+        age: pet.age || '',
+        breed: pet.breed || '',
+        weight: pet.weight || '',
+        symptoms: symptomsDescription
+      } : {
+        symptoms: symptomsDescription
+      };
+
+      // 실제 AI 진단 API 호출
+      const response = await analyzeHealthComprehensive(
+        [selectedFile], // 이미지 배열로 전달
+        pet?.type || 'dog', // 반려동물 타입
+        petInfo
+      );
+
+      console.log('진단 결과 전체:', response);
+      console.log('진단 결과 success:', response?.success);
+      console.log('진단 결과 data:', response?.data);
+
+      // API 응답을 UI에 맞게 변환
+      // axios response는 response.data에 실제 API 응답이 있음
+      // StandardResponse 형식: { success, data, message, ... }
+      if (response && response.data && response.data.data) {
+        const diagnosisData = response.data.data;
+        
+        // 건강 상태에 따른 심각도 매핑
+        const severityMap = {
+          'excellent': 'mild',
+          'good': 'mild',
+          'fair': 'moderate',
+          'poor': 'severe',
+          'critical': 'severe'
+        };
+
+        // 우선순위에 따른 심각도 매핑 (백업)
+        const priorityMap = {
+          'low': 'mild',
+          'medium': 'moderate',
+          'high': 'severe'
+        };
+
+        // 결과 설정
+        setDiagnosisResult({
+          confidence: Math.round(diagnosisData.overall_health_score || 0),
+          diagnosis: response.data.message || '진단이 완료되었습니다.',
+          severity: severityMap[diagnosisData.health_status] || priorityMap[diagnosisData.priority_level] || 'mild',
+          description: diagnosisData.critical_findings?.join(', ') || '',
+          recommendations: diagnosisData.comprehensive_recommendations || [],
+          nextSteps: diagnosisData.critical_findings || [],
+          requiresVet: diagnosisData.requires_vet_visit || false,
+          // 개별 진단 결과도 포함
+          eyeResult: diagnosisData.individual_assessments?.eye_health,
+          bcsResult: diagnosisData.individual_assessments?.body_condition,
+          skinResult: diagnosisData.individual_assessments?.skin_health
+        });
+      } else {
+        throw new Error(response?.data?.message || response?.message || '진단 결과를 받지 못했습니다.');
+      }
+    } catch (error) {
+      console.error('AI 진단 실패:', error);
+      setError('AI 진단 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      
+      // 오류 발생 시 기본 메시지 표시
+      if (error.response?.status === 401) {
+        setError('로그인이 필요합니다.');
+      } else if (error.response?.status === 413) {
+        setError('이미지 파일이 너무 큽니다. 5MB 이하의 파일을 업로드해주세요.');
+      }
+    } finally {
       setIsLoading(false);
-    }, 3000);
+    }
   };
 
   const resetDiagnosis = () => {
     setSelectedImage(null);
+    setSelectedFile(null);
     setDiagnosisResult(null);
     setSymptomsDescription('');
+    setError(null);
   };
 
   return (
@@ -128,6 +196,13 @@ const AiDiagnosis = ({ pet }) => {
             {isLoading ? '진단 중...' : '🔬 AI 진단 시작하기'}
           </button>
 
+          {error && (
+            <div className={styles.errorMessage}>
+              <span className={styles.errorIcon}>⚠️</span>
+              <span>{error}</span>
+            </div>
+          )}
+
           <div className={styles.actionButtons}>
             <button className={styles.actionButton}>
               <span className={styles.actionIcon}>👩‍⚕️</span>
@@ -200,6 +275,44 @@ const AiDiagnosis = ({ pet }) => {
                       ))}
                     </ol>
                   </div>
+
+                  {/* 개별 진단 결과 표시 */}
+                  {(diagnosisResult.eyeResult || diagnosisResult.bcsResult || diagnosisResult.skinResult) && (
+                    <div className={styles.detailedResults}>
+                      <h5 className={styles.detailedTitle}>🔍 상세 진단 결과</h5>
+                      
+                      {diagnosisResult.eyeResult && (
+                        <div className={styles.detailCard}>
+                          <h6 className={styles.detailCardTitle}>👁️ 안구 검사</h6>
+                          <p className={styles.detailText}>
+                            {diagnosisResult.eyeResult.disease || '정상'} 
+                            ({Math.round(diagnosisResult.eyeResult.confidence * 100)}% 신뢰도)
+                          </p>
+                        </div>
+                      )}
+                      
+                      {diagnosisResult.bcsResult && (
+                        <div className={styles.detailCard}>
+                          <h6 className={styles.detailCardTitle}>⚖️ 체형 평가</h6>
+                          <p className={styles.detailText}>
+                            BCS 점수: {diagnosisResult.bcsResult.bcs_score}/9
+                            <br />
+                            {diagnosisResult.bcsResult.condition}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {diagnosisResult.skinResult && (
+                        <div className={styles.detailCard}>
+                          <h6 className={styles.detailCardTitle}>🩹 피부 검사</h6>
+                          <p className={styles.detailText}>
+                            {diagnosisResult.skinResult.diagnosis || '정상'}
+                            {diagnosisResult.skinResult.severity && ` (${diagnosisResult.skinResult.severity})`}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

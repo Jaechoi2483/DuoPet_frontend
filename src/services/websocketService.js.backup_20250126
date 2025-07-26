@@ -122,36 +122,6 @@ class WebSocketService {
     }
   }
 
-  // 상태 변경 알림 구독
-  subscribeToStatusChanges(roomUuid, callback) {
-    if (!this.connected) return;
-    const destination = `/topic/consultation/${roomUuid}/status`;
-    console.log('[WebSocket] Subscribing to status changes:', destination);
-    if (!this.subscriptions.has(destination)) {
-      const sub = this.client.subscribe(destination, (message) => {
-        console.log('[WebSocket] Received status change:', message.body);
-        try {
-          const statusData = JSON.parse(message.body);
-          if (callback) callback(statusData);
-        } catch (error) {
-          console.error('[WebSocket] Error parsing status change:', error);
-        }
-      });
-      this.subscriptions.set(destination, sub);
-    }
-  }
-
-  // 상태 변경 알림 구독 해제
-  unsubscribeFromStatusChanges(roomUuid) {
-    const destination = `/topic/consultation/${roomUuid}/status`;
-    const sub = this.subscriptions.get(destination);
-    if (sub) {
-      sub.unsubscribe();
-      this.subscriptions.delete(destination);
-      console.log('[WebSocket] Unsubscribed from status changes:', destination);
-    }
-  }
-
   // roomUuid 매개변수로 변경 (백엔드가 roomUuid를 기대함)
   sendMessage(roomUuid, content, messageType = 'TEXT') {
     if (!this.connected || !this.client) {

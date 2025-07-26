@@ -18,7 +18,7 @@ import apiClient from './utils/axios';
 // 상세페이지에서만 Footer 제거용 래퍼 컴포넌트
 function AppWrapper() {
   const location = useLocation();
-  const { isAuthenticated, role, userNo } = useContext(AuthContext);
+  const { isLoggedIn, role, userNo, isAuthLoading } = useContext(AuthContext);
   const [isChatOpen, setIsChatOpen] = React.useState(false);
   const footerRef = useRef(null);
   const [footerVisible, setFooterVisible] = useState(false);
@@ -28,11 +28,24 @@ function AppWrapper() {
   
   // WebSocket 연결 관리
   useEffect(() => {
-    if (isAuthenticated && (role === 'VET' || role === 'vet')) {
-      // 전문가로 로그인한 경우 WebSocket 연결
-      console.log('전문가로 로그인됨, WebSocket 연결 중...');
+    // 인증 로딩이 완료되지 않았으면 대기
+    if (isAuthLoading) {
+      console.log('인증 상태 확인 중... WebSocket 연결 대기');
+      return;
+    }
+    
+    console.log('WebSocket 연결 조건 확인:', {
+      isLoggedIn,
+      role,
+      isVet: role === 'VET' || role === 'vet',
+      userNo
+    });
+    
+    if (isLoggedIn) {
+      // 로그인한 모든 사용자는 WebSocket 연결
+      console.log(`${role} 사용자로 로그인됨, WebSocket 연결 중...`);
       
-      // loginId를 가져오거나, 없으면 JWT의 subject (userid) 사용
+      // loginId를 사용 (백엔드가 loginId로 메시지를 보냄)
       let userIdentifier = localStorage.getItem('loginId');
       
       if (!userIdentifier) {
@@ -51,18 +64,43 @@ function AppWrapper() {
       }
       
       console.log('사용할 식별자:', userIdentifier);
+      console.log('사용자 역할:', role);
       
       if (userIdentifier) {
-        // WebSocket 연결
-        websocketService.connect('VET', userIdentifier)
+        // WebSocket 연결 - 토큰으로 연결
+        const accessToken = localStorage.getItem('accessToken');
+        
+        websocketService.connect(accessToken)
           .then(() => {
-            console.log('WebSocket 연결 성공 (identifier:', userIdentifier, ')');
-            // 전역 함수로 알림 표시 함수 등록
-            window.showConsultationRequestNotification = (notification) => {
-              console.log('상담 요청 알림:', notification);
-              setNotificationData(notification);
-              setShowNotification(true);
-            };
+            console.log(`WebSocket 연결 성공 (role: ${role}, identifier: ${userIdentifier})`);
+            
+            // 전문가인 경우에만 상담 알림 구독
+            if (role === 'VET' || role === 'vet') {
+              // 알림 표시 함수 정의
+              const showNotification = (notification) => {
+                console.log('🔔 상담 요청 알림:', notification);
+                setNotificationData(notification);
+                setShowNotification(true);
+                
+                // 알림음 재생 (옵션)
+                // const audio = new Audio('/notification-sound.mp3');
+                // audio.play().catch(e => console.log('알림음 재생 실패:', e));
+              };
+              
+              // 전역 함수로도 등록 (디버깅용)
+              window.showConsultationRequestNotification = showNotification;
+              
+              // WebSocket 구독 설정 - subscribeToNotifications 메서드 사용
+              websocketService.subscribeToNotifications((notification) => {
+                console.log('🔔 상담 요청 알림:', notification);
+                setNotificationData(notification);
+                setShowNotification(true);
+              });
+              
+              console.log('전문가 알림 구독 설정 완료');
+            } else {
+              console.log('일반 사용자 WebSocket 연결 완료');
+            }
           })
           .catch(err => {
             console.error('WebSocket 연결 실패:', err);
@@ -78,7 +116,7 @@ function AppWrapper() {
         websocketService.disconnect();
       }
     };
-  }, [isAuthenticated, role]);
+  }, [isLoggedIn, role, isAuthLoading]);
 
   useEffect(() => {
     if (!footerRef.current) return;

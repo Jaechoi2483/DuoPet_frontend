@@ -319,6 +319,23 @@
   margin-right: 8px;
 }
 
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.errorIcon {
+  font-size: 1.125rem;
+}
+
 .loadingSection, .resultSection {}
 
 .loadingCard {
@@ -507,4 +524,38 @@
   margin-bottom: 8px;
   font-size: 0.875rem;
   color: #7c3aed;
+}
+
+.detailedResults {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.detailedTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.detailCard {
+  background: #f9fafb;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.detailCardTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: 8px;
+}
+
+.detailText {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.5;
 }

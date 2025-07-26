@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL
     ? `${process.env.REACT_APP_API_BASE_URL}/api/consultation`
     : 'http://localhost:8080/api/consultation';
 
-console.log('[consultationApi] API_BASE_URL:', API_BASE_URL);
+// console.log('[consultationApi] API_BASE_URL:', API_BASE_URL);
 
 // Axios 인스턴스 생성
 const api = axios.create({
@@ -21,17 +21,18 @@ api.interceptors.request.use((config) => {
     const userRole = localStorage.getItem('role');
     const userId = localStorage.getItem('userId');
     
-    console.log('[consultationApi] 인터셉터 실행 - accessToken:', accessToken ? '있음' : '없음');
-    console.log('[consultationApi] 인터셉터 실행 - refreshToken:', refreshToken ? '있음' : '없음');
-    console.log('[consultationApi] 인터셉터 실행 - role:', userRole);
-    console.log('[consultationApi] 인터셉터 실행 - userId:', userId);
-    console.log('[consultationApi] 요청 URL:', config.url);
-    console.log('[consultationApi] 현재 포트:', window.location.port);
+    // 디버깅이 필요한 경우에만 주석 해제
+    // console.log('[consultationApi] 인터셉터 실행 - accessToken:', accessToken ? '있음' : '없음');
+    // console.log('[consultationApi] 인터셉터 실행 - refreshToken:', refreshToken ? '있음' : '없음');
+    // console.log('[consultationApi] 인터셉터 실행 - role:', userRole);
+    // console.log('[consultationApi] 인터셉터 실행 - userId:', userId);
+    // console.log('[consultationApi] 요청 URL:', config.url);
+    // console.log('[consultationApi] 현재 포트:', window.location.port);
     
     if (accessToken && refreshToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
         config.headers.RefreshToken = `Bearer ${refreshToken}`;
-        console.log('[consultationApi] Authorization과 RefreshToken 헤더 추가됨');
+        // console.log('[consultationApi] Authorization과 RefreshToken 헤더 추가됨');
     }
     
     // 인증이 필요한 요청에는 쿠키도 포함
@@ -124,9 +125,15 @@ export const consultationRoomApi = {
         return response.data;
     },
 
-    // 상담 상세 조회
+    // 상담 상세 조회 (roomId)
     getConsultationDetail: async (roomId) => {
         const response = await api.get(`/rooms/${roomId}`);
+        return response.data;
+    },
+
+    // 상담 상세 조회 (roomUuid)
+    getConsultationDetailByUuid: async (roomUuid) => {
+        const response = await api.get(`/rooms/${roomUuid}`);
         return response.data;
     },
 
