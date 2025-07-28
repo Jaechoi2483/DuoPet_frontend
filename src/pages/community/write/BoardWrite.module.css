@@ -61,6 +61,7 @@
 .textarea {
   height: 180px;
   resize: none;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 /* 파일 업로드 영역 */

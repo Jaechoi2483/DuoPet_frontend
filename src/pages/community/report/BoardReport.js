@@ -5,7 +5,7 @@ import apiClient from '../../../utils/axios';
 import Modal from '../../../components/common/Modal';
 import modalStyles from '../../../components/common/Modal.module.css';
 
-const FreeBoardReport = ({ isOpen, targetId, targetType, onClose }) => {
+const BoardReport = ({ isOpen, targetId, targetType, onClose }) => {
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
 
@@ -49,11 +49,10 @@ const FreeBoardReport = ({ isOpen, targetId, targetType, onClose }) => {
       alert('신고가 접수되었습니다.');
       onClose(); // 모달 닫기
     } catch (error) {
-      if (error.response?.status === 409) {
+      if (error.response?.data) {
         alert(error.response.data);
       } else {
-        console.error('신고 실패', error);
-        alert('신고 처리 중 오류가 발생했습니다.');
+        alert('신고 처리 중 알 수 없는 오류가 발생했습니다.');
       }
     }
   };
@@ -93,4 +92,4 @@ const FreeBoardReport = ({ isOpen, targetId, targetType, onClose }) => {
   );
 };
 
-export default FreeBoardReport;
+export default BoardReport;

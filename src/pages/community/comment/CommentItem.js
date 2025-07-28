@@ -3,7 +3,7 @@
 import React, { useState, useContext } from 'react';
 import apiClient from '../../../utils/axios';
 import CommentForm from './CommentForm';
-import FreeBoardReport from '../freeBoard/FreeBoardReport';
+import FreeBoardReport from '../report/BoardReport';
 import styles from './Comment.module.css';
 import { AuthContext } from '../../../AuthProvider';
 

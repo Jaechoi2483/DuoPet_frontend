@@ -1,6 +1,7 @@
 import React from 'react';
 import AdoptionSlider from '../components/adoption/AdoptionSlider';
 import RecentNotices from '../components/notice/RecentNotices';
+import MainTopPosts from '../components/mainTopPosts/MainTopPosts';
 
 const HomePage = () => {
   return (
@@ -12,6 +13,9 @@ const HomePage = () => {
 
       {/* 추가 섹션들을 여기에 배치할 수 있습니다 */}
       <RecentNotices />
+
+      {/* 메인 인기 게시글 섹션 */}
+      <MainTopPosts />
     </div>
   );
 };

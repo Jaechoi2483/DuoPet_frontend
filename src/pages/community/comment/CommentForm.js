@@ -57,6 +57,7 @@ function CommentForm({ contentId, parentCommentId = null, onSuccess }) {
     );
   }
 
+  // 고민사항 엔터를 눌렀을 때 등록되는 부분
   return (
     <div className={parentCommentId ? styles.replyForm : styles.commentCard}>
       <label className={styles.label}>{parentCommentId ? '답글 작성' : '댓글 작성'}</label>

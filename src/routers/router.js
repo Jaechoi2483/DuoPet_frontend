@@ -10,7 +10,7 @@ import SessionExpired from '../pages/SessionExpired';
 
 import noticeRoutes from './noticeRoutes';
 import userRoutes from './userRoutes';
-import freeBoardRoutes from './freeBoardRoutes';
+import communityRoutes from './communityRoutes';
 import healthRoutes from './healthRoutes';
 import adminRoutes from './adminRoutes';
 import adoptionRoutes from './adoptionRoutes';
@@ -22,7 +22,6 @@ import qnaRoutes from './qnaRoutes';
 import ConsultationWaitingPage from '../pages/consultation/ConsultationWaitingPage';
 import ConsultationChat from '../pages/consultation/ConsultationChat';
 
-
 const AppRouter = () => {
   return (
     <Routes>
@@ -32,13 +31,13 @@ const AppRouter = () => {
       <Route path="/session-expired" element={<SessionExpired />} />
       {userRoutes}
       {noticeRoutes}
-      {freeBoardRoutes}
+      {communityRoutes}
       {healthRoutes}
       {adminRoutes}
       {adoptionRoutes}
       {infoRoutes}
       {qnaRoutes}
-      
+
       {/* 상담 관련 라우트 */}
       <Route path="/consultation/waiting/:roomUuid" element={<ConsultationWaitingPage />} />
       <Route path="/consultation/chat/:roomUuid" element={<ConsultationChat />} />
