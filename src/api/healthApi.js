@@ -155,7 +155,8 @@ export const analyzeHealthComprehensive = async (images, petType = 'dog', petInf
     console.log('Sending comprehensive diagnosis request');
     
     // 프록시를 통해 라우팅되도록 상대 경로 사용
-    const response = await axios.post('/api/v1/health-diagnose/analyze', formData, {
+    // 임시로 절대 경로 사용 (프록시 문제 해결 시 원복)
+    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -178,7 +179,7 @@ export const analyzeEyeDisease = async (image, petType = 'dog') => {
     formData.append('image', image);
     formData.append('pet_type', petType);
     
-    const response = await axios.post('/api/v1/health-diagnose/analyze/eye', formData, {
+    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/eye', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -209,7 +210,7 @@ export const analyzeBCS = async (images, petType = 'dog', petInfo = {}) => {
       formData.append('pet_info', JSON.stringify(petInfo));
     }
     
-    const response = await axios.post('/api/v1/health-diagnose/analyze/bcs', formData, {
+    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/bcs', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -231,7 +232,7 @@ export const analyzeSkinDisease = async (image, petType = 'dog') => {
     formData.append('image', image);
     formData.append('pet_type', petType);
     
-    const response = await axios.post('/api/v1/health-diagnose/analyze/skin', formData, {
+    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/skin', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -246,10 +247,49 @@ export const analyzeSkinDisease = async (image, petType = 'dog') => {
   }
 };
 
+// AI 진단 - 단일 진단 (새로운 엔드포인트)
+export const analyzeSingleDiagnosis = async (images, diagnosisType, petType = 'dog', petInfo = {}) => {
+  try {
+    const formData = new FormData();
+    
+    // 이미지 파일들 추가
+    images.forEach((image) => {
+      formData.append('images', image);
+    });
+    
+    // 진단 유형 추가 (필수)
+    formData.append('diagnosis_type', diagnosisType);
+    
+    // 펫 타입 추가
+    formData.append('pet_type', petType);
+    
+    // 펫 정보 추가 (선택사항)
+    if (petInfo.age) formData.append('pet_age', petInfo.age);
+    if (petInfo.weight) formData.append('pet_weight', petInfo.weight);
+    if (petInfo.breed) formData.append('pet_breed', petInfo.breed);
+    
+    console.log('Sending single diagnosis request:', diagnosisType);
+    
+    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze-single', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
+      }
+    });
+    
+    console.log('Single diagnosis result:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to analyze single diagnosis:', error);
+    throw error;
+  }
+};
+
 // AI 진단 - 서비스 상태 확인
 export const getDiagnosisStatus = async () => {
   try {
-    const response = await axios.get('/api/v1/health-diagnose/status');
+    const response = await axios.get('http://localhost:8000/api/v1/health-diagnose/status');
     return response.data;
   } catch (error) {
     console.error('Failed to get diagnosis status:', error);
@@ -260,7 +300,7 @@ export const getDiagnosisStatus = async () => {
 // AI 진단 - 촬영 가이드 가져오기
 export const getDiagnosisGuide = async () => {
   try {
-    const response = await axios.get('/api/v1/health-diagnose/guide');
+    const response = await axios.get('http://localhost:8000/api/v1/health-diagnose/guide');
     return response.data;
   } catch (error) {
     console.error('Failed to get diagnosis guide:', error);

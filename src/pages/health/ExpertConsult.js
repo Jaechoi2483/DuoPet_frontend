@@ -40,6 +40,7 @@ const ExpertConsult = () => {
   const [userPets, setUserPets] = useState([]);
   const [showInstantModal, setShowInstantModal] = useState(false);
   const [instantConsultData, setInstantConsultData] = useState(null); // eslint-disable-line no-unused-vars
+  const [consultationStatus, setConsultationStatus] = useState({}); // 상담 상태 맵
 
   // 페이지네이션 상태
   const [currentPage, setCurrentPage] = useState(1);
@@ -55,6 +56,17 @@ const ExpertConsult = () => {
   useEffect(() => {
     loadExperts();
   }, [currentPage, filterSpecialty, sortBy, onlineOnly]); // eslint-disable-line react-hooks/exhaustive-deps
+  
+  // 주기적으로 상담 상태 업데이트 (30초마다)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!showBookingForm) { // 전문가 목록을 보고 있을 때만
+        loadExperts();
+      }
+    }, 30000); // 30초
+    
+    return () => clearInterval(interval);
+  }, [showBookingForm]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 인증 정보가 로드되면 반려동물 목록 로드
   useEffect(() => {
@@ -79,28 +91,30 @@ const ExpertConsult = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await vetProfileApi.getAllAvailable(
+      const response = await vetProfileApi.getAllAvailableWithStatus(
         currentPage - 1,
         6,
-        sortBy,
-        filterSpecialty || null,
-        onlineOnly || null
+        sortBy
       );
       if (response && response.data) {
-        const pageData = response.data;
+        const { vets, consultationStatus: statusMap } = response.data;
+        const pageData = vets;
         const expertsData = pageData.content || [];
         setExperts(expertsData);
         setTotalPages(pageData.totalPages || 0);
         setTotalElements(pageData.totalElements || 0);
+        setConsultationStatus(statusMap || {});
       } else {
         setExperts([]);
         setTotalPages(0);
         setTotalElements(0);
+        setConsultationStatus({});
       }
     } catch (err) {
       console.error('Error loading experts:', err);
       setError('전문가 목록을 불러오는데 실패했습니다.');
       setExperts([]);
+      setConsultationStatus({});
     } finally {
       setLoading(false);
     }
@@ -206,6 +220,14 @@ const ExpertConsult = () => {
   const handleExpertSelect = async (expert) => {
     try {
       console.log('Selected expert:', expert);
+      
+      // 상담 중인 전문가인지 확인
+      const vetId = expert.vet?.vetId;
+      if (vetId && consultationStatus[vetId]) {
+        alert('현재 다른 상담이 진행 중입니다. 상담이 끝난 후 다시 시도해주세요.');
+        return;
+      }
+      
       setSelectedExpert(expert);
       setShowBookingForm(true);
 
@@ -500,17 +522,23 @@ const ExpertConsult = () => {
 
                     <div className={styles.expertFooter}>
                       <div className={styles.expertStatus}>
-                        {expert.isOnline === 'Y' ? (
+                        {consultationStatus[expert.vet?.vetId] ? (
+                          <span className={styles.inConsultation}>🔴 상담중</span>
+                        ) : expert.isOnline === 'Y' ? (
                           <span className={styles.online}>🟢 온라인</span>
                         ) : (
                           <span className={styles.offline}>⚫ 오프라인</span>
                         )}
                       </div>
                       <div className={styles.expertActions}>
-                        <button className={styles.selectButton} onClick={() => handleExpertSelect(expert)}>
+                        <button 
+                          className={`${styles.selectButton} ${consultationStatus[expert.vet?.vetId] ? styles.disabledButton : ''}`} 
+                          onClick={() => handleExpertSelect(expert)}
+                          disabled={consultationStatus[expert.vet?.vetId]}
+                        >
                           예약 상담
                         </button>
-                        {expert.isOnline === 'Y' && (
+                        {expert.isOnline === 'Y' && !consultationStatus[expert.vet?.vetId] && (
                           <button className={styles.instantButton} onClick={() => handleInstantConsultation(expert)}>
                             즉시 상담
                           </button>
