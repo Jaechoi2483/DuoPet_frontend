@@ -13,9 +13,9 @@
   margin-bottom: 24px;
 }
 
-/* "자유게시판" 제목 박스 */
+/* "팁게시판" 제목 박스 */
 .titleWrapper {
-  background-color: #f4f7fe;
+  background-color: #fff8dc; /* 연노랑 */
   padding: 20px 24px;
   border-radius: 12px;
 }
@@ -32,7 +32,7 @@
   margin-top: 6px;
 }
 
-/* 검색/정렬/글쓰기 버튼 전체 묶음 (오른쪽 정렬로 변경) */
+/* 검색/정렬/글쓰기 버튼 전체 묶음 */
 .listControls {
   display: flex;
   justify-content: flex-end;
@@ -83,8 +83,8 @@
 }
 
 .dateInput:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: #facc15;
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.2);
 }
 
 /* 검색 버튼 */
@@ -102,7 +102,7 @@
 /* 글쓰기 버튼 */
 .writeButton {
   width: 88px;
-  background-color: #007bff;
+  background-color: #facc15;
   color: white;
   border: none;
   font-weight: bold;
@@ -112,7 +112,7 @@
 }
 
 .writeButton:hover {
-  background-color: #005fc4;
+  background-color: #eab308;
 }
 
 /* 추천 게시물 전체 영역 */
@@ -126,7 +126,7 @@
 /* 추천 게시물 박스 */
 .topBox {
   flex: 1;
-  background-color: #f7f7f7;
+  background-color: #fffbe6;
   padding: 16px;
   border-radius: 8px;
 }
@@ -149,7 +149,7 @@
 }
 
 .card:hover {
-  background-color: #f2f9ff;
+  background-color: #fffde9;
 }
 
 /* 카드 제목 */
@@ -166,7 +166,7 @@
 
 /* 뱃지 */
 .badge {
-  background-color: #007bff;
+  background-color: #facc15;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -191,7 +191,7 @@
 }
 
 .postItem:hover {
-  background-color: #f9f9f9;
+  background-color: #fffdf0;
 }
 
 .postTitle {
@@ -221,5 +221,5 @@
 }
 
 .active {
-  color: #007bff;
+  color: #facc15;
 }

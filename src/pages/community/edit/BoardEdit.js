@@ -1,13 +1,14 @@
-// src/pages/community/freeBoard/FreeBoardWrite.js
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/pages/community/Board/BoardEdit.js
+
+import React, { useEffect, useState, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../AuthProvider';
-import styles from './FreeBoardWrite.module.css';
+import styles from './BoardEdit.module.css';
 
-function FreeBoardWrite() {
+function BoardEdit({ category = 'free', route = 'freeBoard' }) {
   const navigate = useNavigate();
-
-  const { userNo, isLoggedIn, secureApiRequest } = useContext(AuthContext);
+  const { id } = useParams(); // 게시글 ID
+  const { userNo, secureApiRequest } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     userId: userNo,
@@ -19,6 +20,8 @@ function FreeBoardWrite() {
     files: [],
   });
 
+  const { isLoggedIn } = useContext(AuthContext);
+
   // 비로그인 시 차단
   useEffect(() => {
     if (!isLoggedIn) {
@@ -27,10 +30,31 @@ function FreeBoardWrite() {
     }
   }, [isLoggedIn]);
 
+  // 게시글 데이터 불러오기
   useEffect(() => {
-    // userId가 늦게 들어올 경우 반영
-    setFormData((prev) => ({ ...prev, userId: userNo }));
-  }, [userNo]);
+    async function fetchPost() {
+      try {
+        const response = await secureApiRequest(`/board/${category}/${id}`, {
+          method: 'GET',
+        });
+        const data = await response.json();
+
+        setFormData({
+          userId: data.userId,
+          category: data.category,
+          title: data.title,
+          contentBody: data.contentBody,
+          contentType: 'board',
+          tags: data.tags,
+          files: [], // 기존 파일 보존할 거면 처리 필요
+        });
+      } catch (err) {
+        console.error('게시글 조회 실패', err);
+      }
+    }
+
+    fetchPost();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,73 +71,73 @@ function FreeBoardWrite() {
   };
 
   const handleGoBack = () => {
-    const confirmed = window.confirm('작성 중인 내용이 사라집니다. 정말 목록으로 이동할까요?');
-    if (confirmed) {
-      navigate('/community/freeBoard');
+    if (window.confirm('수정 중인 내용이 사라집니다. 목록으로 이동할까요?')) {
+      navigate(`/community/${route}`);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!formData.title || !formData.contentBody || !formData.category) {
       alert('카테고리, 제목, 내용을 모두 입력해주세요.');
       return;
     }
 
     const data = new FormData();
-    data.append('userId', formData.userId);
-    data.append('category', formData.category);
+    data.append('category', formData.category.trim());
     data.append('title', formData.title);
     data.append('contentBody', formData.contentBody);
     data.append('tags', formData.tags);
     data.append('contentType', formData.contentType);
 
     if (formData.files.length > 0) {
-      data.append('ofile', formData.files[0]); // 첫 파일만 첨부
-    }
-
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!accessToken || !refreshToken) {
-      alert('로그인 정보가 없습니다. 다시 로그인해주세요.');
-      navigate('/login');
-      return;
+      data.append('ofile', formData.files[0]);
     }
 
     try {
-      await secureApiRequest('/board/write', {
-        method: 'POST',
+      await secureApiRequest(`/board/${category}/${id}`, {
+        method: 'PUT',
         body: data,
       });
 
-      alert('게시글이 등록되었습니다.');
-      navigate('/community/freeBoard');
+      alert('게시글이 수정되었습니다.');
+      navigate(`/community/${route}/${id}`);
     } catch (err) {
-      console.error('등록 실패', err);
-      alert('게시글 등록에 실패했습니다.');
+      console.error('수정 실패', err);
+
+      if (err.response?.status === 403) {
+        alert('해당 게시글을 수정할 권한이 없습니다.');
+      } else {
+        alert('게시글 수정 중 오류가 발생했습니다.');
+      }
+
+      return;
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>게시글 작성</h1>
+        <h1>게시글 수정</h1>
       </div>
 
       <form onSubmit={handleSubmit} className={styles.form}>
+        {/* 카테고리 */}
         <div className={styles.formGroup}>
           <label>카테고리</label>
           <select name="category" value={formData.category} onChange={handleChange} className={styles.select}>
-            <option value="">카테고리 선택</option>
-            <option value="자유">자유</option>
-            <option value="후기">후기</option>
-            <option value="질문">질문</option>
-            <option value="팁">팁</option>
+            <option value="" disabled>
+              카테고리 선택
+            </option>
+            <option value="free">자유</option>
+            <option value="review">후기</option>
+            <option value="question">질문</option>
+            <option value="tip">팁</option>
           </select>
-          <small>게시글의 주제에 맞는 카테고리를 선택해주세요.</small>
         </div>
 
+        {/* 제목 */}
         <div className={styles.formGroup}>
           <label>제목</label>
           <input
@@ -126,6 +150,7 @@ function FreeBoardWrite() {
           />
         </div>
 
+        {/* 내용 */}
         <div className={styles.formGroup}>
           <label>내용</label>
           <textarea
@@ -137,8 +162,9 @@ function FreeBoardWrite() {
           />
         </div>
 
+        {/* 태그 */}
         <div className={styles.formGroup}>
-          <label>태그*</label>
+          <label>태그</label>
           <input
             type="text"
             name="tags"
@@ -147,9 +173,9 @@ function FreeBoardWrite() {
             className={styles.input}
             placeholder="태그를 입력하세요 (쉼표로 구분)"
           />
-          <small>예: 강아지, 건강, 산책 (최대 5개)</small>
         </div>
 
+        {/* 첨부파일 */}
         <div className={styles.formGroup}>
           <label>첨부파일 (선택사항)</label>
           <div className={styles.fileBox}>
@@ -160,7 +186,7 @@ function FreeBoardWrite() {
 
         <div className={styles.buttonGroup}>
           <button type="submit" className={styles.submitBtn}>
-            게시글 등록
+            게시글 수정
           </button>
           <button type="button" className={styles.secondaryBtn} onClick={handleGoBack}>
             목록으로
@@ -171,4 +197,4 @@ function FreeBoardWrite() {
   );
 }
 
-export default FreeBoardWrite;
+export default BoardEdit;

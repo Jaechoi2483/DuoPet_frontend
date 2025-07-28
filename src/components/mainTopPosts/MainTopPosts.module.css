@@ -1,0 +1,93 @@
+/* 전체 TOP3 영역 감싸는 박스 */
+.mainTopPostsContainer {
+  display: flex; /* 가로 배치 */
+  justify-content: space-between;
+  gap: 24px; /* 두 박스 사이 간격 */
+  margin: 40px auto;
+  padding: 20px;
+  max-width: 1200px;
+}
+
+/* 좋아요/조회수 개별 박스 */
+.topBox {
+  flex: 1; /* 동일 너비 */
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 박스 상단 제목 */
+.topBox h3 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 게시글 카드 스타일 */
+.postCard {
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+.postCard:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 배지 색상 구분 */
+.badge {
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+/* 카테고리별 색상 */
+.freeBadge {
+  background-color: #4c78ff;
+  color: white;
+}
+
+.reviewBadge {
+  background-color: #ff8800;
+  color: white;
+}
+
+.questionBadge {
+  background-color: #28a745;
+  color: white;
+}
+
+.tipBadge {
+  background-color: #facc15;
+  color: white;
+}
+
+/* 제목, 작성자 등 */
+.cardTitle {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cardMeta {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.cardStats {
+  font-size: 13px;
+  color: #888;
+  display: flex;
+  gap: 12px;
+}

@@ -14,10 +14,10 @@
   margin-bottom: 12px;
 }
 
-/* '자유게시판' 뱃지 스타일 */
+/* '팁게시판' 뱃지 스타일 (노란색) */
 .badge {
-  background-color: #007bff;
-  color: white;
+  background-color: #ffc107;
+  color: #333;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 12px;
@@ -33,7 +33,7 @@
 
 /* 개별 태그 스타일 */
 .tag {
-  background-color: #e8f0ff;
+  background-color: #fff8dc;
   padding: 4px 8px;
   border-radius: 8px;
   font-size: 12px;
@@ -115,7 +115,7 @@
 
 /* 게시글 본문 영역 */
 .contentBox {
-  background-color: #f8f8f8;
+  background-color: #fffdee;
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 20px;

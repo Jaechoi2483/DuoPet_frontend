@@ -13,9 +13,9 @@
   margin-bottom: 24px;
 }
 
-/* "자유게시판" 제목 박스 */
+/* "후기게시판" 제목 박스 */
 .titleWrapper {
-  background-color: #f4f7fe;
+  background-color: #fff7f0;
   padding: 20px 24px;
   border-radius: 12px;
 }
@@ -83,8 +83,8 @@
 }
 
 .dateInput:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+  border-color: #f97316; /* 주황 테두리 */
+  box-shadow: 0 0 0 2px rgba(251, 146, 60, 0.3);
 }
 
 /* 검색 버튼 */
@@ -102,7 +102,7 @@
 /* 글쓰기 버튼 */
 .writeButton {
   width: 88px;
-  background-color: #007bff;
+  background-color: #f97316; /* 주황색 */
   color: white;
   border: none;
   font-weight: bold;
@@ -112,7 +112,7 @@
 }
 
 .writeButton:hover {
-  background-color: #005fc4;
+  background-color: #ea580c; /* hover 시 더 진한 주황 */
 }
 
 /* 추천 게시물 전체 영역 */
@@ -126,7 +126,7 @@
 /* 추천 게시물 박스 */
 .topBox {
   flex: 1;
-  background-color: #f7f7f7;
+  background-color: #fef6ee;
   padding: 16px;
   border-radius: 8px;
 }
@@ -149,7 +149,7 @@
 }
 
 .card:hover {
-  background-color: #f2f9ff;
+  background-color: #fff3e0;
 }
 
 /* 카드 제목 */
@@ -166,7 +166,7 @@
 
 /* 뱃지 */
 .badge {
-  background-color: #007bff;
+  background-color: #f97316;
   color: white;
   padding: 2px 8px;
   border-radius: 12px;
@@ -191,7 +191,7 @@
 }
 
 .postItem:hover {
-  background-color: #f9f9f9;
+  background-color: #fff8f1;
 }
 
 .postTitle {
@@ -221,5 +221,5 @@
 }
 
 .active {
-  color: #007bff;
+  color: #f97316;
 }

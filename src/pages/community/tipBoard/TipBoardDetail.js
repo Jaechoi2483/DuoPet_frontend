@@ -1,15 +1,15 @@
-// src/pages/community/freeBoard/FreeBoardDetail.js
+// src/pages/community/tipBoard/TipBoardDetail.js
 
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import apiClient from '../../../utils/axios';
 import { AuthContext } from '../../../AuthProvider';
-import FreeBoardReport from '../report/BoardReport';
+import BoardReport from '../report/BoardReport';
 import Modal from '../../../components/common/Modal';
 import CommentBox from '../comment/CommentBox';
-import styles from './FreeBoardDetail.module.css';
+import styles from './TipBoardDetail.module.css';
 
-function FreeBoardDetail() {
+function TipBoardDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { secureApiRequest, isLoggedIn, userNo } = useContext(AuthContext);
@@ -28,21 +28,16 @@ function FreeBoardDetail() {
 
   const contentId = Number(id);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return isNaN(date.getTime()) ? '날짜 없음' : date.toLocaleDateString();
-  };
-
-  const handleEdit = () => navigate(`/community/freeBoard/edit/${id}`);
-  const handleBackToList = () => navigate('/community/freeBoard');
+  const handleEdit = () => navigate(`/community/tipBoard/edit/${id}`);
+  const handleBackToList = () => navigate('/community/tipBoard');
 
   const handleDelete = async () => {
     if (!window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
     try {
-      const response = await secureApiRequest(`/board/free/${id}`, { method: 'DELETE' });
+      const response = await secureApiRequest(`/board/tip/${id}`, { method: 'DELETE' });
       if (response.status === 200) {
         alert('게시글이 삭제되었습니다.');
-        navigate('/community/freeBoard');
+        navigate('/community/tipBoard');
       } else {
         alert('삭제에 실패했습니다.');
       }
@@ -65,7 +60,7 @@ function FreeBoardDetail() {
     }
 
     try {
-      const res = await apiClient.post(`/board/free/like/${id}`, null, {
+      const res = await apiClient.post(`/board/tip/like/${id}`, null, {
         headers: {
           Authorization: `Bearer ${validAccessToken}`,
           RefreshToken: `Bearer ${validRefreshToken}`,
@@ -88,7 +83,7 @@ function FreeBoardDetail() {
       return;
     }
     try {
-      const res = await apiClient.post(`/board/free/bookmark/${id}`, null, {
+      const res = await apiClient.post(`/board/tip/bookmark/${id}`, null, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           RefreshToken: `Bearer ${refreshToken}`,
@@ -125,8 +120,7 @@ function FreeBoardDetail() {
         await apiClient.get(`/board/view-count`, { params: { id } });
 
         // 2. 게시글 상세 정보 가져오기
-        const res = await apiClient.get(`/board/free/detail/${id}`);
-        console.log('✅ 게시글 상세 응답:', res.data);
+        const res = await apiClient.get(`/board/tip/detail/${id}`);
         setPost(res.data);
         setLikeCount(res.data.likeCount);
 
@@ -140,7 +134,7 @@ function FreeBoardDetail() {
         // 4. 로그인 상태일 때만 좋아요/북마크 상태 확인
         if (validAccessToken && validRefreshToken) {
           try {
-            const likeRes = await apiClient.get(`/board/free/like/${id}/status`, {
+            const likeRes = await apiClient.get(`/board/tip/like/${id}/status`, {
               headers: {
                 Authorization: `Bearer ${validAccessToken}`,
                 RefreshToken: `Bearer ${validRefreshToken}`,
@@ -154,7 +148,7 @@ function FreeBoardDetail() {
           }
 
           try {
-            const bookmarkRes = await apiClient.get(`/board/free/bookmark/${id}/status`, {
+            const bookmarkRes = await apiClient.get(`/board/tip/bookmark/${id}/status`, {
               headers: {
                 Authorization: `Bearer ${validAccessToken}`,
                 RefreshToken: `Bearer ${validRefreshToken}`,
@@ -212,13 +206,13 @@ function FreeBoardDetail() {
       {showToast && <div className={styles.toast}>{toastMessage}</div>}
 
       <div className={styles.backBtnWrapper}>
-        <button className={styles.backBtn} onClick={() => navigate('/community/freeBoard')}>
+        <button className={styles.backBtn} onClick={() => navigate('/community/tipBoard')}>
           ← 목록으로
         </button>
       </div>
 
       <div className={styles.tagHeader}>
-        <span className={styles.badge}>자유게시판</span>
+        <span className={styles.badge}>팁게시판</span>
         <div className={styles.tagList}>
           {post.tags &&
             post.tags.split(',').map((tag, idx) => (
@@ -244,11 +238,10 @@ function FreeBoardDetail() {
           )}
         </div>
         <div className={styles.meta}>
-          <span>작성자ID: {post?.userId ?? '작성자 없음'}</span> |<span>{formatDate(post?.createdAt)}</span>
+          <span>작성자ID: {post.userId}</span> | <span>{new Date(post.createdAt).toLocaleDateString()}</span>
         </div>
-
         <div className={styles.stats}>
-          👁 {typeof post?.viewCount === 'number' ? post.viewCount : 0} ❤ {likeCount}
+          👁 {post.viewCount} ❤ {likeCount}
         </div>
       </div>
 
@@ -268,7 +261,7 @@ function FreeBoardDetail() {
         <button onClick={openReportModal}>🚩 신고하기</button>
       </div>
 
-      <FreeBoardReport
+      <BoardReport
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         targetId={reportProps.targetId}
@@ -306,4 +299,4 @@ function FreeBoardDetail() {
   );
 }
 
-export default FreeBoardDetail;
+export default TipBoardDetail;

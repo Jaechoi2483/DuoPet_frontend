@@ -1,10 +1,10 @@
-// src/pages/community/freeBoard/FreeBoardList.js
+// src/pages/community/question/QuestionBoardList.js
 
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import apiClient from '../../../utils/axios'; // axios 인스턴스
 import { AuthContext } from '../../../AuthProvider';
-import styles from './FreeBoardList.module.css';
+import styles from './QuestionBoardList.module.css';
 import PagingView from '../../../components/common/pagingView';
 
 // 날짜 포맷 함수 추가
@@ -17,7 +17,7 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${mm}.${dd}`;
 };
 
-function FreeBoardList() {
+function QuestionBoardList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isLoggedIn } = useContext(AuthContext);
@@ -56,7 +56,7 @@ function FreeBoardList() {
     const query = new URLSearchParams();
     if (inputKeyword.trim()) query.set('keyword', inputKeyword.trim());
     if (sortOption) query.set('sort', sortOption);
-    navigate(`/community/freeBoard?${query.toString()}`);
+    navigate(`/community/questionBoard?${query.toString()}`);
     setCurrentPage(1); // 페이지 초기화
   };
 
@@ -73,7 +73,7 @@ function FreeBoardList() {
     }
 
     // URL 이동
-    navigate(`/community/freeBoard?${query.toString()}`);
+    navigate(`/community/questionBoard?${query.toString()}`);
     setCurrentPage(1);
   };
 
@@ -82,11 +82,11 @@ function FreeBoardList() {
       alert('로그인이 필요한 기능입니다.');
       return;
     }
-    navigate('/community/freeBoard/write');
+    navigate('/community/questionBoard/write');
   };
 
   const handleClick = (id) => {
-    navigate(`/community/freeBoard/${id}`);
+    navigate(`/community/questionBoard/${id}`);
   };
 
   // 날짜 선택
@@ -98,13 +98,13 @@ function FreeBoardList() {
     query.set('sort', 'date');
     query.set('date', selected);
 
-    navigate(`/community/freeBoard?${query.toString()}`);
+    navigate(`/community/questionBoard?${query.toString()}`);
     setCurrentPage(1);
   };
 
-  // 자유게시판 경로 클릭 시 검색 초기화 (현재 페이지에서 다시 눌러도 리셋)
+  // 질문게시판 경로 클릭 시 검색 초기화 (현재 페이지에서 다시 눌러도 리셋)
   useEffect(() => {
-    if (location.pathname === '/community/freeBoard') {
+    if (location.pathname === '/community/questionBoard') {
       setInputKeyword(''); // 검색창 초기화
       setCurrentPage(1);
     }
@@ -131,18 +131,15 @@ function FreeBoardList() {
       }
     }
 
-    console.log('💡 요청 URL:', `/board/free/list?${params.toString()}`);
-
-    const accessToken = localStorage.getItem('accessToken');
-    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+    console.log('💡 요청 URL:', `/board/question/list?${params.toString()}`);
 
     apiClient
-      .get(`/board/free/list?${params.toString()}`, { headers })
+      .get(`/board/question/list?${params.toString()}`)
       .then((res) => {
-        setPostList(Array.isArray(res.data.list) ? res.data.list : []);
+        setPostList(res.data.list);
         setPagingInfo(res.data.paging);
       })
-      .catch((err) => console.error('자유게시판 목록 조회 실패:', err));
+      .catch((err) => console.error('질문게시판 목록 조회 실패:', err));
   }, [keyword, sortOption, currentPage, selectedDate]);
 
   useEffect(() => {
@@ -155,14 +152,14 @@ function FreeBoardList() {
   // 좋아요/조회수 TOP3 (처음에만)
   useEffect(() => {
     apiClient
-      .get('/board/free/top-liked')
+      .get('/board/question/top-liked')
       .then((res) => {
         setTopLikedPosts(Array.isArray(res.data) ? res.data : []);
       })
       .catch((err) => console.error('TOP 좋아요 게시글 조회 실패:', err));
 
     apiClient
-      .get('/board/free/top-viewed')
+      .get('/board/question/top-viewed')
       .then((res) => {
         setTopViewedPosts(Array.isArray(res.data) ? res.data : []);
       })
@@ -172,8 +169,8 @@ function FreeBoardList() {
   return (
     <div className={styles.container}>
       <div className={styles.titleWrapper}>
-        <h2 className={styles.sectionTitle}>📢 자유게시판</h2>
-        <p className={styles.sectionSubtitle}>반려동물과 함께하는 이야기를 자유롭게 공유해보세요 🐾</p>
+        <h2 className={styles.sectionTitle}>📢 질문게시판</h2>
+        <p className={styles.sectionSubtitle}>반려동물에 대한 궁금증을 나누고 함께 해결해보세요 🐶🐱</p>
       </div>
       {/* 상단 제목 + 검색/정렬/글쓰기 */}
       <div className={styles.listHeader}>
@@ -216,7 +213,7 @@ function FreeBoardList() {
             <div className={styles.cardList}>
               {topLikedPosts.map((post) => (
                 <div key={post.contentId} className={styles.card} onClick={() => handleClick(post.contentId)}>
-                  <span className={styles.badge}>자유게시판</span>
+                  <span className={styles.badge}>질문게시판</span>
                   <p className={styles.cardTitle}>{post.title}</p>
                   <p className={styles.cardMeta}>
                     🧑 {post.nickname} | 📅 {formatDate(post.createdAt)}
@@ -234,7 +231,7 @@ function FreeBoardList() {
             <div className={styles.cardList}>
               {topViewedPosts.map((post) => (
                 <div key={post.contentId} className={styles.card} onClick={() => handleClick(post.contentId)}>
-                  <span className={styles.badge}>자유게시판</span>
+                  <span className={styles.badge}>질문게시판</span>
                   <p className={styles.cardTitle}>{post.title}</p>
                   <p className={styles.cardMeta}>
                     🧑 {post.nickname} | 📅 {formatDate(post.createdAt)}
@@ -254,7 +251,7 @@ function FreeBoardList() {
         {postList.map((post) => (
           <div key={post.contentId} className={styles.postItem} onClick={() => handleClick(post.contentId)}>
             <div className={styles.postTitle}>
-              <span className={styles.badge}>자유게시판</span>
+              <span className={styles.badge}>질문게시판</span>
               <span>{post.title}</span>
             </div>
             <div className={styles.postMeta}>
@@ -268,14 +265,14 @@ function FreeBoardList() {
 
       {/* 페이징 */}
       <PagingView
-        currentPage={pagingInfo?.currentPage || 1}
-        totalPage={pagingInfo?.totalPage || 1}
-        startPage={pagingInfo?.startPage || 1}
-        endPage={pagingInfo?.endPage || 1}
+        currentPage={pagingInfo.currentPage || 1}
+        totalPage={pagingInfo.totalPage || 1}
+        startPage={pagingInfo.startPage || 1}
+        endPage={pagingInfo.endPage || 1}
         onPageChange={handlePageChange}
       />
     </div>
   );
 }
 
-export default FreeBoardList;
+export default QuestionBoardList;
