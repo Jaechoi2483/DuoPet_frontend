@@ -574,11 +574,6 @@ const FindHospitalPage = () => {
                         </span>
                       ))}
                     </div>
-
-                    <div className={styles.hospitalActions}>
-                      <button className={styles.detailButton}>상세보기</button>
-                      <button className={styles.reserveButton}>예약하기</button>
-                    </div>
                   </div>
                 </div>
               ))}

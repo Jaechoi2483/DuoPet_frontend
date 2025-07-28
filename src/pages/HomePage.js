@@ -1,6 +1,7 @@
 import React from 'react';
 import AdoptionSlider from '../components/adoption/AdoptionSlider';
 import RecentNotices from '../components/notice/RecentNotices';
+import ShoppingSection from '../components/Shopping/ShoppingSection';
 
 const HomePage = () => {
   return (
@@ -12,6 +13,7 @@ const HomePage = () => {
 
       {/* 추가 섹션들을 여기에 배치할 수 있습니다 */}
       <RecentNotices />
+      <ShoppingSection />
     </div>
   );
 };

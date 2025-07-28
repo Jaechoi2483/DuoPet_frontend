@@ -191,7 +191,7 @@ const FindShelterPage = () => {
 
   // 필터 변경 시 데이터 재로드
   useEffect(() => {
-    fetchShelters();
+    setCurrentPage(1);
   }, [filters]);
 
   // 사용자 위치 가져오기
@@ -466,11 +466,6 @@ const FindShelterPage = () => {
 
                     <div className={styles.description}>
                       <p>{shelter.description}</p>
-                    </div>
-
-                    <div className={styles.shelterActions}>
-                      <button className={styles.detailButton}>상세보기</button>
-                      <button className={styles.visitButton}>방문예약</button>
                     </div>
                   </div>
                 </div>
