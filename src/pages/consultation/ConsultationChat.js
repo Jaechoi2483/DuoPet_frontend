@@ -109,6 +109,21 @@ const ConsultationChat = () => {
           setMessages((prev) => [...prev, message]);
         },
       });
+      
+      // 상담 상태 변경 구독 추가
+      websocketService.subscribeToStatusChanges(roomInfo.roomUuid, (statusMessage) => {
+        console.log('[ConsultationChat] 상담 상태 변경 메시지 수신:', statusMessage);
+        if (statusMessage.type === 'CONSULTATION_ENDED') {
+          alert('상담이 종료되었습니다.');
+          // WebSocket 구독 해제
+          if (websocketService.isConnected()) {
+            websocketService.unsubscribeFromRoom(roomInfo.roomUuid);
+            websocketService.unsubscribeFromStatusChanges(roomInfo.roomUuid);
+          }
+          // 전문가 상담 페이지로 이동
+          navigate('/health/expert-consult');
+        }
+      });
     } else {
       console.log('[ConsultationChat] WebSocket 연결 필요');
       // WebSocket 연결이 필요한 경우 (일반적으로 App.js에서 이미 연결됨)
@@ -117,9 +132,10 @@ const ConsultationChat = () => {
     return () => {
       if (websocketService.isConnected() && roomInfo) {
         websocketService.unsubscribeFromRoom(roomInfo.roomUuid);
+        websocketService.unsubscribeFromStatusChanges(roomInfo.roomUuid);
       }
     };
-  }, [roomUuid, isLoggedIn, roomInfo]);
+  }, [roomUuid, isLoggedIn, roomInfo, navigate]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -140,10 +156,16 @@ const ConsultationChat = () => {
   const handleEndConsultation = async () => {
     if (window.confirm('상담을 종료하시겠습니까?')) {
       try {
+        // WebSocket 구독 해제를 먼저 수행
+        if (websocketService.isConnected() && roomInfo) {
+          websocketService.unsubscribeFromRoom(roomInfo.roomUuid);
+        }
+        
         await consultationRoomApi.endConsultation(roomInfo.roomId);
         alert('상담이 종료되었습니다.');
-        navigate('/mypage/consultations');
+        navigate('/health/expert-consult');
       } catch (err) {
+        console.error('상담 종료 오류:', err);
         alert('상담 종료 중 오류가 발생했습니다.');
       }
     }

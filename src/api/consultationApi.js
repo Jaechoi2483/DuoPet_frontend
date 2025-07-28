@@ -96,6 +96,15 @@ export const vetProfileApi = {
         return response.data;
     },
 
+    // 상담 가능한 수의사 목록과 상담 상태 조회
+    getAllAvailableWithStatus: async (page = 0, size = 6, sort = 'createdAt,desc') => {
+        const params = { page, size, sort };
+        params._t = Date.now();
+        
+        const response = await api.get('/vet-profiles/available-with-status', { params });
+        return response.data;
+    },
+
     // 수의사 온라인 상태 업데이트
     updateOnlineStatus: async (vetId, isOnline) => {
         const response = await api.patch(`/vet-profiles/${vetId}/online-status`, null, {
@@ -145,7 +154,7 @@ export const consultationRoomApi = {
 
     // 상담 종료
     endConsultation: async (roomId) => {
-        const response = await api.put(`/rooms/${roomId}/end`);
+        const response = await api.post(`/rooms/${roomId}/end`);
         return response.data;
     },
 

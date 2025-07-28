@@ -802,6 +802,24 @@
   cursor: not-allowed;
 }
 
+/* 상담중 상태 스타일 */
+.inConsultation {
+  color: #d32f2f;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.disabledButton {
+  opacity: 0.6;
+  cursor: not-allowed !important;
+}
+
+.disabledButton:hover {
+  background-color: #4CAF50 !important;
+}
+
 /* 새로운 날짜/시간 선택 UI 스타일 */
 .dateTimeSection {
   display: grid;

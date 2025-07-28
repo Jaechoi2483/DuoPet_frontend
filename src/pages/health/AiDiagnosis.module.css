@@ -7,6 +7,167 @@
   background: #fafafa;
 }
 
+/* 진단 유형 선택 스타일 */
+.diagnosisTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.diagnosisTypeCard {
+  padding: 20px;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.diagnosisTypeCard:hover {
+  border-color: #FFA500;
+  background: #fffbf0;
+}
+
+.diagnosisTypeCard.selected {
+  border-color: #FFA500;
+  background: #fff7ed;
+  box-shadow: 0 0 0 3px rgba(255, 165, 0, 0.2);
+}
+
+.diagnosisTypeIcon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.diagnosisTypeName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.diagnosisTypeDesc {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.diagnosisTypeInfo {
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.imageRequirement {
+  font-size: 0.875rem;
+  color: #FFA500;
+  font-weight: 500;
+}
+
+/* 섹션 타이틀 */
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+/* 이미지 그리드 스타일 */
+.imagePreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.imagePreviewItem {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.imagePreviewItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removeImageBtn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: bold;
+}
+
+.removeImageBtn:hover {
+  background: #dc2626;
+}
+
+.addMoreImages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: 120px;
+}
+
+.addMoreImages:hover {
+  border-color: #FFA500;
+  background: #fffbf0;
+}
+
+.bcsWarning {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  color: #92400e;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diagnosisTypeIndicator {
+  margin-top: 16px;
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diagnosisTypeLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.diagnosisTypeValue {
+  font-weight: 600;
+  color: #FFA500;
+}
+
 .header {
   margin-bottom: 32px;
 }
@@ -557,5 +718,80 @@
 .detailText {
   font-size: 0.875rem;
   color: #6b7280;
+  line-height: 1.5;
+}
+
+/* 확률 정보 섹션 */
+.probabilitySection {
+  background: #f9fafb;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+  border: 1px solid #e5e7eb;
+}
+
+.probabilityTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 12px;
+}
+
+.probabilityBars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.probabilityItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.probabilityLabel {
+  font-size: 0.875rem;
+  color: #6b7280;
+  min-width: 45px;
+}
+
+.probabilityBar {
+  flex: 1;
+  height: 20px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.probabilityFill {
+  height: 100%;
+  transition: width 0.5s ease;
+  border-radius: 10px;
+}
+
+.probabilityValue {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* 경고 메시지 */
+.warningMessage {
+  display: flex;
+  gap: 12px;
+  background: #fef3c7;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+
+.warningMessage p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #92400e;
   line-height: 1.5;
 }
