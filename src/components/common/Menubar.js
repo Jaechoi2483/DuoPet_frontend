@@ -239,21 +239,24 @@ function Menubar({
         <div className={styles.rightSection}>
           {isLoggedIn ? (
             <div className={styles.userSection}>
-              {isLoggedIn && (
-                <div className={styles.sessionTimer}>
-                  <span className={styles.timerIcon}>⏰</span>
-                  <span className={styles.timeText}>{remainingTime}</span>
-                  <button className={styles.extendBtn} onClick={handleExtendSession}>
-                    시간연장
-                  </button>
-                </div>
-              )}
+              {/* 타이머 */}
+              <div className={styles.sessionTimer}>
+                <span className={styles.timerIcon}>⏰</span>
+                <span className={styles.timeText}>{remainingTime}</span>
+                <button className={styles.extendBtn} onClick={handleExtendSession}>
+                  시간연장
+                </button>
+              </div>
+
+              {/* 사용자 표시 */}
               {role && getRoleBadge(role) ? (
                 <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
               ) : (
                 <span className={styles.userInitial}>{getUserInitial(username)}</span>
               )}
               <span className={styles.username}>{username}님</span>
+
+              {/* 관리자 버튼 */}
               {role === 'admin' && (
                 <button
                   className={styles.adminIconButton}
@@ -271,6 +274,8 @@ function Menubar({
                   <img src={adminIcon} alt="관리자 아이콘" style={{ width: '18px', height: '18px' }} />
                 </button>
               )}
+
+              {/* 마이페이지 드롭다운 */}
               <div className={styles.mypageDropdown}>
                 <span
                   className={styles.myPage}
@@ -289,39 +294,18 @@ function Menubar({
                     <a onClick={() => navigate('/mypage', { state: { activeTab: 'activity' } })}>내 활동</a>
                   </li>
                   <li className={styles.mypageSubmenuItem}>
-                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'bookmark' } })}>북마크</a>
+                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'consultations' } })}>상담내역</a>
                   </li>
                   <li className={styles.mypageSubmenuItem}>
                     <a onClick={() => navigate('/mypage', { state: { activeTab: 'settings' } })}>설정</a>
                   </li>
                 </ul>
               </div>
+
+              {/* 로그아웃 */}
               <button className={styles.authButton} onClick={handleLogout}>
                 로그아웃
               </button>
-
-            )}
-            <div className={styles.mypageDropdown}>
-              <span className={styles.myPage} onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>
-                마이페이지 ▼
-              </span>
-              <ul className={styles.mypageSubmenu}>
-                <li className={styles.mypageSubmenuItem}>
-                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>프로필</a>
-                </li>
-                <li className={styles.mypageSubmenuItem}>
-                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'pets' } })}>반려동물</a>
-                </li>
-                <li className={styles.mypageSubmenuItem}>
-                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'activity' } })}>내 활동</a>
-                </li>
-                <li className={styles.mypageSubmenuItem}>
-                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'consultations' } })}>상담내역</a>
-                </li>
-                <li className={styles.mypageSubmenuItem}>
-                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'settings' } })}>설정</a>
-                </li>
-              </ul>
             </div>
           ) : (
             <>
