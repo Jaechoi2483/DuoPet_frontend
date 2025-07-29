@@ -210,9 +210,6 @@ const AdoptionList = () => {
                     e.target.src = '/images/default-animal.png';
                   }}
                 />
-                <div className={styles.statusBadge}>
-                  {animal.processState}
-                </div>
               </div>
 
               <div className={styles.animalInfo}>

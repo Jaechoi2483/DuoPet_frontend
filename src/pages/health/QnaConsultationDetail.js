@@ -24,6 +24,18 @@ function QnaConsultationDetail() {
       loadConsultationDetail();
     }
   }, [isLoggedIn, roomId]);
+  
+  // 권한 체크 로그 (디버깅용 - 한 번만 실행)
+  useEffect(() => {
+    if (consultation) {
+      console.log('권한 체크:', {
+        userRole: localStorage.getItem('userRole'),
+        userId: localStorage.getItem('userId'),
+        consultationVetId: consultation.vetId,
+        consultationUserId: consultation.userId
+      });
+    }
+  }, [consultation]);
 
   const loadConsultationDetail = async () => {
     try {
@@ -78,6 +90,14 @@ function QnaConsultationDetail() {
         });
       }
       
+      // 디버깅: FormData 내용 확인
+      console.log('답변 등록 요청:', {
+        roomId,
+        content: answerContent,
+        filesCount: answerFiles.length,
+        accessToken: localStorage.getItem('accessToken') ? '있음' : '없음'
+      });
+      
       const response = await qnaConsultationApi.createAnswer(roomId, formData);
       
       if (response && response.data) {
@@ -91,7 +111,17 @@ function QnaConsultationDetail() {
       }
     } catch (error) {
       console.error('답변 등록 실패:', error);
-      alert('답변 등록 중 오류가 발생했습니다.');
+      console.error('에러 상세:', error.response);
+      
+      if (error.response?.status === 400) {
+        alert(error.response?.data?.message || '입력 데이터를 확인해주세요.');
+      } else if (error.response?.status === 401) {
+        alert('인증이 필요합니다. 다시 로그인해주세요.');
+      } else if (error.response?.status === 403) {
+        alert('해당 상담에 답변할 권한이 없습니다.');
+      } else {
+        alert('답변 등록 중 오류가 발생했습니다.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -105,15 +135,34 @@ function QnaConsultationDetail() {
     return <div className={styles.error}>상담 정보를 찾을 수 없습니다.</div>;
   }
 
-  const isVet = role === 'VET' && consultation.vetId === userNo;
-  const isOwner = consultation.userId === userNo;
-  const canAnswer = isVet && ((consultation.roomStatus || consultation.status) === 'CREATED' || (consultation.roomStatus || consultation.status) === 'PENDING');
+  // localStorage에서 userId 가져오기
+  const userId = localStorage.getItem('userId');
+  const userRole = localStorage.getItem('userRole');
+  
+  // 수의사 여부 확인 (role이 'vet'인지 확인)
+  const isVet = userRole === 'vet';
+  const isOwner = consultation.userId === parseInt(userId);
+  
+  // 답변 가능 여부 확인
+  const canAnswer = isVet && 
+    ((consultation.roomStatus || consultation.status) === 'CREATED' || 
+     (consultation.roomStatus || consultation.status) === 'PENDING' ||
+     (consultation.roomStatus || consultation.status) === 'WAITING');
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <button 
-          onClick={() => navigate('/mypage/consultations', { state: { activeTab: 'qna' } })} 
+          onClick={() => {
+            // 마이페이지로 이동하면서 상담내역 탭을 활성화하고, 
+            // ConsultationHistory 컴포넌트에도 qna 탭을 활성화하도록 전달
+            navigate('/mypage', { 
+              state: { 
+                activeTab: 'consultations',  // 마이페이지의 상담내역 탭
+                consultationTab: 'qna'       // 상담내역 내의 Q&A 탭
+              } 
+            });
+          }} 
           className={styles.backButton}
         >
           ← 목록으로
@@ -216,7 +265,7 @@ function QnaConsultationDetail() {
       </div>
 
       {/* 답변 내용 */}
-      {consultation.messages && consultation.messages.find(msg => msg.senderType === 'VET' && msg.isMainAnswer) && (
+      {consultation.messages && consultation.messages.filter(msg => msg.senderType === 'VET' && msg.messageType === 'TEXT').length > 0 && (
         <div className={styles.answerSection}>
           <h3>수의사 답변</h3>
           <div className={styles.vetInfo}>
@@ -224,27 +273,29 @@ function QnaConsultationDetail() {
             <span className={styles.specialty}>{consultation.vetSpecialty}</span>
           </div>
           {consultation.messages
-            .filter(msg => msg.senderType === 'VET' && msg.isMainAnswer)
+            .filter(msg => msg.senderType === 'VET' && msg.messageType === 'TEXT')
             .map((answer, index) => (
               <div key={index}>
                 <div className={styles.content}>
                   {answer.content}
                 </div>
-                {answer.fileName && (
-                  <div className={styles.files}>
-                    <h4>첨부 파일</h4>
-                    <div className={styles.fileList}>
-                      <a 
-                        href={`${process.env.REACT_APP_API_BASE_URL}${answer.fileUrl}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.fileItem}
-                      >
-                        {answer.fileName}
-                      </a>
+                {consultation.messages
+                  .filter(msg => msg.senderType === 'VET' && msg.messageType !== 'TEXT' && msg.fileName)
+                  .map((file, fileIndex) => (
+                    <div key={`file-${fileIndex}`} className={styles.files}>
+                      <h4>첨부 파일</h4>
+                      <div className={styles.fileList}>
+                        <a 
+                          href={`${process.env.REACT_APP_API_BASE_URL}${file.fileUrl}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.fileItem}
+                        >
+                          {file.fileName}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
               </div>
             ))}
         </div>

@@ -18,7 +18,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
-    const userRole = localStorage.getItem('role');
+    const userRole = localStorage.getItem('userRole');
     const userId = localStorage.getItem('userId');
     
     // 디버깅이 필요한 경우에만 주석 해제
@@ -244,8 +244,8 @@ export const chatMessageApi = {
 // 상담 후기 API
 export const consultationReviewApi = {
     // 후기 작성
-    createReview: async (reviewData) => {
-        const response = await api.post('/consultation-reviews', reviewData);
+    createReview: async (roomId, reviewData) => {
+        const response = await api.post(`/reviews/room/${roomId}`, reviewData);
         return response.data;
     },
 

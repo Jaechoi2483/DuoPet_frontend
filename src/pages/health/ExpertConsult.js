@@ -71,10 +71,16 @@ const ExpertConsult = () => {
         6,
         sortBy
       );
+      console.log('Expert list API response:', response);
       if (response && response.data) {
         const { vets, consultationStatus: statusMap } = response.data;
         const pageData = vets;
         const expertsData = pageData.content || [];
+        console.log('Experts data:', expertsData);
+        // 첫 번째 전문가의 평점 확인
+        if (expertsData.length > 0) {
+          console.log('First expert rating:', expertsData[0].ratingAvg);
+        }
         setExperts(expertsData);
         setTotalPages(pageData.totalPages || 0);
         setTotalElements(pageData.totalElements || 0);
@@ -327,7 +333,7 @@ const ExpertConsult = () => {
                       <div className={styles.expertStats}>
                         <div className={styles.statItem}>
                           <div className={styles.statLabel}>평점</div>
-                          <div className={styles.statValue}>⭐ {expert.ratingAvg || 0}</div>
+                          <div className={styles.statValue}>⭐ {Number(expert.ratingAvg) || 0}</div>
                         </div>
                         <div className={styles.statItem}>
                           <div className={styles.statLabel}>상담횟수</div>
@@ -335,7 +341,7 @@ const ExpertConsult = () => {
                         </div>
                         <div className={styles.statItem}>
                           <div className={styles.statLabel}>상담료</div>
-                          <div className={styles.statValue}>{expert.consultationFee?.toLocaleString()}원</div>
+                          <div className={styles.statValue}>{expert.consultationFee ? Number(expert.consultationFee).toLocaleString() : '30,000'}원</div>
                         </div>
                       </div>
                       <p className={styles.expertIntroduction}>

@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
             console.log('파싱된 토큰 정보:', parsedToken);
             // localStorage에 필요한 정보 저장 (WebSocket 연결 등을 위해)
-            localStorage.setItem('role', parsedToken.role);
+            localStorage.setItem('userRole', parsedToken.role);
             localStorage.setItem('userId', parsedToken.sub);
             localStorage.setItem('userNo', parsedToken.userNo);
 
@@ -167,7 +167,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('loginId');
     localStorage.removeItem('rememberId');
     localStorage.removeItem('autoLogin');
-    localStorage.removeItem('role');
+    localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
     localStorage.removeItem('userNo');
 
@@ -193,7 +193,7 @@ export const AuthProvider = ({ children }) => {
 
         if (parsedToken) {
           // localStorage에 필요한 정보 저장 (WebSocket 연결 등을 위해)
-          localStorage.setItem('role', parsedToken.role);
+          localStorage.setItem('userRole', parsedToken.role);
           localStorage.setItem('userId', parsedToken.sub);
           localStorage.setItem('userNo', parsedToken.userNo);
 

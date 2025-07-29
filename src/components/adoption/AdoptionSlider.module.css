@@ -3,6 +3,11 @@
   max-width: 1200px;
   margin: 3rem auto;
   padding: 0 1rem;
+  transition: opacity 0.3s ease;
+}
+
+.sliderContainer.hovered {
+  opacity: 0.85;
 }
 
 .header {
@@ -20,19 +25,18 @@
 }
 
 .viewAllBtn {
-  background: none;
-  border: none;
-  color: #007bff;
-  font-size: 1rem;
+  background-color: #f3f3f3;
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
   cursor: pointer;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .viewAllBtn:hover {
-  background-color: #f0f8ff;
-  color: #0056b3;
+  background-color: #e0e0e0;
 }
 
 .sliderWrapper {
