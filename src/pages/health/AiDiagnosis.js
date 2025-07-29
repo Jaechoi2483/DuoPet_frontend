@@ -112,10 +112,13 @@ const AiDiagnosis = ({ pet }) => {
       };
 
       // 새로운 단일 진단 API 호출
+      // animalType을 영어로 변환 ('강아지' -> 'dog', '고양이' -> 'cat')
+      const petType = pet?.animalType === '고양이' ? 'cat' : 'dog';
+      
       const response = await analyzeSingleDiagnosis(
         selectedFiles,
         diagnosisType,
-        pet?.type || 'dog',
+        petType,
         petInfo
       );
 
@@ -138,17 +141,29 @@ const AiDiagnosis = ({ pet }) => {
             severity: results.severity || 'mild',
             description: `${results.category || results.disease || '정상'} (${Math.round(results.confidence * 100)}% 신뢰도)`,
             recommendations: results.recommendations || (results.recommendation ? [results.recommendation] : []),
-            nextSteps: results.recommendations?.slice(0, 3) || [],
+            nextSteps: [],
             requiresVet: results.requires_vet_visit || false
           };
           
           // 낮은 신뢰도 처리
-          if (results.confidence < 0.5) {
+          if (results.confidence <= 0.5) {
             processedResult.severity = 'mild';
-            if (!processedResult.recommendations.length) {
+            if (!processedResult.recommendations || !processedResult.recommendations.length) {
               processedResult.recommendations = ['더 선명한 이미지로 재촬영을 권장합니다'];
             }
           }
+          
+          // recommendations가 없는 경우 기본값 추가
+          if (!processedResult.recommendations || processedResult.recommendations.length === 0) {
+            if (results.category === '정상') {
+              processedResult.recommendations = ['정기적인 안구 검진을 권장합니다', '깨끗한 환경을 유지하세요'];
+            } else {
+              processedResult.recommendations = ['수의사 상담을 권장합니다', '증상을 주의깊게 관찰하세요'];
+            }
+          }
+          
+          // nextSteps를 recommendations에서 생성
+          processedResult.nextSteps = processedResult.recommendations.slice(0, 3);
         } else if (diagnosisType === 'bcs') {
           const severityMap = {
             '저체중': 'moderate',

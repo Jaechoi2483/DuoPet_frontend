@@ -20,9 +20,10 @@ const ConsultationWaitingPage = () => {
     let timer = null;
     let statusPoller = null;
     let isMounted = true;
-    let shouldStartPolling = true;
 
     const loadConsultationData = async () => {
+      let shouldStartPolling = true; // 로컬 변수로 선언
+      
       try {
         // 💡 2. roomUuid를 사용하여 API를 호출합니다.
         const response = await consultationRoomApi.getConsultationDetailByUuid(roomUuid);
@@ -32,19 +33,25 @@ const ConsultationWaitingPage = () => {
           // 이미 종료된 상태인지 확인
           if (response.data.roomStatus === 'IN_PROGRESS') {
             navigate(`/consultation/chat/${roomUuid}`);
+            shouldStartPolling = false;
           } else if (response.data.roomStatus === 'TIMED_OUT') {
-            // 명시적 타임아웃 상태
+            // 명시적 타임아웃 상태 - 즉시 타임아웃 화면 표시
+            console.log('[ConsultationWaitingPage] 초기 로드 시 이미 TIMED_OUT 상태');
             setStatus('TIMEOUT');
             setTimeLeft(0);
             shouldStartPolling = false;
           } else if (response.data.roomStatus === 'REJECTED') {
             // 명시적 거절 상태
+            console.log('[ConsultationWaitingPage] 초기 로드 시 이미 REJECTED 상태');
             setStatus('REJECTED');
             shouldStartPolling = false;
           } else if (response.data.roomStatus === 'CANCELLED') {
             // 기타 취소 상태 (사용자 취소 등)
+            console.log('[ConsultationWaitingPage] 초기 로드 시 이미 CANCELLED 상태');
             setStatus('CANCELLED');
             shouldStartPolling = false;
+          } else if (response.data.roomStatus === 'WAITING') {
+            console.log('[ConsultationWaitingPage] WAITING 상태 - 폴링 시작');
           }
         }
       } catch (err) {
@@ -55,6 +62,8 @@ const ConsultationWaitingPage = () => {
       } finally {
         if (isMounted) setLoading(false);
       }
+      
+      return shouldStartPolling; // 폴링 시작 여부 반환
     };
 
     const checkConsultationStatus = async () => {
@@ -77,6 +86,18 @@ const ConsultationWaitingPage = () => {
               if (isMounted) navigate(`/consultation/chat/${roomUuid}`);
             }, 2000);
           } else if (response.data.roomStatus === 'TIMED_OUT') {
+            // 30초가 실제로 지났는지 확인
+            const elapsedTime = window.consultationStartTime ? 
+              (Date.now() - window.consultationStartTime) / 1000 : 30;
+            console.log('[ConsultationWaitingPage] 폴링 TIMED_OUT - 경과 시간:', elapsedTime);
+            
+            if (elapsedTime < 30) {
+              console.log('[ConsultationWaitingPage] 30초 미만 TIMED_OUT - 무시하고 대기 유지. 경과 시간:', elapsedTime);
+              // 30초가 지나지 않았으므로 타임아웃을 무시하고 계속 대기
+              // 폴링은 계속 진행하여 상태 변경을 감지
+              return;
+            }
+            
             console.log('[ConsultationWaitingPage] 명시적 TIMED_OUT 상태');
             setStatus('TIMEOUT');
             clearInterval(timer);
@@ -100,12 +121,16 @@ const ConsultationWaitingPage = () => {
     };
 
     // 데이터 로드를 먼저 완료하고 나서 타이머/폴링 시작
-    loadConsultationData().then(() => {
-      if (!shouldStartPolling || !isMounted) return;
+    loadConsultationData().then((shouldStartPolling) => {
+      if (!shouldStartPolling || !isMounted) {
+        console.log('[ConsultationWaitingPage] 폴링 시작하지 않음 - shouldStartPolling:', shouldStartPolling);
+        return;
+      }
 
         // 타임아웃 처리를 위한 시작 시간 기록
         const startTime = Date.now();
         window.consultationStartTime = startTime; // 전역 변수로 저장
+        console.log('[ConsultationWaitingPage] 상담 시작 시간 기록:', new Date(startTime).toISOString());
 
         // WebSocket 상태 변경 알림 구독
         if (websocketService.isConnected()) {
@@ -113,11 +138,29 @@ const ConsultationWaitingPage = () => {
           websocketService.subscribeToStatusChanges(roomUuid, (statusData) => {
             console.log('[ConsultationWaitingPage] 상태 변경 알림 수신:', JSON.stringify(statusData));
             
+            // USER_JOINED/USER_LEFT 메시지는 이미 올바른 채널로 전송되므로 별도 처리
+            if (statusData.type === 'USER_JOINED' || statusData.type === 'USER_LEFT') {
+              console.log('[ConsultationWaitingPage] 사용자 상태 변경:', statusData.type, statusData.username);
+              // 사용자 입장/퇴장은 대기 중에는 특별한 처리 불필요
+              return;
+            }
+            
             // WebSocket 메시지 타입과 roomUuid 확인
             if (statusData.type === 'STATUS_CHANGE' && statusData.roomUuid === roomUuid) {
               console.log('[ConsultationWaitingPage] 상태 변경 처리:', statusData.status);
               
               if (statusData.status === 'TIMED_OUT') {
+                // 30초가 실제로 지났는지 확인
+                const elapsedTime = window.consultationStartTime ? 
+                  (Date.now() - window.consultationStartTime) / 1000 : 30;
+                console.log('[ConsultationWaitingPage] TIMED_OUT 수신 - 경과 시간:', elapsedTime);
+                
+                if (elapsedTime < 30) {
+                  console.log('[ConsultationWaitingPage] WebSocket 30초 미만 TIMED_OUT - 무시. 경과 시간:', elapsedTime);
+                  // 30초가 지나지 않았으므로 WebSocket 메시지도 무시
+                  return;
+                }
+                
                 console.log('[ConsultationWaitingPage] 타임아웃 상태로 변경');
                 setStatus('TIMEOUT');
                 setIsPollingActive(false); // 폴링 즉시 중단
@@ -142,7 +185,7 @@ const ConsultationWaitingPage = () => {
                 console.log('[ConsultationWaitingPage] 알 수 없는 상태:', statusData.status);
               }
             } else {
-              console.log('[ConsultationWaitingPage] 다른 방의 상태 변경이거나 타입이 다름');
+              console.log('[ConsultationWaitingPage] 알 수 없는 메시지 타입:', statusData.type);
             }
           });
         } else {

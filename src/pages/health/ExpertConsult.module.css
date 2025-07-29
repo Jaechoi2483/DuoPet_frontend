@@ -205,6 +205,21 @@
   background: #45a049;
 }
 
+.qnaButton {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-weight: 600;
+}
+
+.qnaButton:hover {
+  background: #5a6268;
+}
+
 .expertStatus {
   display: flex;
   justify-content: center;
