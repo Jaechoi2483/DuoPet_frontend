@@ -283,7 +283,7 @@ function Menubar({
                   <a onClick={() => navigate('/mypage', { state: { activeTab: 'activity' } })}>내 활동</a>
                 </li>
                 <li className={styles.mypageSubmenuItem}>
-                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'bookmark' } })}>북마크</a>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'consultations' } })}>상담내역</a>
                 </li>
                 <li className={styles.mypageSubmenuItem}>
                   <a onClick={() => navigate('/mypage', { state: { activeTab: 'settings' } })}>설정</a>

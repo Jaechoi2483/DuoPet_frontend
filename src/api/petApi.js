@@ -107,3 +107,25 @@ export const getPetImageUrl = (filename) => {
   if (!filename) return null;
   return `${API_BASE_URL}/pet/image/${filename}`;
 };
+
+// 현재 로그인한 사용자의 반려동물 목록 조회
+export const getMyPets = async () => {
+  try {
+    const response = await apiClient.get('/pet/my-pets');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch my pets:', error);
+    throw error;
+  }
+};
+
+// petApi 객체로 모든 함수 export
+export const petApi = {
+  getPetList,
+  getPetDetail,
+  registerPet,
+  updatePet,
+  deletePet,
+  getPetImageUrl,
+  getMyPets
+};

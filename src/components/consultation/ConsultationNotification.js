@@ -7,6 +7,7 @@ const ConsultationNotification = ({ notification, onClose }) => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isHandled, setIsHandled] = useState(false); // 처리 완료 여부
+  const [startTime] = useState(Date.now()); // 알림 시작 시간 저장
 
   useEffect(() => {
     let timer = null;
@@ -19,6 +20,17 @@ const ConsultationNotification = ({ notification, onClose }) => {
         console.log('[ConsultationNotification] 상태 변경 알림 수신:', statusData);
         
         if (statusData.type === 'STATUS_CHANGE' && statusData.roomUuid === notification.roomUuid) {
+          // 타임아웃의 경우 30초가 실제로 지났는지 확인
+          if (statusData.status === 'TIMED_OUT') {
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            console.log('[ConsultationNotification] TIMED_OUT 수신 - 경과 시간:', elapsedTime);
+            
+            if (elapsedTime < 30) {
+              console.log('[ConsultationNotification] 30초 미만 TIMED_OUT 무시');
+              return; // 30초가 지나지 않았으면 무시
+            }
+          }
+          
           // 타임아웃, 거절, 취소 등의 경우 알림 닫기
           if (statusData.status === 'TIMED_OUT' || 
               statusData.status === 'REJECTED' || 
@@ -56,6 +68,17 @@ const ConsultationNotification = ({ notification, onClose }) => {
         if (response.success && response.data) {
           const status = response.data.roomStatus;
           console.log('[ConsultationNotification] 상태 체크:', status);
+          
+          // TIMED_OUT의 경우 30초가 실제로 지났는지 확인
+          if (status === 'TIMED_OUT') {
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            console.log('[ConsultationNotification] 폴링 TIMED_OUT - 경과 시간:', elapsedTime);
+            
+            if (elapsedTime < 30) {
+              console.log('[ConsultationNotification] 30초 미만 폴링 TIMED_OUT 무시');
+              return; // 30초가 지나지 않았으면 무시
+            }
+          }
           
           if (status === 'TIMED_OUT' || status === 'REJECTED' || 
               status === 'CANCELLED' || status === 'IN_PROGRESS') {
