@@ -1,3 +1,4 @@
+/* 📦 전체 로그인 박스 */
 .loginContainer {
   width: 380px;
   margin: 60px auto;
@@ -8,13 +9,13 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* 📌 제목/부제목 */
 .title {
   text-align: center;
   font-size: 24px;
   font-weight: 700;
   margin-bottom: 6px;
 }
-
 .subtitle {
   text-align: center;
   color: #777;
@@ -22,6 +23,7 @@
   margin-bottom: 24px;
 }
 
+/* 🔐 로그인 입력창 */
 input[type='text'],
 input[type='password'] {
   width: 100%;
@@ -32,7 +34,6 @@ input[type='password'] {
   border-radius: 6px;
   box-sizing: border-box;
 }
-
 input[type='text']:focus,
 input[type='password']:focus {
   outline: none;
@@ -40,6 +41,7 @@ input[type='password']:focus {
   box-shadow: 0 0 0 2px rgba(49, 130, 246, 0.2);
 }
 
+/* ☑️ 체크박스 */
 .checkboxGroup {
   display: flex;
   justify-content: space-between;
@@ -49,6 +51,7 @@ input[type='password']:focus {
   font-size: 14px;
 }
 
+/* 🔵 로그인 버튼 */
 .loginBtn {
   width: 100%;
   padding: 14px;
@@ -62,12 +65,7 @@ input[type='password']:focus {
   margin-bottom: 20px;
 }
 
-.divider {
-  margin: 20px 0;
-  font-size: 14px;
-  color: #aaa;
-}
-
+/* 🪪 얼굴 로그인 버튼 */
 .faceBtn {
   width: 100%;
   padding: 12px;
@@ -83,37 +81,14 @@ input[type='password']:focus {
   cursor: pointer;
 }
 
-.snsLogin {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.sns {
-  flex: 1;
-  padding: 12px 0;
+/* ━ 구분선 */
+.divider {
+  margin: 20px 0;
   font-size: 14px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
+  color: #aaa;
 }
 
-.kakao {
-  background-color: #fee500;
-  color: #3c1e1e;
-}
-
-.naver {
-  background-color: #03c75a;
-}
-
-.google {
-  background-color: #4285f4;
-}
-
+/* 🔗 회원가입/비번찾기 링크 */
 .loginLinks {
   display: flex;
   justify-content: space-between;
@@ -121,9 +96,107 @@ input[type='password']:focus {
   font-size: 14px;
   padding: 0 4px;
 }
-
 .link {
   color: #007bff;
   cursor: pointer;
   text-decoration: underline;
+}
+
+/* 👤 최근 로그인 표시 (위에 텍스트용) */
+.recentLogin {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* ⭐ 최근 로그인 뱃지 */
+.recentBadge {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+/* 📱 TVING 스타일 소셜 로그인 버튼 */
+.snsLogin {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.snsFull {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center; /* 먼저 가운데로 */
+  align-items: center;
+  position: relative; /* 오른쪽 뱃지 위한 기준점 */
+  cursor: pointer;
+}
+
+.snsLabel {
+  pointer-events: none;
+}
+
+.recentBadge {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #fff;
+  color: #000;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 6px; /* 둥근 직사각형 */
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+  line-height: 1;
+  display: inline-block;
+  z-index: 1;
+}
+
+/* 🗨️ 말풍선 꼬리 */
+.recentBadge::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%; /* ← 왼쪽에 붙임 */
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid #fff; /* 뱃지 배경색과 맞춤 */
+  z-index: -1;
+  margin-right: -1px; /* 테두리 자연스럽게 연결되도록 */
+}
+
+.snsFull {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* 각 소셜 별 색상 */
+.kakao {
+  background-color: #fee500;
+  color: #3c1e1e;
+}
+.naver {
+  background-color: #03c75a;
+  color: white;
+}
+.google {
+  background-color: #4285f4;
+  color: white;
 }

@@ -9,6 +9,10 @@ function SignupStep2() {
   const { signupData, setSignupData } = useContext(SignupContext);
   const [nicknameAvailable, setNicknameAvailable] = useState(null);
   const [emailAvailable, setEmailAvailable] = useState(null);
+  const [code, setCode] = useState('');
+  const [codeSent, setCodeSent] = useState(false);
+  const [verifiedPhone, setVerifiedPhone] = useState(false);
+  const [phoneDuplicate, setPhoneDuplicate] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -46,6 +50,69 @@ function SignupStep2() {
     } catch (err) {
       console.error('[이메일 중복 확인 오류]', err);
       alert('이메일 확인 중 오류 발생');
+    }
+  };
+
+  const handlePhoneChange = (e) => {
+    const raw = e.target.value.replace(/[^0-9]/g, '').slice(0, 11); // 숫자만
+    let formatted = raw;
+
+    if (raw.length === 11) {
+      formatted = raw.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+    } else if (raw.length === 10) {
+      formatted = raw.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+    }
+
+    setSignupData({ ...signupData, phone: raw }); // DB에 저장할 건 숫자만
+  };
+
+  const handleSendCode = async () => {
+    if (!signupData.phone) {
+      setError('전화번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      // 중복 체크 먼저
+      const dupRes = await apiClient.get(`/users/check-phone?phone=${signupData.phone}`);
+      if (dupRes.data === true) {
+        alert('이미 가입된 전화번호입니다.');
+        setPhoneDuplicate(true);
+        setVerifiedPhone(false);
+        return;
+      }
+
+      await apiClient.post('/sms/send', { phone: signupData.phone });
+      alert('인증번호가 전송되었습니다.');
+      setCodeSent(true);
+      setError('');
+    } catch {
+      alert('전화번호 인증 전송 실패');
+    }
+  };
+
+  const handleVerifyCode = async () => {
+    if (!code) {
+      setError('인증번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      const res = await apiClient.post('/sms/verify', {
+        phone: signupData.phone,
+        authCode: code,
+      });
+
+      if (res.data.verified) {
+        alert('인증 성공!');
+        setVerifiedPhone(true);
+        setPhoneDuplicate(false);
+        setError('');
+      } else {
+        setError('인증번호가 틀렸습니다.');
+      }
+    } catch {
+      alert('인증 확인 실패');
     }
   };
 
@@ -143,15 +210,59 @@ function SignupStep2() {
         )}
       </div>
 
+      {/* 전화번호 입력 필드 + 인증 전송 */}
       <div className={styles.formGroup}>
         <label>전화번호 *</label>
-        <input
-          type="text"
-          name="phone"
-          placeholder="전화번호를 입력하세요"
-          value={signupData.phone}
-          onChange={handleChange}
-        />
+
+        <div className={styles.inlineGroup}>
+          <input
+            type="text"
+            name="phone"
+            placeholder="전화번호를 입력하세요"
+            className={styles.inputField}
+            value={
+              signupData.phone.length === 11
+                ? signupData.phone.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3')
+                : signupData.phone
+            }
+            onChange={handlePhoneChange}
+            disabled={verifiedPhone}
+          />
+          <button type="button" onClick={handleSendCode} className={styles.checkButton} disabled={verifiedPhone}>
+            인증번호 전송
+          </button>
+        </div>
+
+        {/* 인증번호 입력 필드 + 인증 확인 */}
+        {codeSent && !verifiedPhone && (
+          <div className={styles.inlineGroup}>
+            <input
+              type="text"
+              placeholder="인증번호 입력"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              className={styles.inputField}
+            />
+            <button type="button" onClick={handleVerifyCode} className={styles.checkButton}>
+              인증 확인
+            </button>
+          </div>
+        )}
+
+        {/* 상태 메시지 */}
+        {signupData.phone === '' && error === '전화번호를 입력해주세요.' && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
+        )}
+
+        {code === '' && error === '인증번호를 입력해주세요.' && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
+        )}
+
+        {phoneDuplicate && (
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>❌ 이미 가입된 전화번호입니다.</div>
+        )}
+
+        {verifiedPhone && <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 인증 완료</div>}
       </div>
 
       <div className={styles.formGroup}>

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../../../AuthProvider';
+import apiClient from '../../../../utils/axios';
 import styles from './SettingsList.module.css';
 import AccountSettings from './AccountSettings';
 import PasswordChange from './PasswordChange';
@@ -9,6 +11,7 @@ import FaceSettings from './FaceSettings';
 const SettingsList = () => {
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState(null);
+  const { secureApiRequest, logoutAndRedirect } = useContext(AuthContext);
 
   const settingsMenu = [
     {
@@ -51,19 +54,21 @@ const SettingsList = () => {
 
   const handleLogout = () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {
-      // 실제로는 로그아웃 처리
-      localStorage.clear();
-      navigate('/login');
+      logoutAndRedirect();
     }
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     if (window.confirm('정말로 회원 탈퇴를 하시겠습니까?\n탈퇴 후에는 모든 데이터가 삭제되며 복구할 수 없습니다.')) {
       if (window.confirm('회원 탈퇴를 진행하시겠습니까? 이 작업은 취소할 수 없습니다.')) {
-        // 실제로는 회원 탈퇴 API 호출
-        alert('회원 탈퇴가 완료되었습니다.');
-        localStorage.clear();
-        navigate('/');
+        try {
+          await apiClient.put('/users/deactivate'); // 서버에 상태 변경 요청
+          alert('회원 탈퇴가 완료되었습니다.');
+          logoutAndRedirect();
+        } catch (error) {
+          console.error('회원 탈퇴 실패:', error);
+          alert('회원 탈퇴 처리 중 오류가 발생했습니다.');
+        }
       }
     }
   };

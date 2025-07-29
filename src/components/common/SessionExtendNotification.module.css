@@ -1,0 +1,83 @@
+.notification {
+  position: fixed;
+  top: 100px;
+  right: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  z-index: 9999;
+  width: 280px;
+  font-family: 'Pretendard', sans-serif;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.timer {
+  font-weight: bold;
+  font-size: 17px;
+  color: #ff5555;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.button {
+  flex: 1;
+  padding: 8px 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.extend {
+  background-color: #4caf50;
+  color: white;
+}
+
+.extend:hover {
+  background-color: #43a047;
+}
+
+.dismiss {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.dismiss:hover {
+  background-color: #d5d5d5;
+}
+
+@media (max-width: 480px) {
+  .notification {
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}

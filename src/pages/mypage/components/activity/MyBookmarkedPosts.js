@@ -1,6 +1,7 @@
 // src/pages/mypage/components/activity/MyBookmarkedPosts.js
 
 import React, { useEffect, useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './MyPosts.module.css';
 import bookmarkStyles from './BookmarkIcon.module.css';
 import { AuthContext } from '../../../../AuthProvider';
@@ -8,6 +9,8 @@ import apiClient from '../../../../utils/axios';
 
 const MyBookmarks = () => {
   const { userNo } = useContext(AuthContext);
+
+  const navigate = useNavigate();
   const [bookmarks, setBookmarks] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,15 +46,27 @@ const MyBookmarks = () => {
     }
   };
 
+  const handlePostClick = (item) => {
+    const boardTypePath =
+      {
+        free: 'freeBoard',
+        review: 'reviewBoard',
+        tip: 'tipBoard',
+        question: 'questionBoard',
+      }[item.category] || 'freeBoard';
+
+    navigate(`/community/${boardTypePath}/${item.contentId}`);
+  };
+
   const getBoardTypeLabel = (type) => {
     switch (type) {
-      case '자유':
+      case 'free':
         return '자유게시판';
-      case '팁':
+      case 'tip':
         return '팁게시판';
-      case '후기':
+      case 'review':
         return '후기게시판';
-      case '질문':
+      case 'question':
         return '질문게시판';
       default:
         return type || '기타';
@@ -74,7 +89,12 @@ const MyBookmarks = () => {
         <>
           <div className={styles.postList}>
             {getCurrentPageItems().map((item) => (
-              <div key={item.contentId} className={styles.postItem}>
+              <div
+                key={item.contentId}
+                className={styles.postItem}
+                onClick={() => handlePostClick(item)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className={styles.postHeader}>
                   <span className={styles.boardType}>[{getBoardTypeLabel(item.category)}]</span>
                   <h3 className={styles.postTitle}>{item.title}</h3>

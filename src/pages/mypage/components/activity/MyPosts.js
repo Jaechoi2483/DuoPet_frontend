@@ -36,7 +36,15 @@ const MyPosts = () => {
   }, [userNo]);
 
   const handlePostClick = (post) => {
-    navigate(`/community/freeBoard/${post.id}`); //나중에 커뮤니티 다 완성하면 그때 추가
+    const boardTypePath =
+      {
+        free: 'freeBoard',
+        review: 'reviewBoard',
+        tip: 'tipBoard',
+        question: 'questionBoard',
+      }[post.boardType] || 'freeBoard'; // fallback 처리
+
+    navigate(`/community/${boardTypePath}/${post.id}`);
   };
 
   const handlePageChange = (page) => {
@@ -45,13 +53,13 @@ const MyPosts = () => {
 
   const getBoardTypeLabel = (type) => {
     switch (type) {
-      case '자유':
+      case 'free':
         return '자유게시판';
-      case '팁':
+      case 'tip':
         return '팁게시판';
-      case '후기':
+      case 'review':
         return '후기게시판';
-      case '질문':
+      case 'question':
         return '질문게시판';
       default:
         return '기타';
