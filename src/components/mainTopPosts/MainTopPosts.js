@@ -72,7 +72,7 @@ function MainTopPosts() {
     <div
       className={styles.postCard}
       key={post.contentId}
-      onClick={() => navigate(`/community/${post.category}/${post.contentId}`)}
+      onClick={() => navigate(`/community/${post.category}Board/${post.contentId}`)}
     >
       <span className={`${styles.badge} ${getBadgeStyle(post.category)}`}>{convertCategoryToLabel(post.category)}</span>
       <p className={styles.cardTitle}>{post.title}</p>

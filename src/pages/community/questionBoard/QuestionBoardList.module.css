@@ -38,6 +38,7 @@
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
+  margin-top: 7px;
 }
 
 /* 정렬 + 검색 묶음 */
@@ -101,18 +102,24 @@
 
 /* 글쓰기 버튼 */
 .writeButton {
-  width: 88px;
-  background-color: #22c55e;
-  color: white;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  white-space: nowrap;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  color: #333;
+  vertical-align: middle;
+  display: inline-block;
+  text-align: center;
 }
 
 .writeButton:hover {
-  background-color: #16a34a;
+  background-color: #f2f2f2;
+  border-color: #aaaaaa;
+  cursor: pointer;
 }
 
 /* 추천 게시물 전체 영역 */
