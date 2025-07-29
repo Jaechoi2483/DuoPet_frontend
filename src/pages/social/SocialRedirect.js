@@ -19,14 +19,19 @@ function SocialRedirect() {
     const accessToken = params.get('accessToken');
     const refreshToken = params.get('refreshToken');
     const isNew = params.get('isNew');
+    const provider = params.get('provider');
 
     console.log('[디버그] accessToken:', accessToken);
     console.log('[디버그] refreshToken:', refreshToken);
     console.log('[디버그] isNew:', isNew);
+    console.log('[디버그] provider:', provider);
 
     const loginFlow = async () => {
       if (accessToken) {
         await updateTokens(accessToken, refreshToken);
+        if (provider) {
+          localStorage.setItem('lastLoginProvider', provider); // 저장
+        }
         if (isNew === 'true') {
           alert('소셜 로그인 최초 사용자입니다! 간편 회원가입 페이지로 이동합니다.');
           navigate('/social-signup');

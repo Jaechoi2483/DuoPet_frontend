@@ -13,17 +13,23 @@ function LoginPage() {
   const [rememberId, setRememberId] = useState(false);
   const [autoLogin, setAutoLogin] = useState(false);
   const [error, setError] = useState('');
+  const [lastProvider, setLastProvider] = useState(null);
 
   // 저장된 ID 및 자동 로그인 여부 불러오기
   useEffect(() => {
     const savedId = localStorage.getItem('rememberId');
     const auto = localStorage.getItem('autoLogin');
+    const provider = localStorage.getItem('lastLoginProvider');
+
     if (savedId) {
       setLoginId(savedId);
       setRememberId(true);
     }
     if (auto === 'true') {
       setAutoLogin(true);
+    }
+    if (provider) {
+      setLastProvider(provider);
     }
   }, []);
 
@@ -46,7 +52,7 @@ function LoginPage() {
 
       // 토큰 저장 및 전역 상태 업데이트
       updateTokens(data.accessToken, data.refreshToken);
-      
+
       // loginId를 항상 저장 (WebSocket 연결을 위해)
       localStorage.setItem('loginId', loginId);
 
@@ -63,6 +69,9 @@ function LoginPage() {
       } else {
         localStorage.removeItem('autoLogin');
       }
+
+      // 소셜 로그인이 아니므로 최근 로그인 기록 삭제
+      localStorage.removeItem('lastLoginProvider');
 
       alert(`${data.nickname}님 환영합니다!`);
       navigate('/');
@@ -96,6 +105,7 @@ function LoginPage() {
     <div className={styles.loginContainer}>
       <h2 className={styles.title}>로그인</h2>
       <p className={styles.subtitle}>DuoPet 서비스를 이용하려면 로그인해주세요</p>
+
       <form onSubmit={handleLogin}>
         <input
           type="text"
@@ -126,19 +136,25 @@ function LoginPage() {
         </button>
 
         <div className={styles.divider}>또는</div>
+
         <button type="button" onClick={handleFaceLogin} className={styles.faceBtn}>
           📷 얼굴인식 로그인
         </button>
 
         <div className={styles.snsLogin}>
-          <button type="button" className={`${styles.sns} ${styles.kakao}`} onClick={handleKakaoLogin}>
-            카카오
+          <button type="button" className={`${styles.snsFull} ${styles.kakao}`} onClick={handleKakaoLogin}>
+            <span className={styles.snsLabel}>카카오로 시작하기</span>
+            {lastProvider === 'kakao' && <span className={styles.recentBadge}>최근 로그인</span>}
           </button>
-          <button type="button" className={`${styles.sns} ${styles.naver}`} onClick={handleNaverLogin}>
-            네이버
+
+          <button type="button" className={`${styles.snsFull} ${styles.naver}`} onClick={handleNaverLogin}>
+            <span className={styles.snsLabel}>네이버로 시작하기</span>
+            {lastProvider === 'naver' && <span className={styles.recentBadge}>최근 로그인</span>}
           </button>
-          <button type="button" className={`${styles.sns} ${styles.google}`} onClick={handleGoogleLogin}>
-            구글
+
+          <button type="button" className={`${styles.snsFull} ${styles.google}`} onClick={handleGoogleLogin}>
+            <span className={styles.snsLabel}>구글로 시작하기</span>
+            {lastProvider === 'google' && <span className={styles.recentBadge}>최근 로그인</span>}
           </button>
         </div>
 

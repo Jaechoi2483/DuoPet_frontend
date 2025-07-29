@@ -9,6 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import logo from '../../assets/images/logo3.png';
 import adminIcon from '../../assets/images/adminIcon.png';
 import styles from './Menubar.module.css'; // 파일명 변경: Header.module.css -> Menubar.module.css
+import SessionExtendNotification from './SessionExtendNotification';
 
 // 메뉴 데이터 정의 (이전과 동일)
 const menuData = [
@@ -85,16 +86,20 @@ function Menubar({
   const { isLoggedIn, username, role, logoutAndRedirect } = useContext(AuthContext);
 
   const navigate = useNavigate();
-
+  const [hasAskedExtend, setHasAskedExtend] = useState(false);
+  const [showExtendPopup, setShowExtendPopup] = useState(false);
   const [remainingTime, setRemainingTime] = useState('');
   const intervalRef = useRef(null);
 
   useEffect(() => {
     if (isLoggedIn) {
+      setHasAskedExtend(false); // 로그인 시 초기화
+
       updateSessionTimer();
       if (intervalRef.current) clearInterval(intervalRef.current);
       intervalRef.current = setInterval(updateSessionTimer, 1000);
     }
+
     return () => clearInterval(intervalRef.current);
   }, [isLoggedIn]);
 
@@ -110,16 +115,20 @@ function Menubar({
 
       if (diff <= 0) {
         setRemainingTime('만료됨');
-
-        // 세션 만료 시 자동 로그아웃 처리
         localStorage.clear();
         alert('세션이 만료되었습니다. 다시 로그인해주세요.');
         window.location.href = '/login';
         return;
-      } else {
-        const minutes = Math.floor(diff / 60000);
-        const seconds = Math.floor((diff % 60000) / 1000);
-        setRemainingTime(`${minutes}분 ${seconds < 10 ? '0' : ''}${seconds}초`);
+      }
+
+      const minutes = Math.floor(diff / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
+      setRemainingTime(`${minutes}분 ${seconds < 10 ? '0' : ''}${seconds}초`);
+
+      // 연장 여부 묻기
+      if (diff <= 5 * 60 * 1000 && !hasAskedExtend) {
+        setHasAskedExtend(true);
+        setShowExtendPopup(true); // 이 알림만 띄우면 됨
       }
     } catch (e) {
       console.error('토큰 디코딩 실패', e);
@@ -151,7 +160,6 @@ function Menubar({
       if (newAccessToken) {
         localStorage.setItem('accessToken', newAccessToken);
         console.log('🟢 accessToken 갱신됨');
-        console.log('🧠 디코딩된 accessToken 만료:', new Date(jwtDecode(newAccessToken).exp * 1000).toLocaleString());
       }
 
       if (newRefreshToken) {
@@ -159,18 +167,12 @@ function Menubar({
         console.log('🟢 refreshToken 갱신됨');
       }
 
-      // 약간의 시간차를 주고 타이머 재시작
+      // 타이머 리셋
       setTimeout(() => {
-        if (intervalRef.current) {
-          clearInterval(intervalRef.current);
-        }
-
-        intervalRef.current = setInterval(() => {
-          updateSessionTimer();
-        }, 1000);
-
-        updateSessionTimer(); // 바로 한 번 반영해서 UI 갱신
-      }, 50); // 딜레이 50ms
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = setInterval(updateSessionTimer, 1000);
+        updateSessionTimer();
+      }, 50);
 
       alert('로그인 시간이 연장되었습니다.');
     } catch (e) {
@@ -193,80 +195,111 @@ function Menubar({
   // };
 
   return (
-    <header className={styles.header}>
-      {/* 로고 */}
-      <div className={styles.logoSection}>
-        <Link to="/" className={styles.logoLink}>
-          <img src={logo} alt="Site Logo" className={styles.logo} />
-        </Link>
-      </div>
+    <>
+      <header className={styles.header}>
+        {/* 로고 */}
+        <div className={styles.logoSection}>
+          <Link to="/" className={styles.logoLink}>
+            <img src={logo} alt="Site Logo" className={styles.logo} />
+          </Link>
+        </div>
 
-      {/* 메인 네비게이션 (드롭다운 메뉴) */}
-      <nav className={styles.mainNav}>
-        <ul className={styles.menuList}>
-          {menuData.map((menu, index) => (
-            <li
-              key={index}
-              className={styles.menuItem}
-              // onMouseEnter와 onMouseLeave 이벤트는 이제 제거합니다.
-            >
-              {menu.title === '건강 관리' ? (
-                <Link to="/health" className={styles.menuTitle} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  {menu.title}
-                </Link>
-              ) : (
-                <span className={styles.menuTitle}>{menu.title}</span>
-              )}
-              {/* 서브메뉴는 항상 렌더링되도록 합니다. CSS로 숨김/표시를 제어합니다. */}
-              {menu.submenus && (
-                <ul className={styles.submenu}>
-                  {menu.submenus.map((submenu, subIndex) => (
-                    <li key={subIndex} className={styles.submenuItem}>
-                      <Link to={submenu.path}>{submenu.name}</Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </nav>
-
-      {/* 로그인 / 로그아웃 버튼, 회원가입 버튼, 알림 아이콘 */}
-      <div className={styles.rightSection}>
-        {isLoggedIn ? (
-          <div className={styles.userSection}>
-            {isLoggedIn && (
-              <div className={styles.sessionTimer}>
-                <span className={styles.timerIcon}>⏰</span>
-                <span className={styles.timeText}>{remainingTime}</span>
-                <button className={styles.extendBtn} onClick={handleExtendSession}>
-                  시간연장
-                </button>
-              </div>
-            )}
-            {role && getRoleBadge(role) ? (
-              <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
-            ) : (
-              <span className={styles.userInitial}>{getUserInitial(username)}</span>
-            )}
-            <span className={styles.username}>{username}님</span>
-            {role === 'admin' && (
-              <button
-                className={styles.adminIconButton}
-                onClick={() => navigate('/admin')}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: 0,
-                  cursor: 'pointer',
-                  background: 'none',
-                  border: 'none',
-                }}
-                title="관리자 페이지로 이동"
+        {/* 메인 네비게이션 (드롭다운 메뉴) */}
+        <nav className={styles.mainNav}>
+          <ul className={styles.menuList}>
+            {menuData.map((menu, index) => (
+              <li
+                key={index}
+                className={styles.menuItem}
+                // onMouseEnter와 onMouseLeave 이벤트는 이제 제거합니다.
               >
-                <img src={adminIcon} alt="관리자 아이콘" style={{ width: '18px', height: '18px' }} />
+                {menu.title === '건강 관리' ? (
+                  <Link to="/health" className={styles.menuTitle} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    {menu.title}
+                  </Link>
+                ) : (
+                  <span className={styles.menuTitle}>{menu.title}</span>
+                )}
+                {/* 서브메뉴는 항상 렌더링되도록 합니다. CSS로 숨김/표시를 제어합니다. */}
+                {menu.submenus && (
+                  <ul className={styles.submenu}>
+                    {menu.submenus.map((submenu, subIndex) => (
+                      <li key={subIndex} className={styles.submenuItem}>
+                        <Link to={submenu.path}>{submenu.name}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* 로그인 / 로그아웃 버튼, 회원가입 버튼, 알림 아이콘 */}
+        <div className={styles.rightSection}>
+          {isLoggedIn ? (
+            <div className={styles.userSection}>
+              {isLoggedIn && (
+                <div className={styles.sessionTimer}>
+                  <span className={styles.timerIcon}>⏰</span>
+                  <span className={styles.timeText}>{remainingTime}</span>
+                  <button className={styles.extendBtn} onClick={handleExtendSession}>
+                    시간연장
+                  </button>
+                </div>
+              )}
+              {role && getRoleBadge(role) ? (
+                <span className={styles.roleBadge}>{getRoleBadge(role)}</span>
+              ) : (
+                <span className={styles.userInitial}>{getUserInitial(username)}</span>
+              )}
+              <span className={styles.username}>{username}님</span>
+              {role === 'admin' && (
+                <button
+                  className={styles.adminIconButton}
+                  onClick={() => navigate('/admin')}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: 0,
+                    cursor: 'pointer',
+                    background: 'none',
+                    border: 'none',
+                  }}
+                  title="관리자 페이지로 이동"
+                >
+                  <img src={adminIcon} alt="관리자 아이콘" style={{ width: '18px', height: '18px' }} />
+                </button>
+              )}
+              <div className={styles.mypageDropdown}>
+                <span
+                  className={styles.myPage}
+                  onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}
+                >
+                  마이페이지 ▼
+                </span>
+                <ul className={styles.mypageSubmenu}>
+                  <li className={styles.mypageSubmenuItem}>
+                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>프로필</a>
+                  </li>
+                  <li className={styles.mypageSubmenuItem}>
+                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'pets' } })}>반려동물</a>
+                  </li>
+                  <li className={styles.mypageSubmenuItem}>
+                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'activity' } })}>내 활동</a>
+                  </li>
+                  <li className={styles.mypageSubmenuItem}>
+                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'bookmark' } })}>북마크</a>
+                  </li>
+                  <li className={styles.mypageSubmenuItem}>
+                    <a onClick={() => navigate('/mypage', { state: { activeTab: 'settings' } })}>설정</a>
+                  </li>
+                </ul>
+              </div>
+              <button className={styles.authButton} onClick={handleLogout}>
+                로그아웃
               </button>
+
             )}
             <div className={styles.mypageDropdown}>
               <span className={styles.myPage} onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>
@@ -290,23 +323,29 @@ function Menubar({
                 </li>
               </ul>
             </div>
-            <button className={styles.authButton} onClick={handleLogout}>
-              로그아웃
-            </button>
-          </div>
-        ) : (
-          <>
-            <button className={styles.authButton} onClick={() => navigate('/login')}>
-              로그인
-            </button>
-            <span className={styles.separator}>|</span>
-            <button className={styles.authButton} onClick={handleSignup}>
-              회원가입
-            </button>
-          </>
-        )}
-      </div>
-    </header>
+          ) : (
+            <>
+              <button className={styles.authButton} onClick={() => navigate('/login')}>
+                로그인
+              </button>
+              <span className={styles.separator}>|</span>
+              <button className={styles.authButton} onClick={handleSignup}>
+                회원가입
+              </button>
+            </>
+          )}
+        </div>
+      </header>
+      {showExtendPopup && (
+        <SessionExtendNotification
+          onExtend={handleExtendSession}
+          onDismiss={() => {
+            setShowExtendPopup(false);
+            setHasAskedExtend(true);
+          }}
+        />
+      )}
+    </>
   );
 }
 

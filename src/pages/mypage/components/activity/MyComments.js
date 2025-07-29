@@ -28,15 +28,14 @@ const MyComments = () => {
   }, [userNo]);
 
   const handlePostClick = (postId, boardType) => {
-    // 나중에 커뮤니티 완성되면 그때 추가
     const boardTypePathMap = {
-      자유: '/community/freeBoard',
-      팁: '/community/tipBoard',
-      후기: '/community/reviewBoard',
-      질문: '/community/qna',
+      free: 'freeBoard',
+      tip: 'tipBoard',
+      review: 'reviewBoard',
+      question: 'questionBoard',
     };
-    const basePath = boardTypePathMap[boardType] || '/community/freeBoard';
-    navigate(`${basePath}?postId=${postId}`);
+    const path = boardTypePathMap[boardType] || 'freeBoard';
+    navigate(`/community/${path}/${postId}`);
   };
 
   const getCurrentPageComments = () => {
@@ -47,13 +46,13 @@ const MyComments = () => {
 
   const getBoardTypeLabel = (type) => {
     switch (type) {
-      case '자유':
+      case 'free':
         return '자유게시판';
-      case '팁':
+      case 'tip':
         return '팁게시판';
-      case '후기':
+      case 'review':
         return '후기게시판';
-      case '질문':
+      case 'question':
         return '질문게시판';
       default:
         return '기타';

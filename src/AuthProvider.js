@@ -158,8 +158,26 @@ export const AuthProvider = ({ children }) => {
       console.error('서버 로그아웃 요청 실패:', error.response?.data);
     }
 
+    // 로그아웃 후에도 최근 로그인 provider는 유지
+    const lastLoginProvider = localStorage.getItem('lastLoginProvider');
+
+    // 토큰 및 기타 민감 정보만 제거
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('loginId');
+    localStorage.removeItem('rememberId');
+    localStorage.removeItem('autoLogin');
+    localStorage.removeItem('role');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userNo');
+
     // 클라이언트 토큰 삭제
-    localStorage.clear();
+    //localStorage.clear();
+
+    // 최근 로그인 provider는 복원
+    if (lastLoginProvider) {
+      localStorage.setItem('lastLoginProvider', lastLoginProvider);
+    }
     setAuthInfo({ isLoggedIn: false, role: '', username: '', userid: '' });
     window.location.href = '/';
   }; // logoutAndRedirect
