@@ -317,30 +317,39 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
-/* 목록으로 돌아가기 버튼 wrapper */
+/* 목록으로 돌아가기 버튼 & 뒤로 가기 버튼 wrapper */
 .backBtnWrapper {
+  display: flex;
+  gap: 8px;
   margin-bottom: 16px;
 }
 
-/* 목록으로 돌아가기 버튼 스타일 */
-.backBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+/* 목록으로 버튼 */
+.listBtn {
+  background-color: #f3f3f3;
+  color: #444;
+  border: 1px solid #ccc;
   padding: 8px 14px;
-  font-size: 14px;
-  font-weight: 500;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
   border-radius: 6px;
-  color: #bf360c;
+  font-weight: bold;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
 }
 
-.backBtn:hover {
-  background-color: #fff3e0;
-  transform: translateY(-1px);
+.listBtn:hover {
+  background-color: #e0e0e0;
+}
+
+/* 뒤로가기 버튼 */
+.historyBackBtn {
+  background-color: #f3f3f3;
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.historyBackBtn:hover {
+  background-color: #e0e0e0;
 }

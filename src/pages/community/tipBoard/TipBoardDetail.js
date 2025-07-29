@@ -206,8 +206,12 @@ function TipBoardDetail() {
       {showToast && <div className={styles.toast}>{toastMessage}</div>}
 
       <div className={styles.backBtnWrapper}>
-        <button className={styles.backBtn} onClick={() => navigate('/community/tipBoard')}>
+        <button className={styles.listBtn} onClick={() => navigate('/community/tipBoard')}>
           ← 목록으로
+        </button>
+
+        <button className={styles.historyBackBtn} onClick={() => window.history.back()}>
+          뒤로가기
         </button>
       </div>
 
