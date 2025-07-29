@@ -2,13 +2,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ExpertConsult.module.css';
-import { vetProfileApi, consultationRoomApi, vetScheduleApi } from '../../api/consultationApi';
+import { vetProfileApi, consultationRoomApi } from '../../api/consultationApi';
 import { getPetList, getPetImageUrl } from '../../api/petApi';
 import Loading from '../../components/common/Loading';
 import PagingView from '../../components/common/pagingView';
-import DatePicker from '../../components/consultation/DatePicker';
-import TimeSlotPicker from '../../components/consultation/TimeSlotPicker';
-import BookingConfirmModal from '../../components/consultation/BookingConfirmModal';
 import InstantConsultModal from '../../components/consultation/InstantConsultModal';
 import { AuthContext } from '../../AuthProvider';
 
@@ -25,21 +22,11 @@ const ExpertConsult = () => {
     isAuthLoading = false 
   } = authContext;
   const [selectedExpert, setSelectedExpert] = useState(null);
-  const [consultationType, setConsultationType] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState(''); // eslint-disable-line no-unused-vars
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
-  const [symptoms, setSymptoms] = useState('');
-  const [showBookingForm, setShowBookingForm] = useState(false);
   const [experts, setExperts] = useState([]);
-  const [vetSchedules, setVetSchedules] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); // eslint-disable-line no-unused-vars
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPet, setSelectedPet] = useState(null);
   const [userPets, setUserPets] = useState([]);
   const [showInstantModal, setShowInstantModal] = useState(false);
-  const [instantConsultData, setInstantConsultData] = useState(null); // eslint-disable-line no-unused-vars
   const [consultationStatus, setConsultationStatus] = useState({}); // 상담 상태 맵
 
   // 페이지네이션 상태
@@ -60,13 +47,11 @@ const ExpertConsult = () => {
   // 주기적으로 상담 상태 업데이트 (30초마다)
   useEffect(() => {
     const interval = setInterval(() => {
-      if (!showBookingForm) { // 전문가 목록을 보고 있을 때만
-        loadExperts();
-      }
+      loadExperts();
     }, 30000); // 30초
     
     return () => clearInterval(interval);
-  }, [showBookingForm]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 인증 정보가 로드되면 반려동물 목록 로드
   useEffect(() => {
@@ -75,16 +60,6 @@ const ExpertConsult = () => {
     }
   }, [userNo, isAuthLoading]);
 
-  // 선택한 날짜가 변경되면 해당 날짜의 일정 로드
-  useEffect(() => {
-    if (selectedExpert && selectedDate) {
-      const vetId = selectedExpert.vet?.vetId || selectedExpert.profileId;
-      if (vetId) {
-        console.log('Loading schedules for vetId:', vetId, 'date:', selectedDate);
-        loadVetSchedules(vetId, selectedDate);
-      }
-    }
-  }, [selectedDate, selectedExpert]);
 
   // 전문가 목록 로드
   const loadExperts = async () => {
@@ -151,17 +126,6 @@ const ExpertConsult = () => {
     }
   };
 
-  // 수의사 일정 로드
-  const loadVetSchedules = async (vetId, date) => {
-    try {
-      const response = await vetScheduleApi.getAvailableSchedules(vetId, date, date);
-      if (response.success) {
-        setVetSchedules(response.data);
-      }
-    } catch (err) {
-      console.error('Error loading schedules:', err);
-    }
-  };
 
   // 💡 [수정됨] 즉시 상담 요청 처리 (유일한 함수)
   // InstantConsultModal의 onConfirm prop으로 전달됩니다.
@@ -211,156 +175,6 @@ const ExpertConsult = () => {
     }
   };
 
-  const consultationTypes = [
-    { value: 'VIDEO', label: '화상 상담', price: 30000, displayPrice: '30,000원' },
-    { value: 'CHAT', label: '채팅 상담', price: 15000, displayPrice: '15,000원' },
-    { value: 'PHONE', label: '전화 상담', price: 20000, displayPrice: '20,000원' },
-  ];
-
-  const handleExpertSelect = async (expert) => {
-    try {
-      console.log('Selected expert:', expert);
-      
-      // 상담 중인 전문가인지 확인
-      const vetId = expert.vet?.vetId;
-      if (vetId && consultationStatus[vetId]) {
-        alert('현재 다른 상담이 진행 중입니다. 상담이 끝난 후 다시 시도해주세요.');
-        return;
-      }
-      
-      setSelectedExpert(expert);
-      setShowBookingForm(true);
-
-      setTimeout(() => {
-        const bookingSection = document.querySelector(`.${styles.bookingSection}`);
-        if (bookingSection) {
-          bookingSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    } catch (err) {
-      console.error('Error selecting expert:', err);
-      alert('전문가 선택 중 오류가 발생했습니다.');
-    }
-  };
-
-  const handleBooking = async () => {
-    if (!consultationType || !selectedDate || !selectedSchedule || !symptoms || !selectedPet) {
-      alert('모든 필수 정보를 입력해주세요.');
-      return;
-    }
-
-    if (!isLoggedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      navigate('/login');
-      return;
-    }
-
-    setShowPaymentModal(true);
-  };
-
-  // 더미 스케줄 생성 (개발용)
-  const generateDummySchedules = async () => {
-    if (!selectedExpert) {
-      alert('먼저 전문가를 선택해주세요.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const vetId = selectedExpert.profileId || selectedExpert.vetId;
-
-      const schedules = [];
-      const today = new Date();
-
-      for (let day = 0; day < 7; day++) {
-        const currentDate = new Date(today);
-        currentDate.setDate(today.getDate() + day);
-        const dateStr = currentDate.toISOString().split('T')[0];
-
-        for (let hour = 9; hour < 12; hour++) {
-          schedules.push({
-            vetId,
-            date: dateStr,
-            startTime: `${String(hour).padStart(2, '0')}:00`,
-            endTime: `${String(hour).padStart(2, '0')}:30`,
-            slotDurationMinutes: 30,
-          });
-          schedules.push({
-            vetId,
-            date: dateStr,
-            startTime: `${String(hour).padStart(2, '0')}:30`,
-            endTime: `${String(hour + 1).padStart(2, '0')}:00`,
-            slotDurationMinutes: 30,
-          });
-        }
-        for (let hour = 14; hour < 18; hour++) {
-          schedules.push({
-            vetId,
-            date: dateStr,
-            startTime: `${String(hour).padStart(2, '0')}:00`,
-            endTime: `${String(hour).padStart(2, '0')}:30`,
-            slotDurationMinutes: 30,
-          });
-          schedules.push({
-            vetId,
-            date: dateStr,
-            startTime: `${String(hour).padStart(2, '0')}:30`,
-            endTime: `${String(hour + 1).padStart(2, '0')}:00`,
-            slotDurationMinutes: 30,
-          });
-        }
-      }
-
-      console.log('Creating dummy schedules:', schedules.length);
-      for (const schedule of schedules) {
-        await vetScheduleApi.createScheduleBatch(schedule);
-      }
-
-      alert(`${schedules.length}개의 스케줄이 생성되었습니다!`);
-
-      if (selectedDate) {
-        await loadVetSchedules(vetId, selectedDate);
-      }
-    } catch (err) {
-      console.error('Error creating dummy schedules:', err);
-      alert('스케줄 생성에 실패했습니다.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 결제 완료 후 상담 예약 처리
-  const handlePaymentComplete = async () => {
-    setLoading(true);
-    try {
-      await vetScheduleApi.bookSchedule(selectedSchedule.scheduleId);
-
-      const vetId = selectedExpert.vetId || selectedExpert.vet?.vetId;
-      const consultationData = {
-        // 💡 [수정됨] AuthContext에서 가져온 userNo를 사용합니다.
-        userId: userNo,
-        vetId: vetId,
-        petId: selectedPet.petId,
-        scheduleId: selectedSchedule.scheduleId,
-        consultationType: consultationType.toUpperCase(),
-        chiefComplaint: symptoms,
-      };
-
-      const response = await consultationRoomApi.createConsultation(consultationData);
-
-      if (response.success) {
-        alert('상담 예약이 완료되었습니다!');
-        navigate('/mypage/consultations');
-      }
-    } catch (err) {
-      alert('상담 예약에 실패했습니다.');
-      console.error('Booking error:', err);
-    } finally {
-      setLoading(false);
-      setShowPaymentModal(false);
-      resetForm();
-    }
-  };
 
   // 즉시 상담 모달 열기 핸들러
   const handleInstantConsultation = (expert) => {
@@ -381,27 +195,36 @@ const ExpertConsult = () => {
     }
 
     setSelectedExpert(expert);
-    setInstantConsultData({ expert });
     setShowInstantModal(true);
+  };
+
+  // Q&A 상담 페이지로 이동
+  const handleQnaConsultation = (expert) => {
+    if (!isLoggedIn) {
+      alert('로그인이 필요한 서비스입니다.');
+      navigate('/login');
+      return;
+    }
+    
+    // Q&A 상담 페이지로 이동하면서 전문가 정보 전달
+    navigate('/health/qna-consultation', { 
+      state: { 
+        vetInfo: {
+          vetId: expert.vet?.vetId || expert.vetId,
+          name: expert.vet?.name || expert.name,
+          specialization: expert.vet?.specialization || expert.specialization,
+          consultationFee: expert.consultationFee || 30000
+        }
+      }
+    });
   };
 
   // 💡 [삭제됨] 이전에 중복으로 존재하던 두 번째 handleInstantConsultRequest 함수를 제거했습니다.
 
-  const resetForm = () => {
-    setShowBookingForm(false);
-    setSelectedExpert(null);
-    setConsultationType('');
-    setSelectedDate('');
-    setSelectedTime('');
-    setSelectedSchedule(null);
-    setSymptoms('');
-    setSelectedPet(null);
-  };
 
   return (
     <div className={styles.container}>
-      {!showBookingForm ? (
-        <div className={styles.expertsSection}>
+      <div className={styles.expertsSection}>
           <h2 className={styles.sectionTitle}>전문가 선택</h2>
 
           {/* 필터 및 정렬 컨트롤 */}
@@ -531,18 +354,17 @@ const ExpertConsult = () => {
                         )}
                       </div>
                       <div className={styles.expertActions}>
-                        <button 
-                          className={`${styles.selectButton} ${consultationStatus[expert.vet?.vetId] ? styles.disabledButton : ''}`} 
-                          onClick={() => handleExpertSelect(expert)}
-                          disabled={consultationStatus[expert.vet?.vetId]}
-                        >
-                          예약 상담
-                        </button>
                         {expert.isOnline === 'Y' && !consultationStatus[expert.vet?.vetId] && (
                           <button className={styles.instantButton} onClick={() => handleInstantConsultation(expert)}>
                             즉시 상담
                           </button>
                         )}
+                        <button 
+                          className={styles.qnaButton} 
+                          onClick={() => handleQnaConsultation(expert)}
+                        >
+                          Q&A 상담
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -564,201 +386,7 @@ const ExpertConsult = () => {
             </div>
           )}
         </div>
-      ) : (
-        <div className={styles.bookingSection}>
-          <div className={styles.bookingHeader}>
-            <button className={styles.backButton} onClick={() => setShowBookingForm(false)}>
-              ← 전문가 선택으로 돌아가기
-            </button>
-            <h2 className={styles.bookingTitle}>상담 예약</h2>
-          </div>
 
-          <div className={styles.selectedExpertInfo}>
-            <div className={styles.selectedExpertImage}>
-              {selectedExpert.vet?.user?.renameFilename ? (
-                <img
-                  src={`${process.env.REACT_APP_API_BASE_URL}/upload/userprofile/${selectedExpert.vet.user.renameFilename}`}
-                  alt={selectedExpert.vet?.name}
-                />
-              ) : (
-                <div className={styles.defaultProfileImageSmall}>
-                  <span>{selectedExpert.vet?.name?.charAt(0) || '?'}</span>
-                </div>
-              )}
-            </div>
-            <div className={styles.expertDetails}>
-              <h3 className={styles.expertName}>{selectedExpert.vet?.name || '이름 없음'}</h3>
-              <div className={styles.expertSpecialty}>{selectedExpert.vet?.specialization || '전문 분야 없음'}</div>
-              <div className={styles.expertHospital}>{selectedExpert.vet?.address || '주소 없음'}</div>
-            </div>
-          </div>
-
-          {/* 개발 환경에서만 표시되는 더미 데이터 생성 버튼 */}
-          {process.env.NODE_ENV === 'development' && (
-            <div className={styles.devTools}>
-              <button className={styles.generateScheduleButton} onClick={generateDummySchedules} disabled={loading}>
-                {loading ? '생성 중...' : '테스트용 스케줄 생성 (7일)'}
-              </button>
-              <p className={styles.devToolsInfo}>* 개발 환경 전용: 향후 7일간의 상담 스케줄을 자동 생성합니다.</p>
-            </div>
-          )}
-
-          <div className={styles.bookingForm}>
-            <div className={styles.formSection}>
-              <h3 className={styles.formTitle}>1. 상담 방식 선택</h3>
-              <div className={styles.consultationTypeGrid}>
-                {consultationTypes.map((type) => (
-                  <div
-                    key={type.value}
-                    className={`${styles.typeCard} ${consultationType === type.value ? styles.selected : ''}`}
-                    onClick={() => setConsultationType(type.value)}
-                  >
-                    <div className={styles.typeLabel}>{type.label}</div>
-                    <div className={styles.typePrice}>{type.displayPrice}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.formSection}>
-              <h3 className={styles.formTitle}>2. 날짜 및 시간 선택</h3>
-              <div className={styles.dateTimeSection}>
-                <div className={styles.datePickerWrapper}>
-                  <DatePicker selectedDate={selectedDate} onDateSelect={setSelectedDate} minDate={new Date()} />
-                </div>
-                {selectedDate && (
-                  <div className={styles.timeSlotWrapper}>
-                    <TimeSlotPicker
-                      availableSlots={vetSchedules}
-                      selectedSlot={selectedSchedule}
-                      onSlotSelect={(slot) => {
-                        setSelectedSchedule(slot);
-                        setSelectedTime(slot ? `${slot.startTime} - ${slot.endTime}` : '');
-                      }}
-                      isLoading={loading}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.formSection}>
-              <h3 className={styles.formTitle}>3. 반려동물 선택</h3>
-              <div className={styles.petSelect}>
-                {userPets.length === 0 ? (
-                  <div className={styles.noPetsMessage}>
-                    <p>등록된 반려동물이 없습니다.</p>
-                    <button className={styles.registerPetButton} onClick={() => navigate('/mypage/pet/register')}>
-                      반려동물 등록하기
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <select
-                      value={selectedPet?.petId || ''}
-                      onChange={(e) => {
-                        const pet = userPets.find((p) => p.petId === Number(e.target.value));
-                        setSelectedPet(pet);
-                      }}
-                    >
-                      <option value="">반려동물을 선택하세요</option>
-                      {userPets.map((pet) => (
-                        <option key={pet.petId} value={pet.petId}>
-                          {pet.name} ({pet.species} - {pet.breed}, {pet.age}살, {pet.gender})
-                        </option>
-                      ))}
-                    </select>
-                    <div className={styles.petManagementActions}>
-                      <button className={styles.addPetButton} onClick={() => navigate('/mypage/pet/register')}>
-                        + 반려동물 추가 등록
-                      </button>
-                    </div>
-                  </>
-                )}
-
-                {selectedPet && (
-                  <div className={styles.selectedPetInfo}>
-                    <div className={styles.petImageWrapper}>
-                      {selectedPet.imageUrl ? (
-                        <img src={selectedPet.imageUrl} alt={selectedPet.name} className={styles.petImage} />
-                      ) : (
-                        <div className={styles.petImagePlaceholder}>{selectedPet.species === '개' ? '🐕' : '🐈'}</div>
-                      )}
-                    </div>
-                    <div className={styles.petDetails}>
-                      <h4>{selectedPet.name}</h4>
-                      <p>
-                        {selectedPet.species} - {selectedPet.breed}
-                      </p>
-                      <p>
-                        {selectedPet.age}살, {selectedPet.gender}, {selectedPet.weight}kg
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className={styles.formSection}>
-              <h3 className={styles.formTitle}>4. 증상 및 상담 내용</h3>
-              <textarea
-                className={styles.textArea}
-                placeholder="반려동물의 증상이나 상담하고 싶은 내용을 자세히 적어주세요..."
-                value={symptoms}
-                onChange={(e) => setSymptoms(e.target.value)}
-                rows={5}
-              />
-            </div>
-
-            <div className={styles.formActions}>
-              <button
-                className={styles.bookingButton}
-                onClick={handleBooking}
-                disabled={!consultationType || !selectedDate || !selectedSchedule || !selectedPet}
-              >
-                {!consultationType && '상담 방식을 선택해주세요'}
-                {consultationType && !selectedDate && '날짜를 선택해주세요'}
-                {consultationType && selectedDate && !selectedSchedule && '시간을 선택해주세요'}
-                {consultationType && selectedDate && selectedSchedule && !selectedPet && '반려동물을 선택해주세요'}
-                {consultationType && selectedDate && selectedSchedule && selectedPet && '상담 예약하기'}
-              </button>
-              {consultationType && selectedDate && selectedSchedule && selectedPet && (
-                <p className={styles.formHelperText}>모든 정보가 입력되었습니다. 예약하기를 클릭해주세요.</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 결제 모달 */}
-      <BookingConfirmModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        onConfirm={handlePaymentComplete}
-        bookingData={
-          showPaymentModal
-            ? {
-                expert: {
-                  vetName: selectedExpert?.vet?.name || '이름 없음',
-                  hospitalName: selectedExpert?.vet?.address || '병원 정보 없음',
-                  specialties: selectedExpert?.vet?.specialization ? [selectedExpert.vet.specialization] : [],
-                  rating: selectedExpert?.rating || 0,
-                  consultationCount: selectedExpert?.consultationCount || 0,
-                  profileImageUrl: selectedExpert?.vet?.user?.renameFilename
-                    ? `${process.env.REACT_APP_API_BASE_URL}/upload/userprofile/${selectedExpert.vet.user.renameFilename}`
-                    : null,
-                },
-                consultationType,
-                date: selectedDate,
-                schedule: selectedSchedule,
-                pet: selectedPet,
-                symptoms,
-                consultationFee: consultationTypes.find((t) => t.value === consultationType)?.price || 0,
-              }
-            : null
-        }
-        isProcessing={loading}
-      />
 
       {/* 즉시 상담 모달 */}
       <InstantConsultModal

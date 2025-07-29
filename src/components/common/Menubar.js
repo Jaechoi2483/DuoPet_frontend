@@ -299,6 +299,29 @@ function Menubar({
               <button className={styles.authButton} onClick={handleLogout}>
                 로그아웃
               </button>
+
+            )}
+            <div className={styles.mypageDropdown}>
+              <span className={styles.myPage} onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>
+                마이페이지 ▼
+              </span>
+              <ul className={styles.mypageSubmenu}>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'profile' } })}>프로필</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'pets' } })}>반려동물</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'activity' } })}>내 활동</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'consultations' } })}>상담내역</a>
+                </li>
+                <li className={styles.mypageSubmenuItem}>
+                  <a onClick={() => navigate('/mypage', { state: { activeTab: 'settings' } })}>설정</a>
+                </li>
+              </ul>
             </div>
           ) : (
             <>

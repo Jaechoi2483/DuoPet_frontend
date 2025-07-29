@@ -270,6 +270,10 @@ export const analyzeSingleDiagnosis = async (images, diagnosisType, petType = 'd
     
     console.log('Sending single diagnosis request:', diagnosisType);
     
+    console.log('=== AXIOS POST 직전 ===');
+    console.log('URL:', 'http://localhost:8000/api/v1/health-diagnose/analyze-single');
+    console.log('axios 인스턴스:', axios);
+    
     const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze-single', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -278,6 +282,10 @@ export const analyzeSingleDiagnosis = async (images, diagnosisType, petType = 'd
       }
     });
     
+    console.log('=== AXIOS 응답 받음 ===');
+    console.log('response.status:', response.status);
+    console.log('response.headers:', response.headers);
+    console.log('response.config.url:', response.config.url);
     console.log('Single diagnosis result:', response.data);
     return response.data;
   } catch (error) {

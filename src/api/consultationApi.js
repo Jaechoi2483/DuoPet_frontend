@@ -129,8 +129,12 @@ export const consultationRoomApi = {
     },
 
     // 내 상담 목록 조회
-    getMyConsultations: async () => {
-        const response = await api.get('/rooms/my-consultations');
+    getMyConsultations: async (consultationType = null) => {
+        const params = {};
+        if (consultationType) {
+            params.consultationType = consultationType;
+        }
+        const response = await api.get('/rooms/my-consultations', { params });
         return response.data;
     },
 
@@ -272,12 +276,68 @@ export const consultationReviewApi = {
     },
 };
 
+// Q&A 상담 API
+export const qnaConsultationApi = {
+    // Q&A 상담 생성
+    createQnaConsultation: async (formData) => {
+        const response = await api.post('/qna', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
+    // Q&A 답변 작성 (수의사용)
+    createAnswer: async (roomId, formData) => {
+        const response = await api.post(`/qna/${roomId}/answer`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+
+    // 내 Q&A 상담 목록 조회
+    getMyQnaConsultations: async (page = 0, size = 10, role = null) => {
+        const params = { page, size };
+        if (role) params.role = role;
+        const response = await api.get('/qna/my', { params });
+        return response.data;
+    },
+
+    // 수의사의 상태별 Q&A 상담 목록 조회
+    getVetQnaConsultationsByStatus: async (status, page = 0, size = 10) => {
+        const response = await api.get(`/qna/vet/status/${status}`, {
+            params: { page, size }
+        });
+        return response.data;
+    },
+
+    // Q&A 상담 상세 조회
+    getQnaConsultationDetail: async (roomId) => {
+        const response = await api.get(`/qna/${roomId}`);
+        return response.data;
+    },
+
+    // 추가 메시지 작성
+    addMessage: async (roomId, formData) => {
+        const response = await api.post(`/qna/${roomId}/message`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    },
+};
+
 const consultationApi = {
     vetProfileApi,
     consultationRoomApi,
     vetScheduleApi,
     chatMessageApi,
     consultationReviewApi,
+    qnaConsultationApi,
 };
 
 export default consultationApi;

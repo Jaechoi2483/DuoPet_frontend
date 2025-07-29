@@ -177,6 +177,7 @@ const FileUploader = ({
           최대 {maxFiles}개, {(maxSize / 1024 / 1024).toFixed(1)}MB 이하
         </p>
         <button 
+          type="button"
           className={styles.selectButton}
           onClick={() => fileInputRef.current.click()}
           disabled={uploading}

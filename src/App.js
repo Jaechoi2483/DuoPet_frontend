@@ -82,9 +82,14 @@ function AppWrapper() {
                 setNotificationData(notification);
                 setShowNotification(true);
                 
-                // 알림음 재생 (옵션)
-                // const audio = new Audio('/notification-sound.mp3');
-                // audio.play().catch(e => console.log('알림음 재생 실패:', e));
+                // 알림음 재생
+                try {
+                  const audio = new Audio(require('./assets/Audio/alarm1.mp3'));
+                  audio.volume = 0.7; // 볼륨 70%
+                  audio.play().catch(e => console.log('알림음 재생 실패:', e));
+                } catch (err) {
+                  console.error('알림음 로드 실패:', err);
+                }
               };
               
               // 전역 함수로도 등록 (디버깅용)
@@ -95,6 +100,15 @@ function AppWrapper() {
                 console.log('🔔 상담 요청 알림:', notification);
                 setNotificationData(notification);
                 setShowNotification(true);
+                
+                // 알림음 재생
+                try {
+                  const audio = new Audio(require('./assets/Audio/alarm1.mp3'));
+                  audio.volume = 0.7; // 볼륨 70%
+                  audio.play().catch(e => console.log('알림음 재생 실패:', e));
+                } catch (err) {
+                  console.error('알림음 로드 실패:', err);
+                }
               });
               
               console.log('전문가 알림 구독 설정 완료');
