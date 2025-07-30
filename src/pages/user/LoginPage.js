@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styles from './LoginPage.module.css';
 import apiClient from '../../utils/axios';
 import { AuthContext } from '../../AuthProvider';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { updateTokens } = useContext(AuthContext);
 
   const [loginId, setLoginId] = useState('');
@@ -32,6 +33,18 @@ function LoginPage() {
       setLastProvider(provider);
     }
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const errorParam = params.get('error');
+
+    if (errorParam === 'inactive') {
+      setError('탈퇴된 계정입니다. 관리자에게 문의하세요.');
+      navigate('/login', { replace: true }); // alert 대신 URL만 정리
+    } else if (errorParam === 'bad_credentials') {
+      setError('아이디 또는 비밀번호가 올바르지 않습니다.');
+    }
+  }, [location, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

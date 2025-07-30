@@ -4,12 +4,10 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../AuthProvider';
 import apiClient from '../../utils/axios';
-import { jwtDecode } from 'jwt-decode';
 
 import logo from '../../assets/images/logo3.png';
 import adminIcon from '../../assets/images/adminIcon.png';
 import styles from './Menubar.module.css'; // 파일명 변경: Header.module.css -> Menubar.module.css
-import SessionExtendNotification from './SessionExtendNotification';
 
 // 메뉴 데이터 정의 (이전과 동일)
 const menuData = [
@@ -83,58 +81,34 @@ function Menubar({
   updateMemberResults,
   resetSearchInput,
 }) {
-  const { isLoggedIn, username, role, logoutAndRedirect } = useContext(AuthContext);
+  const { isLoggedIn, username, role, logoutAndRedirect, extendSessionManually } = useContext(AuthContext);
 
   const navigate = useNavigate();
   const [hasAskedExtend, setHasAskedExtend] = useState(false);
-  const [showExtendPopup, setShowExtendPopup] = useState(false);
   const [remainingTime, setRemainingTime] = useState('');
   const intervalRef = useRef(null);
 
   useEffect(() => {
-    if (isLoggedIn) {
-      setHasAskedExtend(false); // 로그인 시 초기화
+    if (!isLoggedIn) return;
 
-      updateSessionTimer();
-      if (intervalRef.current) clearInterval(intervalRef.current);
-      intervalRef.current = setInterval(updateSessionTimer, 1000);
-    }
+    setHasAskedExtend(false);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(async () => {
+      try {
+        const res = await apiClient.get('/session/check');
+        const { remainingTimeMs, showExtendPopup } = res.data;
+
+        const minutes = Math.floor(remainingTimeMs / 60000);
+        const seconds = Math.floor((remainingTimeMs % 60000) / 1000);
+        setRemainingTime(`${minutes}분 ${seconds < 10 ? '0' : ''}${seconds}초`);
+      } catch (err) {
+        console.error('세션 체크 실패', err);
+      }
+    }, 1000);
 
     return () => clearInterval(intervalRef.current);
   }, [isLoggedIn]);
-
-  const updateSessionTimer = () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return;
-
-    try {
-      const decoded = jwtDecode(token);
-      const exp = decoded.exp * 1000;
-      const now = Date.now();
-      const diff = exp - now;
-
-      if (diff <= 0) {
-        setRemainingTime('만료됨');
-        localStorage.clear();
-        alert('세션이 만료되었습니다. 다시 로그인해주세요.');
-        window.location.href = '/login';
-        return;
-      }
-
-      const minutes = Math.floor(diff / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
-      setRemainingTime(`${minutes}분 ${seconds < 10 ? '0' : ''}${seconds}초`);
-
-      // 연장 여부 묻기
-      if (diff <= 5 * 60 * 1000 && !hasAskedExtend) {
-        setHasAskedExtend(true);
-        setShowExtendPopup(true); // 이 알림만 띄우면 됨
-      }
-    } catch (e) {
-      console.error('토큰 디코딩 실패', e);
-      setRemainingTime('-');
-    }
-  };
 
   const handleLogout = () => {
     logoutAndRedirect();
@@ -142,41 +116,35 @@ function Menubar({
 
   const handleExtendSession = async () => {
     try {
-      const accessToken = localStorage.getItem('accessToken');
-      const refreshToken = localStorage.getItem('refreshToken');
-
       const res = await apiClient.post('/reissue', null, {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
-          RefreshToken: `Bearer ${refreshToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
           ExtendLogin: 'true',
         },
         withCredentials: true,
       });
 
+      console.log('[Reissue 응답 헤더]', res.headers);
+
+      // 응답 헤더에서 토큰 추출 (소문자 키로 접근)
       const newAccessToken = res.headers['authorization']?.split(' ')[1];
       const newRefreshToken = res.headers['refresh-token']?.split(' ')[1];
 
-      if (newAccessToken) {
-        localStorage.setItem('accessToken', newAccessToken);
-        console.log('🟢 accessToken 갱신됨');
+      if (!newAccessToken || !newRefreshToken) {
+        console.error('❌ 새 토큰이 응답 헤더에 없음!', res.headers);
+        throw new Error('토큰 없음');
       }
 
-      if (newRefreshToken) {
-        localStorage.setItem('refreshToken', newRefreshToken);
-        console.log('🟢 refreshToken 갱신됨');
-      }
+      // localStorage에 새 토큰 저장
+      localStorage.setItem('accessToken', newAccessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
 
-      // 타이머 리셋
-      setTimeout(() => {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        intervalRef.current = setInterval(updateSessionTimer, 1000);
-        updateSessionTimer();
-      }, 50);
+      extendSessionManually();
 
       alert('로그인 시간이 연장되었습니다.');
-    } catch (e) {
-      console.error('연장 실패', e);
+      setHasAskedExtend(true); // 다시 묻지 않도록
+    } catch (err) {
       alert('세션 연장에 실패했습니다. 다시 로그인해주세요.');
       navigate('/login');
     }
@@ -185,14 +153,6 @@ function Menubar({
   const handleSignup = () => {
     navigate('/signup/step1');
   };
-
-  // const handleLoginClick = () => {
-  //   setShowLoginModal(true);
-  // };
-
-  // const handleCloseModal = () => {
-  //   setShowLoginModal(false);
-  // };
 
   return (
     <>
@@ -320,15 +280,6 @@ function Menubar({
           )}
         </div>
       </header>
-      {showExtendPopup && (
-        <SessionExtendNotification
-          onExtend={handleExtendSession}
-          onDismiss={() => {
-            setShowExtendPopup(false);
-            setHasAskedExtend(true);
-          }}
-        />
-      )}
     </>
   );
 }
