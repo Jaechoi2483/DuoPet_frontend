@@ -11,6 +11,10 @@ const ConsultationHistory = () => {
   const [consultations, setConsultations] = useState([]);
   const [qnaConsultations, setQnaConsultations] = useState([]);
   
+  // 현재 사용자 role 확인
+  const userRole = localStorage.getItem('userRole');
+  const isVet = userRole === 'vet';
+  
   // 초기 activeTab 설정 - 항상 'realtime'이 기본값
   const [activeTab, setActiveTab] = useState('realtime');
   const [loading, setLoading] = useState(false);
@@ -28,10 +32,10 @@ const ConsultationHistory = () => {
 
   // 다른 페이지에서 특정 탭으로 직접 이동한 경우에만 처리
   useEffect(() => {
-    if (location.state?.activeTab === 'qna') {
+    if (location.state?.activeTab === 'qna' || location.state?.consultationTab === 'qna') {
       setActiveTab('qna');
     }
-  }, [location.state?.activeTab]);
+  }, [location.state?.activeTab, location.state?.consultationTab]);
 
   useEffect(() => {
     if (activeTab === 'realtime') {
@@ -70,9 +74,17 @@ const ConsultationHistory = () => {
         // response.data가 페이지네이션 객체인 경우 content 필드 사용
         if (response.data.content !== undefined) {
           console.log('Using paginated content:', response.data.content);
+          // hasReview 정보 확인
+          response.data.content.forEach(consultation => {
+            console.log(`Consultation ${consultation.roomId} hasReview:`, consultation.hasReview);
+          });
           setConsultations(response.data.content);
         } else if (Array.isArray(response.data)) {
           console.log('Using array data:', response.data);
+          // hasReview 정보 확인
+          response.data.forEach(consultation => {
+            console.log(`Consultation ${consultation.roomId} hasReview:`, consultation.hasReview);
+          });
           setConsultations(response.data);
         } else {
           console.log('Unexpected data format:', response.data);
@@ -101,7 +113,16 @@ const ConsultationHistory = () => {
       console.log('accessToken exists:', !!localStorage.getItem('accessToken'));
       console.log('refreshToken exists:', !!localStorage.getItem('refreshToken'));
       
-      const response = await qnaConsultationApi.getMyQnaConsultations();
+      // userRole 확인
+      const userRole = localStorage.getItem('userRole');
+      console.log('userRole:', userRole);
+      
+      // 전문가 롤인 경우 role 파라미터 전달
+      const response = await qnaConsultationApi.getMyQnaConsultations(
+        0,  // page
+        10, // size
+        userRole === 'vet' ? 'vet' : null  // role parameter
+      );
       console.log('Q&A Consultation API response:', response);
       console.log('Q&A Response structure:', {
         success: response?.success,
@@ -125,9 +146,17 @@ const ConsultationHistory = () => {
         // response.data가 페이지네이션 객체인 경우 content 필드 사용
         if (response.data.content !== undefined) {
           console.log('Using paginated content:', response.data.content);
+          // hasReview 정보 확인
+          response.data.content.forEach(qna => {
+            console.log(`Q&A Consultation ${qna.roomId} hasReview:`, qna.hasReview);
+          });
           setQnaConsultations(response.data.content);
         } else if (Array.isArray(response.data)) {
           console.log('Using array data:', response.data);
+          // hasReview 정보 확인
+          response.data.forEach(qna => {
+            console.log(`Q&A Consultation ${qna.roomId} hasReview:`, qna.hasReview);
+          });
           setQnaConsultations(response.data);
         } else {
           console.log('Unexpected data format:', response.data);
@@ -199,25 +228,43 @@ const ConsultationHistory = () => {
 
     try {
       const review = {
-        consultationRoomId: selectedConsultation.roomId,
-        vetId: selectedConsultation.vetId,
         rating: reviewData.rating,
         kindnessScore: reviewData.kindnessScore,
         professionalScore: reviewData.professionalScore,
         responseScore: reviewData.responseScore,
         reviewContent: reviewData.reviewContent
       };
+      
+      console.log('Sending review data:', review);
+      console.log('Room ID:', selectedConsultation.roomId);
 
-      const response = await consultationReviewApi.createReview(review);
-      if (response.success) {
+      const response = await consultationReviewApi.createReview(selectedConsultation.roomId, review);
+      console.log('Review API response:', response);
+      
+      // 응답 처리 - success 필드가 없을 수도 있으므로 체크
+      if (response && (response.success || response.data)) {
         alert('후기가 작성되었습니다.');
         setShowReviewModal(false);
         resetReviewData();
-        loadConsultations(); // 리스트 새로고침
+        setSelectedConsultation(null);
+        // 현재 탭에 따라 적절한 목록 새로고침
+        if (activeTab === 'realtime') {
+          loadConsultations();
+        } else {
+          loadQnaConsultations();
+        }
+      } else {
+        alert('후기 작성에 실패했습니다.');
       }
     } catch (err) {
-      alert('후기 작성에 실패했습니다.');
       console.error('Review submit error:', err);
+      console.error('Error response:', err.response);
+      
+      if (err.response?.data?.message) {
+        alert(`후기 작성 실패: ${err.response.data.message}`);
+      } else {
+        alert('후기 작성에 실패했습니다. 콘솔을 확인해주세요.');
+      }
     }
   };
 
@@ -292,8 +339,8 @@ const ConsultationHistory = () => {
             >
               <div className={styles.consultationHeader}>
                 <div className={styles.vetInfo}>
-                  <h3>{consultation.vetName}</h3>
-                  <span className={styles.specialty}>일반진료</span>
+                  <h3>{isVet ? consultation.userName : consultation.vetName}</h3>
+                  <span className={styles.specialty}>{isVet ? '보호자' : '일반진료'}</span>
                 </div>
                 <span className={`${styles.status} ${getStatusClass(consultation.roomStatus)}`}>
                   {getStatusLabel(consultation.roomStatus)}
@@ -356,7 +403,7 @@ const ConsultationHistory = () => {
               </div>
 
               <div className={styles.consultationFooter}>
-                {consultation.roomStatus === 'COMPLETED' && (
+                {consultation.roomStatus === 'COMPLETED' && !isVet && !consultation.hasReview && (
                   <button 
                     className={styles.reviewBtn}
                     onClick={(e) => {
@@ -366,6 +413,11 @@ const ConsultationHistory = () => {
                   >
                     후기 작성
                   </button>
+                )}
+                {consultation.roomStatus === 'COMPLETED' && !isVet && consultation.hasReview && (
+                  <span className={styles.reviewCompleted}>
+                    후기 작성 완료
+                  </span>
                 )}
                 {consultation.roomStatus === 'IN_PROGRESS' && (
                   <button className={styles.enterBtn}>
@@ -382,7 +434,7 @@ const ConsultationHistory = () => {
             >
               <div className={styles.consultationHeader}>
                 <div className={styles.vetInfo}>
-                  <h3>{qna.vetName}</h3>
+                  <h3>{isVet ? qna.userName : qna.vetName}</h3>
                   <span className={styles.specialty}>{qna.category || '기타'}</span>
                 </div>
                 <span className={`${styles.status} ${getStatusClass(qna.roomStatus || qna.status)}`}>
@@ -412,7 +464,29 @@ const ConsultationHistory = () => {
               </div>
 
               <div className={styles.consultationFooter}>
-                <button className={styles.viewDetailBtn}>
+                {((qna.roomStatus === 'COMPLETED' || qna.roomStatus === 'ANSWERED' || qna.status === 'ANSWERED' || qna.hasAnswer) && !isVet && !qna.hasReview) && (
+                  <button 
+                    className={styles.reviewBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleReviewClick(qna);
+                    }}
+                  >
+                    후기 작성
+                  </button>
+                )}
+                {((qna.roomStatus === 'COMPLETED' || qna.roomStatus === 'ANSWERED' || qna.status === 'ANSWERED' || qna.hasAnswer) && !isVet && qna.hasReview) && (
+                  <span className={styles.reviewCompleted}>
+                    후기 작성 완료
+                  </span>
+                )}
+                <button 
+                  className={styles.viewDetailBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/health/qna-consultation/${qna.roomId}`);
+                  }}
+                >
                   상세보기
                 </button>
               </div>
@@ -431,9 +505,9 @@ const ConsultationHistory = () => {
         >
           <div className={styles.consultationDetail}>
             <div className={styles.detailSection}>
-              <h4>수의사 정보</h4>
-              <p>이름: {selectedConsultation.vetName}</p>
-              <p>전문분야: 일반진료</p>
+              <h4>{isVet ? '보호자 정보' : '수의사 정보'}</h4>
+              <p>이름: {isVet ? selectedConsultation.userName : selectedConsultation.vetName}</p>
+              <p>{isVet ? '' : '전문분야: 일반진료'}</p>
             </div>
             
             <div className={styles.detailSection}>

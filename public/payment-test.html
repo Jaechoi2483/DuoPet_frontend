@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토스페이먼츠 결제 테스트 가이드</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4299e1;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #4299e1;
+            margin-top: 30px;
+        }
+        .test-card {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .test-card h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        .test-info {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .label {
+            font-weight: 600;
+            color: #666;
+        }
+        .value {
+            font-family: monospace;
+            color: #333;
+            background: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .steps {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .steps ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .warning {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .warning::before {
+            content: "⚠️";
+            font-size: 20px;
+        }
+        .success {
+            background: #e8f5e9;
+            border: 1px solid #81c784;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .error {
+            background: #ffebee;
+            border: 1px solid #e57373;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .button {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #3182ce;
+        }
+        .button.secondary {
+            background: #718096;
+        }
+        .button.secondary:hover {
+            background: #4a5568;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>토스페이먼츠 결제 테스트 가이드</h1>
+        
+        <div class="warning">
+            <div>이 페이지는 개발/테스트 환경에서만 사용하세요. 실제 결제가 이루어지지 않습니다.</div>
+        </div>
+
+        <h2>테스트 카드 정보</h2>
+        <div class="test-card">
+            <h3>기본 테스트 카드</h3>
+            <div class="test-info">
+                <div class="label">카드번호:</div>
+                <div class="value">4242-4242-4242-4242</div>
+                <div class="label">유효기간:</div>
+                <div class="value">12/28 (미래 날짜)</div>
+                <div class="label">CVC:</div>
+                <div class="value">123</div>
+                <div class="label">비밀번호:</div>
+                <div class="value">00 (아무 2자리)</div>
+                <div class="label">생년월일:</div>
+                <div class="value">000101 (YYMMDD)</div>
+            </div>
+        </div>
+
+        <h2>테스트 시나리오</h2>
+        
+        <h3>1. 실시간 상담 결제 테스트</h3>
+        <div class="steps">
+            <ol>
+                <li>전문가 상담 페이지(<code>/consultation/expert</code>)로 이동</li>
+                <li>원하는 전문가의 "실시간 상담" 버튼 클릭</li>
+                <li>상담 신청 모달에서 반려동물 선택 및 증상 입력</li>
+                <li>결제 확인 모달에서 금액(30,000원) 확인</li>
+                <li>"결제하고 상담 신청" 버튼 클릭</li>
+                <li>토스페이먼츠 결제창에서 위 테스트 카드 정보 입력</li>
+                <li>결제 완료 후 성공 페이지 확인</li>
+            </ol>
+        </div>
+        
+        <h3>2. Q&A 상담 결제 테스트</h3>
+        <div class="steps">
+            <ol>
+                <li>전문가 상담 페이지에서 "Q&A 상담" 버튼 클릭</li>
+                <li>질문 작성 및 이미지 첨부(선택사항)</li>
+                <li>결제 확인 모달에서 금액(30,000원) 확인</li>
+                <li>동일한 결제 프로세스 진행</li>
+                <li>결제 완료 후 Q&A 상담 생성 확인</li>
+            </ol>
+        </div>
+
+        <h3>3. 결제 실패 테스트</h3>
+        <div class="steps">
+            <ol>
+                <li>결제창에서 X 버튼을 클릭하여 취소</li>
+                <li>에러 메시지가 표시되는지 확인</li>
+                <li>다시 시도 가능한지 확인</li>
+            </ol>
+        </div>
+
+        <h2>디버깅 도구</h2>
+        
+        <h3>브라우저 콘솔에서 확인할 항목</h3>
+        <div class="test-card">
+            <p>Chrome DevTools Console (F12)에서 다음 명령어로 상태 확인:</p>
+            <div class="test-info">
+                <div class="label">세션 데이터:</div>
+                <div class="value">sessionStorage.getItem('pendingPayment')</div>
+                <div class="label">API 키 확인:</div>
+                <div class="value">console.log(process.env.REACT_APP_TOSS_CLIENT_KEY)</div>
+                <div class="label">결제 요청 로그:</div>
+                <div class="value">Network 탭에서 /api/consultation/rooms 요청 확인</div>
+            </div>
+        </div>
+
+        <h3>백엔드 로그 확인</h3>
+        <div class="test-card">
+            <p>Spring Boot 콘솔에서 확인할 로그:</p>
+            <ul>
+                <li><code>[consultationApi] 상담 생성 요청</code> - 결제 정보 포함 여부</li>
+                <li><code>토스페이먼츠 결제 검증 시작</code> - 결제 검증 프로세스</li>
+                <li><code>Paid consultation created</code> - 결제 완료된 상담</li>
+            </ul>
+        </div>
+
+        <h2>자주 발생하는 문제</h2>
+        
+        <div class="error">
+            <h4>CORS 오류</h4>
+            <p>토스페이먼츠 SDK 로드 실패 시 프록시 설정을 확인하세요.</p>
+        </div>
+        
+        <div class="error">
+            <h4>인증 오류</h4>
+            <p>로그인하지 않은 상태에서는 결제를 진행할 수 없습니다.</p>
+        </div>
+        
+        <div class="error">
+            <h4>세션 만료</h4>
+            <p>결제 중 세션이 만료되면 다시 로그인 후 시도하세요.</p>
+        </div>
+
+        <h2>빠른 링크</h2>
+        <div style="margin: 30px 0;">
+            <a href="/consultation/expert" class="button">전문가 상담 페이지</a>
+            <a href="/consultation/history" class="button secondary">상담 내역 확인</a>
+        </div>
+
+        <div class="success">
+            <h4>테스트 완료 체크리스트</h4>
+            <ul>
+                <li>✅ 실시간 상담 결제 성공</li>
+                <li>✅ Q&A 상담 결제 성공</li>
+                <li>✅ 결제 취소 처리 확인</li>
+                <li>✅ 에러 메시지 표시 확인</li>
+                <li>✅ 결제 완료 후 상담방 생성 확인</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

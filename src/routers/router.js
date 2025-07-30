@@ -22,6 +22,10 @@ import qnaRoutes from './qnaRoutes';
 import ConsultationWaitingPage from '../pages/consultation/ConsultationWaitingPage';
 import ConsultationChat from '../pages/consultation/ConsultationChat';
 
+// 결제 관련 페이지 import
+import PaymentSuccess from '../pages/consultation/PaymentSuccess';
+import PaymentFail from '../pages/consultation/PaymentFail';
+
 const AppRouter = () => {
   return (
     <Routes>
@@ -41,6 +45,10 @@ const AppRouter = () => {
       {/* 상담 관련 라우트 */}
       <Route path="/consultation/waiting/:roomUuid" element={<ConsultationWaitingPage />} />
       <Route path="/consultation/chat/:roomUuid" element={<ConsultationChat />} />
+      
+      {/* 결제 관련 라우트 */}
+      <Route path="/consultation/payment/success" element={<PaymentSuccess />} />
+      <Route path="/consultation/payment/fail" element={<PaymentFail />} />
     </Routes>
   );
 };

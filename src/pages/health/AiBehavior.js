@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './AiBehavior.module.css';
 import ProgressBar from '../../components/common/ProgressBar';
-import ModelStatus from '../../components/health/ModelStatus';
 import BehaviorScoreVisualizer from '../../components/health/BehaviorScoreVisualizer';
 
 const AiBehavior = ({ pet }) => {
@@ -14,7 +13,6 @@ const AiBehavior = ({ pet }) => {
   const [analysisProgress, setAnalysisProgress] = useState(0);
   const [analysisStatus, setAnalysisStatus] = useState('');
   const previousProgressRef = useRef(0);
-  const [showModelStatus, setShowModelStatus] = useState(false);
   const [petType, setPetType] = useState(''); // 펫 타입 상태 추가
 
   // pet prop에서 자동으로 펫 타입 설정
@@ -415,13 +413,6 @@ const AiBehavior = ({ pet }) => {
     <div className={styles.container}>
       <div className={styles.topBar}>
         <h2 className={styles.pageTitle}>AI 행동분석</h2>
-        <button 
-          className={styles.statusButton}
-          onClick={() => setShowModelStatus(true)}
-          title="AI 모델 상태 확인"
-        >
-          🔧 모델 상태
-        </button>
       </div>
       
       <div className={styles.analysisContainer}>
@@ -559,11 +550,6 @@ const AiBehavior = ({ pet }) => {
         </div>
       </div>
       
-      {/* 모델 상태 모달 */}
-      <ModelStatus 
-        isVisible={showModelStatus} 
-        onClose={() => setShowModelStatus(false)} 
-      />
     </div>
   );
 };

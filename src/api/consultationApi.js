@@ -18,7 +18,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
-    const userRole = localStorage.getItem('role');
+    const userRole = localStorage.getItem('userRole');
     const userId = localStorage.getItem('userId');
     
     // 디버깅이 필요한 경우에만 주석 해제
@@ -118,7 +118,9 @@ export const vetProfileApi = {
 export const consultationRoomApi = {
     // 상담 신청
     createConsultation: async (consultationData) => {
+        console.log('[consultationApi] 상담 생성 요청:', consultationData);
         const response = await api.post('/rooms', consultationData);
+        console.log('[consultationApi] 상담 생성 응답:', response.data);
         return response.data;
     },
 
@@ -244,8 +246,8 @@ export const chatMessageApi = {
 // 상담 후기 API
 export const consultationReviewApi = {
     // 후기 작성
-    createReview: async (reviewData) => {
-        const response = await api.post('/consultation-reviews', reviewData);
+    createReview: async (roomId, reviewData) => {
+        const response = await api.post(`/reviews/room/${roomId}`, reviewData);
         return response.data;
     },
 
@@ -330,6 +332,9 @@ export const qnaConsultationApi = {
         return response.data;
     },
 };
+
+// 결제 관련 API는 백엔드에서 직접 토스페이먼츠 API 호출하여 처리
+// 프론트엔드에서는 결제 정보만 상담 생성 API에 포함하여 전송
 
 const consultationApi = {
     vetProfileApi,

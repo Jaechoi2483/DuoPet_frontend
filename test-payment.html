@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>토스페이먼츠 테스트 결제</title>
+    <script src="https://js.tosspayments.com/v1/payment"></script>
+</head>
+<body>
+    <h1>토스페이먼츠 테스트 결제</h1>
+    <button id="payment-button">테스트 결제하기 (30,000원)</button>
+    
+    <div style="margin-top: 20px; padding: 20px; background: #f0f0f0;">
+        <h3>테스트 카드 정보:</h3>
+        <p>카드번호: 4242-4242-4242-4242</p>
+        <p>유효기간: 12/25</p>
+        <p>CVC: 123</p>
+        <p>비밀번호: 00</p>
+    </div>
+
+    <script>
+        const clientKey = 'test_ck_D5GePWvyJnrK0W0k6q8gLzN97Eoq';
+        const tossPayments = TossPayments(clientKey);
+        
+        const button = document.getElementById('payment-button');
+        button.addEventListener('click', function () {
+            // 기본 결제 위젯 사용
+            tossPayments.requestPayment('카드', {
+                amount: 30000,
+                orderId: 'TEST_' + new Date().getTime(),
+                orderName: '테스트 상담 결제',
+                customerName: '테스트',
+                successUrl: window.location.origin + '/consultation/payment/success',
+                failUrl: window.location.origin + '/consultation/payment/fail',
+                // 테스트 모드 옵션
+                flowMode: 'DIRECT',
+                cardCompany: null,
+                easyPay: null,
+                useEscrow: false,
+                cashReceipt: {
+                    type: '미발행'
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -4,25 +4,24 @@
   padding: 2rem 1rem;
 }
 
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #4A9FF3;
-  text-decoration: none;
-  font-weight: 500;
-  margin-bottom: 1.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
+.backBtnWrapper {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-.backLink:hover {
-  background-color: #F0F8FF;
-  color: #2E7DDB;
+.listBtn {
+  background-color: #f3f3f3;
+  color: #444;
+  border: 1px solid #ccc;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.listBtn:hover {
+  background-color: #e0e0e0;
 }
 
 .detailCard {
@@ -146,44 +145,6 @@
   margin: 0;
 }
 
-.actionButtons {
-  display: flex;
-  gap: 1rem;
-  margin: 2rem 0;
-}
-
-.primaryButton,
-.secondaryButton {
-  flex: 1;
-  padding: 12px 24px;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-}
-
-.primaryButton {
-  background-color: #4A9FF3;
-  color: white;
-}
-
-.primaryButton:hover {
-  background-color: #2E7DDB;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(74, 159, 243, 0.3);
-}
-
-.secondaryButton {
-  background-color: white;
-  color: #4A9FF3;
-  border: 2px solid #4A9FF3;
-}
-
-.secondaryButton:hover {
-  background-color: #F0F8FF;
-}
 
 .notice {
   background-color: #FFF9E6;

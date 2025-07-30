@@ -8,6 +8,7 @@ const AdoptionSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
 
   // useRef를 사용하여 인터벌 및 타임아웃 ID를 저장합니다.
@@ -19,7 +20,7 @@ const AdoptionSlider = () => {
     const fetchFeaturedAnimals = async () => {
       try {
         setLoading(true);
-        const data = await adoptionService.getFeaturedAnimals(10);
+        const data = await adoptionService.getFeaturedAnimals(12);
         setAnimals(data);
         setError(null);
       } catch (err) {
@@ -34,13 +35,16 @@ const AdoptionSlider = () => {
 
   // 다음 슬라이드로 이동하는 함수 (useCallback으로 불필요한 재생성 방지)
   const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev >= animals.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => {
+      const nextIndex = prev + 3;
+      return nextIndex >= animals.length ? 0 : nextIndex;
+    });
   }, [animals.length]);
 
   // 자동 슬라이드를 시작하는 함수
   const startAutoSlide = useCallback(() => {
     stopAutoSlide(); // 기존 인터벌이 있다면 정리
-    autoSlideInterval.current = setInterval(handleNext, 3000); // 3초마다 handleNext 호출
+    autoSlideInterval.current = setInterval(handleNext, 5000); // 5초마다 handleNext 호출
   }, [handleNext]);
 
   // 자동 슬라이드를 멈추는 함수
@@ -65,10 +69,17 @@ const AdoptionSlider = () => {
     stopAutoSlide(); // 자동 슬라이드 멈춤
     clearTimeout(pauseTimeout.current); // 기존 일시정지 타임아웃이 있다면 초기화
 
-    setCurrentIndex((prev) => (prev === 0 ? animals.length - 1 : prev - 1));
+    setCurrentIndex((prev) => {
+      const prevIndex = prev - 3;
+      return prevIndex < 0 ? Math.floor(animals.length / 3) * 3 : prevIndex;
+    });
 
-    // 5초 후에 자동 슬라이드를 다시 시작합니다.
-    pauseTimeout.current = setTimeout(startAutoSlide, 5000);
+    // 5초 후에 자동 슬라이드를 다시 시작합니다 (호버 중이 아닌 경우에만).
+    pauseTimeout.current = setTimeout(() => {
+      if (!isHovered) {
+        startAutoSlide();
+      }
+    }, 5000);
   };
 
   // 다음 버튼 클릭 핸들러
@@ -78,7 +89,11 @@ const AdoptionSlider = () => {
 
     handleNext(); // 다음 슬라이드로 즉시 이동
 
-    pauseTimeout.current = setTimeout(startAutoSlide, 5000);
+    pauseTimeout.current = setTimeout(() => {
+      if (!isHovered) {
+        startAutoSlide();
+      }
+    }, 5000);
   };
 
   const handleAnimalClick = (animalId) => {
@@ -87,6 +102,17 @@ const AdoptionSlider = () => {
 
   const handleViewAll = () => {
     navigate('/adoption');
+  };
+
+  // 마우스 호버 이벤트 핸들러
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    stopAutoSlide();
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    startAutoSlide();
   };
 
   if (loading) {
@@ -118,7 +144,11 @@ const AdoptionSlider = () => {
   }
 
   return (
-    <div className={styles.sliderContainer}>
+    <div 
+      className={`${styles.sliderContainer} ${isHovered ? styles.hovered : ''}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className={styles.header}>
         <h2 className={styles.title}>사랑을 기다리는 아이들</h2>
         <button className={styles.viewAllBtn} onClick={handleViewAll}>
@@ -151,7 +181,6 @@ const AdoptionSlider = () => {
                     e.target.src = '/default-animal.svg';
                   }}
                 />
-                <div className={styles.statusBadge}>보호중</div>
               </div>
 
               <div className={styles.animalInfo}>
@@ -182,15 +211,15 @@ const AdoptionSlider = () => {
         </button>
       </div>
 
-      {/* 인디케이터 로직은 현재 1개씩 이동하는 기준으로 변경됩니다. */}
+      {/* 인디케이터 로직 - 3개씩 그룹으로 표시 */}
       <div className={styles.indicators}>
-        {animals.map((_, idx) => (
+        {Array.from({ length: Math.ceil(animals.length / 3) }, (_, idx) => (
           <span
             key={idx}
             className={`${styles.indicator} ${
-              currentIndex === idx ? styles.active : ''
+              Math.floor(currentIndex / 3) === idx ? styles.active : ''
             }`}
-            onClick={() => setCurrentIndex(idx)}
+            onClick={() => setCurrentIndex(idx * 3)}
           />
         ))}
       </div>

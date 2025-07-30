@@ -66,9 +66,11 @@ const AdoptionDetail = () => {
 
   return (
     <div className={styles.container}>
-      <button onClick={handleBack} className={styles.backLink}>
-        ← 목록으로 돌아가기
-      </button>
+      <div className={styles.backBtnWrapper}>
+        <button onClick={handleBack} className={styles.listBtn}>
+          ← 목록으로
+        </button>
+      </div>
 
       <div className={styles.detailCard}>
         <div className={styles.imageSection}>
@@ -79,7 +81,6 @@ const AdoptionDetail = () => {
               onError={() => setImageError(true)}
               className={styles.image}
             />
-            <span className={styles.statusBadge}>{animal.processState}</span>
           </div>
         </div>
 
@@ -154,14 +155,6 @@ const AdoptionDetail = () => {
             </dl>
           </div>
 
-          <div className={styles.actionButtons}>
-            <button onClick={handleInquiry} className={styles.primaryButton}>
-              입양 문의하기
-            </button>
-            <button className={styles.secondaryButton}>
-              관심 동물 등록
-            </button>
-          </div>
 
           <div className={styles.notice}>
             <p>

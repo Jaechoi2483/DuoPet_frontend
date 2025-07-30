@@ -4,13 +4,14 @@ import { AuthContext } from '../../AuthProvider';
 import { getPetList, getPetImageUrl } from '../../api/petApi';
 import { qnaConsultationApi } from '../../api/consultationApi';
 import FileUploader from '../../components/common/FileUploader';
+import { initTossPayments, createPaymentParams, CONSULTATION_PRICES } from '../../utils/payment';
 import styles from './QnaConsultation.module.css';
 
 function QnaConsultation() {
   const navigate = useNavigate();
   const location = useLocation();
   const vetInfo = location.state?.vetInfo;
-  const { userNo, isLoggedIn, secureApiRequest } = useContext(AuthContext);
+  const { userNo, isLoggedIn, secureApiRequest, username } = useContext(AuthContext);
   
   const [formData, setFormData] = useState({
     vetId: vetInfo?.vetId || '',
@@ -107,32 +108,49 @@ function QnaConsultation() {
     setLoading(true);
     
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('vetId', vetInfo.vetId);
-      formDataToSend.append('petId', formData.petId);
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('content', formData.content);
-      formDataToSend.append('category', formData.category);
+      // 토스페이먼츠 결제 진행
+      const tossPayments = await initTossPayments();
       
-      // 파일 첨부
-      if (formData.files.length > 0) {
-        formData.files.forEach(file => {
-          formDataToSend.append('files', file);
-        });
-      }
+      // 사용자 정보 구성
+      const userInfo = {
+        userId: userNo,
+        name: username || '고객', // AuthContext에서 username 사용
+        email: 'test@example.com', // 테스트용 이메일
+        phone: '01012345678' // 테스트용 전화번호 (하이픈 제거)
+      };
       
-      const response = await qnaConsultationApi.createQnaConsultation(formDataToSend);
+      // 결제 파라미터 생성
+      const paymentParams = createPaymentParams({
+        consultationType: 'QNA',
+        vetId: vetInfo.vetId,
+        vetName: vetInfo.name || vetInfo.vet?.name || '수의사',
+        petId: formData.petId
+      }, userInfo);
       
-      if (response && response.data) {
-        alert('Q&A 상담이 성공적으로 등록되었습니다.');
-        navigate('/mypage/consultations', { state: { activeTab: 'qna' } });
-      } else {
-        alert(response?.message || 'Q&A 상담 등록에 실패했습니다.');
-      }
+      // 세션 스토리지에 Q&A 데이터 저장 (결제 완료 후 사용)
+      sessionStorage.setItem('pendingQnaConsultation', JSON.stringify({
+        ...formData,
+        vetInfo,
+        paymentInfo: {
+          orderId: paymentParams.orderId,
+          amount: paymentParams.amount
+        }
+      }));
+      
+      // 토스페이먼츠 결제창 호출 - 테스트 환경에서는 flowMode 설정
+      await tossPayments.requestPayment('카드', {
+        ...paymentParams,
+        flowMode: 'DEFAULT',  // 일반 결제 플로우 사용
+        easyPay: undefined    // 간편결제 비활성화
+      });
+      
     } catch (error) {
-      console.error('Q&A 상담 등록 실패:', error);
-      alert('Q&A 상담 등록 중 오류가 발생했습니다.');
-    } finally {
+      console.error('결제 처리 중 오류:', error);
+      if (error.code === 'USER_CANCEL') {
+        alert('결제가 취소되었습니다.');
+      } else {
+        alert('결제 처리 중 오류가 발생했습니다.');
+      }
       setLoading(false);
     }
   };
@@ -248,8 +266,19 @@ function QnaConsultation() {
             <li>Q&A 상담은 실시간 상담이 아닙니다.</li>
             <li>수의사님의 일정에 따라 답변까지 1-2일 정도 소요될 수 있습니다.</li>
             <li>긴급한 상황의 경우 실시간 상담이나 병원 방문을 권장합니다.</li>
-            <li>상담료는 {vetInfo?.consultationFee?.toLocaleString() || '30,000'}원입니다.</li>
           </ul>
+        </div>
+
+        {/* 결제 정보 */}
+        <div className={styles.paymentInfo}>
+          <h4>결제 정보</h4>
+          <div className={styles.paymentDetails}>
+            <span>상담료</span>
+            <span className={styles.price}>{CONSULTATION_PRICES.QNA.toLocaleString()}원</span>
+          </div>
+          <p className={styles.paymentNotice}>
+            결제 후 Q&A 상담이 등록됩니다.
+          </p>
         </div>
 
         {/* 버튼 */}
@@ -267,7 +296,7 @@ function QnaConsultation() {
             className={styles.submitButton}
             disabled={loading}
           >
-            {loading ? '등록 중...' : 'Q&A 상담 요청'}
+            {loading ? '처리 중...' : '결제하고 상담 요청'}
           </button>
         </div>
       </form>
