@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../AuthProvider';
 import styles from './BoardEdit.module.css';
 
+// 게시글 수정 페이지
 function BoardEdit({ category = 'free', route = 'freeBoard' }) {
   const navigate = useNavigate();
   const { id } = useParams(); // 게시글 ID
@@ -56,11 +57,13 @@ function BoardEdit({ category = 'free', route = 'freeBoard' }) {
     fetchPost();
   }, [id]);
 
+  // 폼 값 변경
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 파일 업로드
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 5) {
@@ -70,12 +73,14 @@ function BoardEdit({ category = 'free', route = 'freeBoard' }) {
     setFormData((prev) => ({ ...prev, files }));
   };
 
+  // 뒤로가기 버튼
   const handleGoBack = () => {
     if (window.confirm('수정 중인 내용이 사라집니다. 목록으로 이동할까요?')) {
       navigate(`/community/${route}`);
     }
   };
 
+  // 게시글 수정 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
 

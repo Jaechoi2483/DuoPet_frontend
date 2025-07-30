@@ -4,14 +4,16 @@ import React, { useState } from 'react';
 import apiClient from '../../../utils/axios';
 import styles from './Comment.module.css';
 
+// 댓글/대댓글 작성 폼
 function CommentForm({ contentId, parentCommentId = null, onSuccess }) {
   const [comment, setComment] = useState('');
 
+  // JWT 인증 토큰 가져오기
   const accessToken = localStorage.getItem('accessToken');
   const refreshToken = localStorage.getItem('refreshToken');
-
   const isLoggedIn = accessToken && refreshToken;
 
+  // 댓글 등록 요청
   const handleSubmit = async () => {
     if (!comment.trim()) {
       alert('내용을 입력해주세요.');
@@ -40,6 +42,7 @@ function CommentForm({ contentId, parentCommentId = null, onSuccess }) {
         }
       );
 
+      // 성공 시 입력 초기화 + 콜백
       setComment('');
       onSuccess?.(); // 새로고침 콜백 실행
     } catch (error) {
@@ -48,7 +51,7 @@ function CommentForm({ contentId, parentCommentId = null, onSuccess }) {
     }
   };
 
-  //비로그인 상태면 안내 문구만 렌더링
+  // 비로그인 상태면 안내 문구만 렌더링
   if (!isLoggedIn) {
     return (
       <div className={styles.commentCard}>
@@ -57,7 +60,7 @@ function CommentForm({ contentId, parentCommentId = null, onSuccess }) {
     );
   }
 
-  // 고민사항 엔터를 눌렀을 때 등록되는 부분
+  // 댓글/답글 작성 폼
   return (
     <div className={parentCommentId ? styles.replyForm : styles.commentCard}>
       <label className={styles.label}>{parentCommentId ? '답글 작성' : '댓글 작성'}</label>

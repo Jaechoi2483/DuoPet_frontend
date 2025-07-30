@@ -5,17 +5,19 @@ import apiClient from '../../../utils/axios';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
 import styles from './Comment.module.css';
-import { AuthContext } from '../../../AuthProvider'; // 로그인 상태 확인을 위해 import
+import { AuthContext } from '../../../AuthProvider';
 
 function CommentBox({ contentId, setReportProps, setIsReportOpen }) {
   const [comments, setComments] = useState([]);
   const [reload, setReload] = useState(false);
   const { isLoggedIn } = useContext(AuthContext); // 로그인 상태 가져오기
 
+  // 맷글 목록 조회
   useEffect(() => {
     fetchComments();
   }, [contentId, reload]);
 
+  // 서버로부터 댓글 목록 불러오기
   const fetchComments = async () => {
     try {
       const res = await apiClient.get(`/comments/view/${contentId}`);
@@ -34,6 +36,7 @@ function CommentBox({ contentId, setReportProps, setIsReportOpen }) {
     }
   };
 
+  // 댓글 작성/삭제 후 목록 갱신
   const handleReload = () => setReload(!reload);
 
   return (

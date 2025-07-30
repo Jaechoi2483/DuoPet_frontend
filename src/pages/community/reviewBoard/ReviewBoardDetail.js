@@ -24,6 +24,7 @@ function ReviewBoardDetail() {
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportProps, setReportProps] = useState({ targetId: null, targetType: '' });
   const [videos, setVideos] = useState([]);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
   const BACKEND_URL = 'http://localhost:8080';
 
   const contentId = Number(id);
@@ -188,16 +189,19 @@ function ReviewBoardDetail() {
 
     const fetchRecommendedVideos = async () => {
       try {
+        setIsVideoLoading(true);
+
         const res = await apiClient.post('http://localhost:8000/api/v1/video-recommend/recommend', {
           contentId: post.contentId,
           maxResults: 3,
         });
 
         console.log('AI 응답:', res.data.data);
-
         setVideos(res.data.data.videos);
       } catch (error) {
         console.error('영상 추천 실패:', error);
+      } finally {
+        setIsVideoLoading(false);
       }
     };
 
@@ -211,12 +215,12 @@ function ReviewBoardDetail() {
       {showToast && <div className={styles.toast}>{toastMessage}</div>}
 
       <div className={styles.backBtnWrapper}>
-        <button className={styles.listBtn} onClick={() => navigate('/community/reviewBoard')}>
-          ← 목록으로
-        </button>
-
         <button className={styles.historyBackBtn} onClick={() => window.history.back()}>
           뒤로가기
+        </button>
+
+        <button className={styles.listBtn} onClick={() => navigate('/community/reviewBoard')}>
+          목록으로
         </button>
       </div>
 
@@ -279,9 +283,17 @@ function ReviewBoardDetail() {
 
       <div className={styles.youtubeSection}>
         <h3>📺 관련 YouTube 영상</h3>
-        <div className={styles.videoList}>
-          {Array.isArray(videos) &&
-            videos.map((video) => (
+
+        {isVideoLoading ? (
+          <>
+            <div className={styles.localLoadingBarWrapper}>
+              <div className={styles.localLoadingBar}></div>
+            </div>
+            <p className={styles.loadingText}>🔄 추천 영상을 불러오는 중입니다...</p>
+          </>
+        ) : videos.length > 0 ? (
+          <div className={styles.videoList}>
+            {videos.map((video) => (
               <a
                 key={video.video_id}
                 href={`https://www.youtube.com/watch?v=${video.video_id}`}
@@ -298,7 +310,10 @@ function ReviewBoardDetail() {
                 </p>
               </a>
             ))}
-        </div>
+          </div>
+        ) : (
+          <p>😥 관련 추천 영상을 찾을 수 없습니다.</p>
+        )}
       </div>
 
       <div className={styles.commentSection}>

@@ -7,6 +7,7 @@ import FreeBoardReport from '../report/BoardReport';
 import styles from './Comment.module.css';
 import { AuthContext } from '../../../AuthProvider';
 
+// 댓글(대댓글) 컴포넌트
 function CommentItem({ comment, allComments = [], onReload, setReportProps, setIsReportOpen }) {
   const [showReplyForm, setShowReplyForm] = useState(false);
   const { user } = useContext(AuthContext); // user만 AuthContext에서 사용 (accessToken은 직접 가져옴)
