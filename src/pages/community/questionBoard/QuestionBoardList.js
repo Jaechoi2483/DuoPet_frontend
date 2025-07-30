@@ -255,7 +255,7 @@ function QuestionBoardList() {
               <span>{post.title}</span>
             </div>
             <div className={styles.postMeta}>
-              <span>작성자ID: {post.userId}</span> |<span>{new Date(post.createdAt).toLocaleDateString()}</span> |
+              <span>작성자: {post.nickname}</span> |<span>{new Date(post.createdAt).toLocaleDateString()}</span> |
               <span>👁 {post.viewCount}</span>
               <span>❤ {post.likeCount}</span>
             </div>

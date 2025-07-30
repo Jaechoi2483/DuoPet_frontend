@@ -1,4 +1,5 @@
 // src/pages/community/freeBoard/FreeBoardWrite.js
+
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../AuthProvider';
@@ -6,8 +7,8 @@ import styles from './BoardWrite.module.css';
 
 function BoardWrite({ category = 'free', route = 'freeBoard' }) {
   const navigate = useNavigate();
-
   const { userNo, isLoggedIn, secureApiRequest } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     userId: userNo,
@@ -19,16 +20,18 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
     files: [],
   });
 
-  // 비로그인 시 차단
   useEffect(() => {
     if (!isLoggedIn) {
-      alert('로그인이 필요한 서비스입니다.');
-      navigate('/login');
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        alert('로그인이 필요한 서비스입니다.');
+        navigate('/login');
+      }
     }
+    setLoading(false);
   }, [isLoggedIn]);
 
   useEffect(() => {
-    // userId가 늦게 들어올 경우 반영
     setFormData((prev) => ({ ...prev, userId: userNo }));
   }, [userNo]);
 
@@ -48,37 +51,38 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
 
   const handleGoBack = () => {
     const confirmed = window.confirm('작성 중인 내용이 사라집니다. 정말 목록으로 이동할까요?');
-    if (confirmed) {
-      navigate(`/community/${route}`);
-    }
+    if (confirmed) navigate(`/community/${route}`);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.contentBody || !formData.category) {
+    const { title, contentBody, category, tags } = formData;
+
+    if (!title || !contentBody || !category) {
       alert('카테고리, 제목, 내용을 모두 입력해주세요.');
       return;
     }
 
+    // 강아지/고양이 태그 유효성 검사
+    if (category !== 'free') {
+      const tagList = tags.split(',').map((t) => t.trim());
+      const hasRequiredTag = tagList.some((t) => t.includes('강아지') || t.includes('고양이'));
+      if (!hasRequiredTag) {
+        alert('후기, 질문, 팁 게시판에서는 "강아지" 또는 "고양이" 태그가 포함되어야 합니다.');
+        return;
+      }
+    }
+
     const data = new FormData();
     data.append('userId', formData.userId);
-    data.append('category', formData.category);
-    data.append('title', formData.title);
-    data.append('contentBody', formData.contentBody);
-    data.append('tags', formData.tags);
+    data.append('category', category);
+    data.append('title', title);
+    data.append('contentBody', contentBody);
+    data.append('tags', tags);
     data.append('contentType', formData.contentType);
 
     if (formData.files.length > 0) {
-      data.append('ofile', formData.files[0]); // 첫 파일만 첨부
-    }
-
-    const accessToken = localStorage.getItem('accessToken');
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!accessToken || !refreshToken) {
-      alert('로그인 정보가 없습니다. 다시 로그인해주세요.');
-      navigate('/login');
-      return;
+      data.append('ofile', formData.files[0]);
     }
 
     try {
@@ -91,7 +95,14 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
       navigate(`/community/${route}`);
     } catch (err) {
       console.error('등록 실패', err);
-      alert('게시글 등록에 실패했습니다.');
+
+      if (!formData.tags || formData.tags.trim() === '') {
+        alert('태그를 입력해세요!');
+      } else if (formData.category !== 'free' && !/(강아지|고양이)/.test(formData.tags)) {
+        alert('해당 카테고리는 "강아지" 또는 "고양이" 태그가 포함되어야 합니다.');
+      } else {
+        alert('게시글 등록에 실패했습니다. 입력값을 확인해주세요.');
+      }
     }
   };
 
@@ -149,7 +160,12 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
             className={styles.input}
             placeholder="태그를 입력하세요 (쉼표로 구분)"
           />
-          <small>예: 강아지, 건강, 산책 (최대 5개)</small>
+          <small>예: 강아지, 건강, 산책 (최대 3개)</small>
+
+          {/* 강아지/고양이 키워드 안내 문구 - 선택된 경우만 표시 */}
+          {formData.category && formData.category !== 'free' && (
+            <small className={styles.notice}>※ 반드시 "강아지" 또는 "고양이" 키워드가 포함되어야 합니다.</small>
+          )}
         </div>
 
         <div className={styles.formGroup}>
