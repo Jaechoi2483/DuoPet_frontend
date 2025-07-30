@@ -165,8 +165,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('loginId');
-    localStorage.removeItem('rememberId');
-    localStorage.removeItem('autoLogin');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
     localStorage.removeItem('userNo');
