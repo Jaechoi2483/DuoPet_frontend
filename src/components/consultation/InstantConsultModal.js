@@ -70,7 +70,7 @@ const InstantConsultModal = ({
           <ul className={styles.infoList}>
             <li>상담 요청 후 전문가 승인 시 바로 상담이 시작됩니다.</li>
             <li>전문가가 30초 내에 응답하지 않으면 자동 취소됩니다.</li>
-            <li>상담료: 20,000원 (20분 기준)</li>
+            <li>상담료: 30,000원</li>
             <li>채팅 상담으로 진행됩니다.</li>
           </ul>
         </div>
@@ -122,7 +122,7 @@ const InstantConsultModal = ({
             onClick={handleSubmit}
             disabled={isLoading || !selectedPetId || !symptoms.trim()}
           >
-            {isLoading ? '요청 중...' : '상담 요청'}
+            {isLoading ? '처리 중...' : '결제하고 상담 요청'}
           </button>
         </div>
       </div>

@@ -118,7 +118,9 @@ export const vetProfileApi = {
 export const consultationRoomApi = {
     // 상담 신청
     createConsultation: async (consultationData) => {
+        console.log('[consultationApi] 상담 생성 요청:', consultationData);
         const response = await api.post('/rooms', consultationData);
+        console.log('[consultationApi] 상담 생성 응답:', response.data);
         return response.data;
     },
 
@@ -330,6 +332,9 @@ export const qnaConsultationApi = {
         return response.data;
     },
 };
+
+// 결제 관련 API는 백엔드에서 직접 토스페이먼츠 API 호출하여 처리
+// 프론트엔드에서는 결제 정보만 상담 생성 API에 포함하여 전송
 
 const consultationApi = {
     vetProfileApi,

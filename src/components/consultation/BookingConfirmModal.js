@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import styles from './BookingConfirmModal.module.css';
 import moment from 'moment';
 import 'moment/locale/ko';
+import { initTossPayments, createPaymentParams, CONSULTATION_PRICES } from '../../utils/payment';
 
 moment.locale('ko');
 
@@ -11,8 +12,12 @@ const BookingConfirmModal = ({
   onClose, 
   onConfirm, 
   bookingData,
+  userInfo,
   isProcessing = false 
 }) => {
+  const [error, setError] = useState(null);
+  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
+  
   if (!bookingData) return null;
 
   const {
@@ -24,6 +29,9 @@ const BookingConfirmModal = ({
     symptoms,
     consultationFee
   } = bookingData;
+  
+  // 상담료는 일괄 30,000원
+  const finalConsultationFee = 30000;
 
   const formatDate = (dateStr) => {
     return moment(dateStr).format('M월 D일 (ddd)');
@@ -40,9 +48,61 @@ const BookingConfirmModal = ({
     const types = {
       'VIDEO': '화상 상담',
       'CHAT': '채팅 상담',
-      'PHONE': '전화 상담'
+      'PHONE': '전화 상담',
+      'INSTANT': '실시간 상담',
+      'QNA': 'Q&A 상담'
     };
     return types[type] || type;
+  };
+  
+  const handlePayment = async () => {
+    setIsPaymentProcessing(true);
+    setError(null);
+
+    try {
+      // 토스페이먼츠 초기화
+      const tossPayments = await initTossPayments();
+      
+      // 결제 파라미터 생성
+      const consultationData = {
+        consultationType: consultationType || 'CHAT',
+        vetId: expert.vetId,
+        vetName: expert.vetName,
+        petId: pet.petId,
+        scheduleId: schedule?.scheduleId,
+        date: date,
+        time: schedule?.startTime
+      };
+      
+      const paymentParams = createPaymentParams(consultationData, {
+        ...userInfo,
+        name: userInfo.name || '고객',
+        email: userInfo.email || 'test@example.com',
+        phone: userInfo.phone ? userInfo.phone.replace(/-/g, '') : '01012345678' // 하이픈 제거
+      });
+      
+      // 결제 데이터를 세션 스토리지에 저장 (결제 완료 후 사용)
+      sessionStorage.setItem('pendingConsultation', JSON.stringify({
+        ...bookingData,
+        consultationData,
+        paymentInfo: {
+          orderId: paymentParams.orderId,
+          amount: paymentParams.amount
+        }
+      }));
+      
+      // 토스페이먼츠 결제창 호출 - 테스트 환경에서는 flowMode 설정
+      await tossPayments.requestPayment('카드', {
+        ...paymentParams,
+        flowMode: 'DEFAULT',  // 일반 결제 플로우 사용
+        easyPay: undefined    // 간편결제 비활성화
+      });
+      
+    } catch (error) {
+      console.error('Payment error:', error);
+      setError(error.message || '결제 처리 중 오류가 발생했습니다.');
+      setIsPaymentProcessing(false);
+    }
   };
 
   return (
@@ -164,18 +224,25 @@ const BookingConfirmModal = ({
               <div className={styles.feeRow}>
                 <span className={styles.feeLabel}>상담료</span>
                 <span className={styles.feeAmount}>
-                  {formatFee(consultationFee)}
+                  {formatFee(finalConsultationFee)}
                 </span>
               </div>
               <div className={styles.totalRow}>
                 <span className={styles.totalLabel}>총 결제 금액</span>
                 <span className={styles.totalAmount}>
-                  {formatFee(consultationFee)}
+                  {formatFee(finalConsultationFee)}
                 </span>
               </div>
             </div>
           </div>
         </div>
+
+        {error && (
+          <div className={styles.errorMessage}>
+            <span className={styles.errorIcon}>⚠️</span>
+            {error}
+          </div>
+        )}
 
         <div className={styles.notice}>
           <p className={styles.noticeTitle}>📌 예약 안내</p>
@@ -197,10 +264,10 @@ const BookingConfirmModal = ({
           </button>
           <button 
             className={styles.confirmButton} 
-            onClick={onConfirm}
-            disabled={isProcessing}
+            onClick={handlePayment}
+            disabled={isProcessing || isPaymentProcessing}
           >
-            {isProcessing ? (
+            {(isProcessing || isPaymentProcessing) ? (
               <>
                 <span className={styles.spinner}></span>
                 처리 중...

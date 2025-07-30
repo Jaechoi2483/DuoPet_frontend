@@ -8,6 +8,7 @@ import Loading from '../../components/common/Loading';
 import PagingView from '../../components/common/pagingView';
 import InstantConsultModal from '../../components/consultation/InstantConsultModal';
 import { AuthContext } from '../../AuthProvider';
+import { initTossPayments, createPaymentParams, CONSULTATION_PRICES } from '../../utils/payment';
 
 const ExpertConsult = () => {
   const navigate = useNavigate();
@@ -133,7 +134,7 @@ const ExpertConsult = () => {
   };
 
 
-  // 💡 [수정됨] 즉시 상담 요청 처리 (유일한 함수)
+  // 💡 [수정됨] 즉시 상담 요청 처리 - 결제 프로세스 추가
   // InstantConsultModal의 onConfirm prop으로 전달됩니다.
   const handleInstantConsultRequest = async (petId, symptoms) => {
     if (!isLoggedIn || !selectedExpert) {
@@ -149,33 +150,53 @@ const ExpertConsult = () => {
 
     setLoading(true);
     try {
-      const requestData = {
-        userId: userNo, // 로그인된 사용자의 고유 ID
-        vetId: selectedExpert.vet.vetId, // 선택된 전문가의 vetId
+      // 토스페이먼츠 결제 진행
+      const tossPayments = await initTossPayments();
+      
+      // 사용자 정보 구성
+      const userInfo = {
+        userId: userNo,
+        name: username || '고객',
+        email: 'test@example.com', // 테스트용 이메일
+        phone: '01012345678' // 테스트용 전화번호
+      };
+      
+      // 결제 파라미터 생성
+      const paymentParams = createPaymentParams({
+        consultationType: 'INSTANT',
+        vetId: selectedExpert.vet.vetId,
+        vetName: selectedExpert.vet?.name || '수의사',
+        petId: petId
+      }, userInfo);
+      
+      // 세션 스토리지에 즉시 상담 데이터 저장 (결제 완료 후 사용)
+      sessionStorage.setItem('pendingInstantConsultation', JSON.stringify({
+        userId: userNo,
+        vetId: selectedExpert.vet.vetId,
         petId: petId,
         consultationType: 'CHAT', // 즉시상담은 채팅으로 고정
         chiefComplaint: symptoms,
-      };
-
-      console.log('상담 요청 데이터:', requestData);
-      // 상담방 생성 API 호출
-      // 💡 API 통일: 예약/즉시 모두 createConsultation 사용 (백엔드와 협의 필요)
-      // 만약 즉시상담 API가 다르다면 consultationRoomApi.createInstantConsultation 사용
-      const response = await consultationRoomApi.createConsultation(requestData);
-
-      if (response.success && response.data && response.data.roomUuid) {
-        const { roomUuid } = response.data;
-        console.log('상담방 생성 성공, UUID:', roomUuid);
-        // 상담 대기 페이지로 이동
-        navigate(`/consultation/waiting/${roomUuid}`);
-      } else {
-        console.error('예상치 못한 응답 구조:', response);
-        alert('상담 요청에 실패했습니다: ' + (response.message || '알 수 없는 오류'));
-      }
+        expertInfo: selectedExpert,
+        paymentInfo: {
+          orderId: paymentParams.orderId,
+          amount: paymentParams.amount
+        }
+      }));
+      
+      // 토스페이먼츠 결제창 호출
+      await tossPayments.requestPayment('카드', {
+        ...paymentParams,
+        flowMode: 'DEFAULT',
+        easyPay: undefined
+      });
+      
     } catch (error) {
-      console.error('상담 요청 중 오류 발생:', error);
-      alert('상담 요청 중 오류가 발생했습니다.');
-    } finally {
+      console.error('결제 처리 중 오류:', error);
+      if (error.code === 'USER_CANCEL') {
+        alert('결제가 취소되었습니다.');
+      } else {
+        alert('결제 처리 중 오류가 발생했습니다.');
+      }
       setLoading(false);
       setShowInstantModal(false);
     }

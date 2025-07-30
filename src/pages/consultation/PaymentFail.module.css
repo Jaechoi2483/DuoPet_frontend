@@ -1,0 +1,115 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: #f5f7fa;
+}
+
+.failContainer {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.failIcon {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.failContainer h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.errorInfo {
+  background-color: #fff5f5;
+  border: 1px solid #ffe0e0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.errorMessage {
+  color: #d32f2f;
+  font-size: 16px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.errorCode {
+  color: #888;
+  font-size: 14px;
+  margin: 0;
+}
+
+.notice {
+  color: #666;
+  margin-bottom: 30px;
+  line-height: 1.6;
+}
+
+.notice p {
+  margin: 5px 0;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.retryButton,
+.homeButton {
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.retryButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.retryButton:hover {
+  background-color: #0056b3;
+}
+
+.homeButton {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.homeButton:hover {
+  background-color: #f8f9fa;
+  border-color: #bbb;
+}
+
+.helpText {
+  border-top: 1px solid #e9ecef;
+  padding-top: 20px;
+  color: #888;
+  font-size: 14px;
+}
+
+.helpText p {
+  margin: 5px 0;
+}
+
+.contactInfo {
+  color: #666;
+  font-weight: 500;
+  margin-top: 10px !important;
+}
