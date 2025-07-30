@@ -28,6 +28,11 @@ function QuestionBoardDetail() {
 
   const contentId = Number(id);
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? '날짜 없음' : date.toLocaleDateString();
+  };
+
   const handleEdit = () => navigate(`/community/questionBoard/edit/${id}`);
   const handleBackToList = () => navigate('/community/questionBoard');
 
@@ -185,7 +190,7 @@ function QuestionBoardDetail() {
       try {
         const res = await apiClient.post('http://localhost:8000/api/v1/video-recommend/recommend', {
           contentId: post.contentId,
-          maxResults: 1,
+          maxResults: 3,
         });
 
         console.log('AI 응답:', res.data.data);
@@ -242,7 +247,7 @@ function QuestionBoardDetail() {
           )}
         </div>
         <div className={styles.meta}>
-          <span>작성자ID: {post.userId}</span> | <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+          <span>작성자: {post?.nickname ?? '작성자 없음'}</span> | <span>{formatDate(post?.createdAt)}</span>
         </div>
         <div className={styles.stats}>
           👁 {post.viewCount} ❤ {likeCount}

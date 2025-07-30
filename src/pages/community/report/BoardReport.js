@@ -1,6 +1,6 @@
 // src/pages/community/freeBoard/FreeBoardReport.js
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import apiClient from '../../../utils/axios';
 import Modal from '../../../components/common/Modal';
 import modalStyles from '../../../components/common/Modal.module.css';
@@ -8,6 +8,13 @@ import modalStyles from '../../../components/common/Modal.module.css';
 const BoardReport = ({ isOpen, targetId, targetType, onClose }) => {
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setReason('');
+      setDetails('');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

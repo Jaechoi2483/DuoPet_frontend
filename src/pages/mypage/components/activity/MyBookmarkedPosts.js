@@ -109,7 +109,10 @@ const MyBookmarks = () => {
                       className={`${bookmarkStyles.bookmarkIcon} ${
                         item.bookmarked ? bookmarkStyles.bookmarkActive : bookmarkStyles.bookmarkInactive
                       }`}
-                      onClick={() => toggleBookmark(item.contentId)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleBookmark(item.contentId);
+                      }}
                     >
                       📌
                     </span>

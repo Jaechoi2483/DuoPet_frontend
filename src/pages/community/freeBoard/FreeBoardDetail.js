@@ -191,7 +191,7 @@ function FreeBoardDetail() {
       try {
         const res = await apiClient.post('http://localhost:8000/api/v1/video-recommend/recommend', {
           contentId: post.contentId,
-          maxResults: 1,
+          maxResults: 3,
         });
 
         console.log('AI 응답:', res.data.data);
@@ -248,7 +248,7 @@ function FreeBoardDetail() {
           )}
         </div>
         <div className={styles.meta}>
-          <span>작성자ID: {post?.userId ?? '작성자 없음'}</span> |<span>{formatDate(post?.createdAt)}</span>
+          <span>작성자: {post?.nickname ?? '작성자 없음'}</span> | <span>{formatDate(post?.createdAt)}</span>
         </div>
 
         <div className={styles.stats}>

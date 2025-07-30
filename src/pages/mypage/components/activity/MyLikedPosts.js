@@ -115,7 +115,10 @@ const MyLikes = () => {
                     <span className={styles.statItem}>👁 {item.viewCount}</span>
                     <span
                       className={`${styles.statItem} ${heartStyles.heartWrapper}`}
-                      onClick={() => toggleLike(item.contentId)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // 상세보기 클릭 방지
+                        toggleLike(item.contentId);
+                      }}
                     >
                       <span className={heartStyles.heartIcon}>{item.liked ? '❤️' : '🤍'}</span>
                       <span className={heartStyles.likeNumber}>{item.likeCount}</span>
