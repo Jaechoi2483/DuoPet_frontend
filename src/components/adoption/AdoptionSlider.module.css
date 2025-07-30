@@ -25,7 +25,7 @@
 }
 
 .viewAllBtn {
-  background-color: #f3f3f3;
+  background-color: #ffffff;
   color: #444;
   border: 1px solid #ccc;
   padding: 8px 14px;
@@ -36,7 +36,7 @@
 }
 
 .viewAllBtn:hover {
-  background-color: #e0e0e0;
+  background-color: #f5f5f5;
 }
 
 .sliderWrapper {
