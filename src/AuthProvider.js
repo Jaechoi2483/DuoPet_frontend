@@ -170,6 +170,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('role');
     localStorage.removeItem('userId');
     localStorage.removeItem('userNo');
+    localStorage.removeItem('tokenIssuedAt');
+    localStorage.removeItem('toastClosed');
 
     // 클라이언트 토큰 삭제
     //localStorage.clear();
@@ -189,6 +191,7 @@ export const AuthProvider = ({ children }) => {
       if (accessToken) {
         localStorage.setItem('accessToken', accessToken);
         const parsedToken = parseAccessToken(accessToken);
+        localStorage.setItem('tokenIssuedAt', Date.now().toString());
         console.log('AuthProvider updateTokens : ', parsedToken);
 
         if (parsedToken) {
@@ -362,6 +365,14 @@ export const AuthProvider = ({ children }) => {
     }
   }; // handleReissueTokens
 
+  // 상단 시간 연장 버튼을 위한 수동 세션 연장 처리
+  const extendSessionManually = () => {
+    const now = Date.now();
+    localStorage.setItem('tokenIssuedAt', now.toString());
+    localStorage.setItem('toastClosed', 'false');
+    console.log('[AuthProvider] ✅ 수동 세션 연장: tokenIssuedAt, toastClosed 초기화 완료');
+  };
+
   // 다른 컴포넌트에 제공할 함수나 데이터는 반드시 AuthContext.Provider 의 value 에 추가해 놓아야 함
   // authInfo 작성하면 다른 컴포넌트에서 사용시 authInfo 로만 사용할 수 있음, authInfo.isLoggedIn
   // ...authInfo 작성하면 다름 컴포넌트에서 사용시, isLoggedIn 으로 바로 사용 가능함
@@ -374,6 +385,7 @@ export const AuthProvider = ({ children }) => {
         secureApiRequest,
         logoutAndRedirect,
         updateTokens,
+        extendSessionManually,
       }}
     >
       {children}

@@ -14,6 +14,7 @@ import NotificationToast from './components/consultation/NotificationToast';
 import websocketService from './services/websocketService';
 import { AuthContext } from './AuthProvider';
 import apiClient from './utils/axios';
+import SessionTimer from './components/common/SessionTimer';
 
 // 상세페이지에서만 Footer 제거용 래퍼 컴포넌트
 function AppWrapper() {
@@ -25,7 +26,7 @@ function AppWrapper() {
   const [footerHeight, setFooterHeight] = useState(0);
   const [showNotification, setShowNotification] = useState(false);
   const [notificationData, setNotificationData] = useState(null);
-  
+
   // WebSocket 연결 관리
   useEffect(() => {
     // 인증 로딩이 완료되지 않았으면 대기
@@ -33,21 +34,21 @@ function AppWrapper() {
       console.log('인증 상태 확인 중... WebSocket 연결 대기');
       return;
     }
-    
+
     console.log('WebSocket 연결 조건 확인:', {
       isLoggedIn,
       role,
       isVet: role === 'VET' || role === 'vet',
-      userNo
+      userNo,
     });
-    
+
     if (isLoggedIn) {
       // 로그인한 모든 사용자는 WebSocket 연결
       console.log(`${role} 사용자로 로그인됨, WebSocket 연결 중...`);
-      
+
       // loginId를 사용 (백엔드가 loginId로 메시지를 보냄)
       let userIdentifier = localStorage.getItem('loginId');
-      
+
       if (!userIdentifier) {
         // OAuth 로그인의 경우 loginId가 없으므로 JWT의 sub 필드 사용
         const accessToken = localStorage.getItem('accessToken');
@@ -62,18 +63,19 @@ function AppWrapper() {
           }
         }
       }
-      
+
       console.log('사용할 식별자:', userIdentifier);
       console.log('사용자 역할:', role);
-      
+
       if (userIdentifier) {
         // WebSocket 연결 - 토큰으로 연결
         const accessToken = localStorage.getItem('accessToken');
-        
-        websocketService.connect(accessToken)
+
+        websocketService
+          .connect(accessToken)
           .then(() => {
             console.log(`WebSocket 연결 성공 (role: ${role}, identifier: ${userIdentifier})`);
-            
+
             // 전문가인 경우에만 상담 알림 구독
             if (role === 'VET' || role === 'vet') {
               // 알림 표시 함수 정의
@@ -81,49 +83,49 @@ function AppWrapper() {
                 console.log('🔔 상담 요청 알림:', notification);
                 setNotificationData(notification);
                 setShowNotification(true);
-                
+
                 // 알림음 재생
                 try {
                   const audio = new Audio(require('./assets/Audio/alarm1.mp3'));
                   audio.volume = 0.7; // 볼륨 70%
-                  audio.play().catch(e => console.log('알림음 재생 실패:', e));
+                  audio.play().catch((e) => console.log('알림음 재생 실패:', e));
                 } catch (err) {
                   console.error('알림음 로드 실패:', err);
                 }
               };
-              
+
               // 전역 함수로도 등록 (디버깅용)
               window.showConsultationRequestNotification = showNotification;
-              
+
               // WebSocket 구독 설정 - subscribeToNotifications 메서드 사용
               websocketService.subscribeToNotifications((notification) => {
                 console.log('🔔 상담 요청 알림:', notification);
                 setNotificationData(notification);
                 setShowNotification(true);
-                
+
                 // 알림음 재생
                 try {
                   const audio = new Audio(require('./assets/Audio/alarm1.mp3'));
                   audio.volume = 0.7; // 볼륨 70%
-                  audio.play().catch(e => console.log('알림음 재생 실패:', e));
+                  audio.play().catch((e) => console.log('알림음 재생 실패:', e));
                 } catch (err) {
                   console.error('알림음 로드 실패:', err);
                 }
               });
-              
+
               console.log('전문가 알림 구독 설정 완료');
             } else {
               console.log('일반 사용자 WebSocket 연결 완료');
             }
           })
-          .catch(err => {
+          .catch((err) => {
             console.error('WebSocket 연결 실패:', err);
           });
       } else {
         console.error('사용자 식별자를 찾을 수 없습니다.');
       }
     }
-    
+
     return () => {
       // 컴포넌트 언마운트 시 WebSocket 연결 해제
       if (websocketService.isConnected()) {
@@ -160,43 +162,45 @@ function AppWrapper() {
   }, []);
 
   // 상세페이지 경로 조건 확인
-  const isFreeBoardDetail = location.pathname.startsWith(
-    '/community/freeBoard/'
-  );
+  const isFreeBoardDetail = location.pathname.startsWith('/community/freeBoard/');
 
   return (
     <>
       <Menubar />
+      <SessionTimer /> {/* 세션 타이머 전역 적용 */}
       <AppRouter />
       {!isFreeBoardDetail && <Footer ref={footerRef} />}
-      
       {/* 전문가 알림 시스템 */}
       {showNotification && notificationData && (
-        <NotificationToast 
-          notification={notificationData}
-          onClose={() => setShowNotification(false)}
-        />
+        <NotificationToast notification={notificationData} onClose={() => setShowNotification(false)} />
       )}
-
       {/* 챗봇 플로팅 버튼 */}
       <button
-        className={
-          chatbotStyles.chatbotFloatingBtn +
-          ' ' +
-          chatbotStyles.noBgBtn
-        }
+        className={chatbotStyles.chatbotFloatingBtn + ' ' + chatbotStyles.noBgBtn}
         style={footerVisible ? { bottom: `${footerHeight + 16}px` } : {}}
         onClick={() => setIsChatOpen(true)}
         aria-label="챗봇 열기"
       >
         <span className={chatbotStyles.chatbotIcon}>
           {/* 미니멀 말풍선 SVG 아이콘 */}
-          <svg width="60" height="60" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg
+            width="60"
+            height="60"
+            viewBox="0 0 32 32"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
             <g transform="translate(0,-2)">
-              <path d="M6 18C4.89543 18 4 17.1046 4 16V8C4 5.79086 5.79086 4 8 4H24C26.2091 4 28 5.79086 28 8V16C28 17.1046 27.1046 18 26 18H16.83C16.4172 18 16.0292 18.1679 15.76 18.46L12.53 21.95C12.24 22.26 11.76 22.26 11.47 21.95L8.24 18.46C7.9708 18.1679 7.58277 18 7.17 18H6Z" stroke="white" strokeWidth="2" fill="#3b82f6"/>
-              <circle cx="12" cy="12" r="1.2" fill="white"/>
-              <circle cx="16" cy="12" r="1.2" fill="white"/>
-              <circle cx="20" cy="12" r="1.2" fill="white"/>
+              <path
+                d="M6 18C4.89543 18 4 17.1046 4 16V8C4 5.79086 5.79086 4 8 4H24C26.2091 4 28 5.79086 28 8V16C28 17.1046 27.1046 18 26 18H16.83C16.4172 18 16.0292 18.1679 15.76 18.46L12.53 21.95C12.24 22.26 11.76 22.26 11.47 21.95L8.24 18.46C7.9708 18.1679 7.58277 18 7.17 18H6Z"
+                stroke="white"
+                strokeWidth="2"
+                fill="#3b82f6"
+              />
+              <circle cx="12" cy="12" r="1.2" fill="white" />
+              <circle cx="16" cy="12" r="1.2" fill="white" />
+              <circle cx="20" cy="12" r="1.2" fill="white" />
             </g>
           </svg>
         </span>
