@@ -44,7 +44,7 @@ input[type='password']:focus {
 /* ☑️ 체크박스 */
 .checkboxGroup {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   gap: 12px;
   margin-bottom: 20px;

@@ -26,9 +26,6 @@ function LoginPage() {
       setLoginId(savedId);
       setRememberId(true);
     }
-    if (auto === 'true') {
-      setAutoLogin(true);
-    }
     if (provider) {
       setLastProvider(provider);
     }
@@ -74,13 +71,6 @@ function LoginPage() {
         localStorage.setItem('rememberId', loginId);
       } else {
         localStorage.removeItem('rememberId');
-      }
-
-      // 자동 로그인 저장
-      if (autoLogin) {
-        localStorage.setItem('autoLogin', 'true');
-      } else {
-        localStorage.removeItem('autoLogin');
       }
 
       // 소셜 로그인이 아니므로 최근 로그인 기록 삭제
@@ -138,10 +128,6 @@ function LoginPage() {
           <label>
             <input type="checkbox" checked={rememberId} onChange={(e) => setRememberId(e.target.checked)} />
             아이디 저장
-          </label>
-          <label>
-            <input type="checkbox" checked={autoLogin} onChange={(e) => setAutoLogin(e.target.checked)} />
-            자동 로그인
           </label>
         </div>
         <button type="submit" className={styles.loginBtn}>
