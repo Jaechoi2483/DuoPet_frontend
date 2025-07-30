@@ -17,20 +17,20 @@ api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
-    
+
     console.log('Health API Request - URL:', config.url);
     console.log('Health API Request - Access Token exists:', !!accessToken);
     console.log('Health API Request - Refresh Token exists:', !!refreshToken);
-    
+
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     if (refreshToken) {
       config.headers.RefreshToken = `Bearer ${refreshToken}`;
     }
-    
+
     console.log('Health API Request Headers:', config.headers);
-    
+
     return config;
   },
   (error) => {
@@ -51,31 +51,31 @@ api.interceptors.response.use(
 export const createHealthRecord = async (recordData, files) => {
   try {
     const formData = new FormData();
-    
+
     // JSON 데이터를 Blob으로 변환
     const dataBlob = new Blob([JSON.stringify(recordData)], {
-      type: 'application/json'
+      type: 'application/json',
     });
     formData.append('data', dataBlob, 'data.json');
-    
+
     // 파일 추가
     if (files && files.length > 0) {
-      files.forEach(file => {
+      files.forEach((file) => {
         formData.append('files', file);
       });
     }
-    
+
     console.log('Creating health record with data:', recordData);
     console.log('Files count:', files ? files.length : 0);
-    
+
     const response = await axios.post(`${API_BASE_URL}/api/health/records`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
+      },
     });
-    
+
     console.log('Health record created successfully:', response.data);
     return response.data;
   } catch (error) {
@@ -138,32 +138,32 @@ export const deleteHealthRecord = async (recordId) => {
 export const analyzeHealthComprehensive = async (images, petType = 'dog', petInfo = {}) => {
   try {
     const formData = new FormData();
-    
+
     // 이미지 파일들 추가
     images.forEach((image, index) => {
       formData.append('images', image);
     });
-    
+
     // 펫 타입 추가
     formData.append('pet_type', petType);
-    
+
     // 펫 정보 추가 (선택사항)
     if (petInfo && Object.keys(petInfo).length > 0) {
       formData.append('pet_info', JSON.stringify(petInfo));
     }
-    
+
     console.log('Sending comprehensive diagnosis request');
-    
+
     // 프록시를 통해 라우팅되도록 상대 경로 사용
     // 임시로 절대 경로 사용 (프록시 문제 해결 시 원복)
     const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
+      },
     });
-    
+
     console.log('Comprehensive diagnosis result:', response.data);
     return response.data;
   } catch (error) {
@@ -178,15 +178,15 @@ export const analyzeEyeDisease = async (image, petType = 'dog') => {
     const formData = new FormData();
     formData.append('image', image);
     formData.append('pet_type', petType);
-    
+
     const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/eye', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
+      },
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Failed to analyze eye disease:', error);
@@ -198,26 +198,27 @@ export const analyzeEyeDisease = async (image, petType = 'dog') => {
 export const analyzeBCS = async (images, petType = 'dog', petInfo = {}) => {
   try {
     const formData = new FormData();
-    
+
     // 여러 각도의 이미지 추가
     images.forEach((image) => {
       formData.append('images', image);
     });
-    
+
     formData.append('pet_type', petType);
-    
+
     if (petInfo && Object.keys(petInfo).length > 0) {
       formData.append('pet_info', JSON.stringify(petInfo));
     }
-    
-    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/bcs', formData, {
+
+    // const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/bcs', formData, {
+    const response = await axios.post('http://localhost:8000/api/v1/gpt-diagnose/analyze', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
+      },
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Failed to analyze BCS:', error);
@@ -231,15 +232,15 @@ export const analyzeSkinDisease = async (image, petType = 'dog') => {
     const formData = new FormData();
     formData.append('image', image);
     formData.append('pet_type', petType);
-    
+
     const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze/skin', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
+      },
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Failed to analyze skin disease:', error);
@@ -248,44 +249,38 @@ export const analyzeSkinDisease = async (image, petType = 'dog') => {
 };
 
 // AI 진단 - 단일 진단 (새로운 엔드포인트)
-export const analyzeSingleDiagnosis = async (images, diagnosisType, petType = 'dog', petInfo = {}) => {
+export const analyzeSingleDiagnosis = async (images, diagnosisType, symptoms, petType = 'dog', petInfo = {}) => {
   try {
-    const formData = new FormData();
-    
-    // 이미지 파일들 추가
+    const formData = new FormData(); // 이미지 파일들 추가 (FastAPI의 'files'와 일치하도록 변경)
+
     images.forEach((image) => {
-      formData.append('images', image);
-    });
-    
-    // 진단 유형 추가 (필수)
-    formData.append('diagnosis_type', diagnosisType);
-    
-    // 펫 타입 추가
-    formData.append('pet_type', petType);
-    
-    // 펫 정보 추가 (선택사항)
+      formData.append('files', image);
+    }); // 진단 유형 추가 (필수)
+
+    formData.append('diagnosis_type', diagnosisType); // 증상 추가 (FastAPI의 'symptoms'와 일치하도록 추가)
+
+    formData.append('symptoms', symptoms); // 펫 타입 추가
+
+    formData.append('pet_type', petType); // 펫 정보 추가 (선택사항)
+
     if (petInfo.age) formData.append('pet_age', petInfo.age);
     if (petInfo.weight) formData.append('pet_weight', petInfo.weight);
     if (petInfo.breed) formData.append('pet_breed', petInfo.breed);
-    
-    console.log('Sending single diagnosis request:', diagnosisType);
-    
-    console.log('=== AXIOS POST 직전 ===');
-    console.log('URL:', 'http://localhost:8000/api/v1/health-diagnose/analyze-single');
-    console.log('axios 인스턴스:', axios);
-    
-    const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze-single', formData, {
+
+    console.log('Sending single diagnosis request:', { diagnosisType, symptoms, petType, petInfo }); // 콘솔 로그 추가
+    for (let pair of formData.entries()) {
+      // FormData 내용 확인용
+      console.log(pair[0] + ', ' + pair[1]);
+    } // const response = await axios.post('http://localhost:8000/api/v1/health-diagnose/analyze-single', formData, {
+
+    const response = await axios.post('http://localhost:8000/api/v1/gpt-diagnose/analyze', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-        'RefreshToken': `Bearer ${localStorage.getItem('refreshToken')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        RefreshToken: `Bearer ${localStorage.getItem('refreshToken')}`,
+      },
     });
-    
-    console.log('=== AXIOS 응답 받음 ===');
-    console.log('response.status:', response.status);
-    console.log('response.headers:', response.headers);
-    console.log('response.config.url:', response.config.url);
+
     console.log('Single diagnosis result:', response.data);
     return response.data;
   } catch (error) {
