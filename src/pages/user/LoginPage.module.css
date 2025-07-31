@@ -54,15 +54,15 @@ input[type='password']:focus {
 /* 🔵 로그인 버튼 */
 .loginBtn {
   width: 100%;
-  padding: 14px;
+  padding: 14px 16px;
   background-color: #3182f6;
   color: white;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  border-radius: 12px;
+  font-weight: 600;
   font-size: 16px;
   cursor: pointer;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
 
 /* 🪪 얼굴 로그인 버튼 */
@@ -110,16 +110,6 @@ input[type='password']:focus {
   color: #555;
 }
 
-/* ⭐ 최근 로그인 뱃지 */
-.recentBadge {
-  font-size: 0.75rem;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background-color: #fff;
-  color: #000;
-  border: 1px solid #ccc;
-}
-
 /* 📱 TVING 스타일 소셜 로그인 버튼 */
 .snsLogin {
   display: flex;
@@ -127,22 +117,33 @@ input[type='password']:focus {
   gap: 12px;
   margin-bottom: 24px;
 }
+
 .snsFull {
-  width: 100%;
-  padding: 14px 16px;
-  font-size: 14px;
-  font-weight: bold;
-  border: none;
-  border-radius: 6px;
+  position: relative;
   display: flex;
-  justify-content: center; /* 먼저 가운데로 */
   align-items: center;
-  position: relative; /* 오른쪽 뱃지 위한 기준점 */
+  justify-content: center; /* 👉 텍스트는 가운데 */
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
+  width: 100%;
 }
 
 .snsLabel {
-  pointer-events: none;
+  z-index: 1;
+  text-align: center;
+  flex: none;
+}
+
+/* 🖼️ SNS 아이콘 스타일 */
+.snsIcon {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
 }
 
 .recentBadge {
@@ -150,41 +151,49 @@ input[type='password']:focus {
   right: 16px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: #fff;
-  color: #000;
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 6px; /* 둥근 직사각형 */
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 4px 8px;
   border: 1px solid #ccc;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background-color: #fff;
+  color: #333;
   white-space: nowrap;
-  line-height: 1;
-  display: inline-block;
   z-index: 1;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
 }
 
-/* 🗨️ 말풍선 꼬리 */
+/* 꼬리 만들기 (완전히 붙임) */
 .recentBadge::before {
   content: '';
+  display: block;
   position: absolute;
+  left: -6px;
   top: 50%;
-  right: 100%; /* ← 왼쪽에 붙임 */
   transform: translateY(-50%);
   width: 0;
   height: 0;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
-  border-right: 6px solid #fff; /* 뱃지 배경색과 맞춤 */
-  z-index: -1;
-  margin-right: -1px; /* 테두리 자연스럽게 연결되도록 */
+  border-right: 6px solid #fff;
 }
 
-.snsFull {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+/* 꼬리 테두리까지 연결 */
+.recentBadge::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-right: 7px solid #ccc;
+  z-index: -1;
 }
 
 /* 각 소셜 별 색상 */
@@ -193,10 +202,16 @@ input[type='password']:focus {
   color: #3c1e1e;
 }
 .naver {
-  background-color: #03c75a;
+  background-color: #00c300;
   color: white;
 }
 .google {
-  background-color: #4285f4;
-  color: white;
+  background-color: #fff;
+  color: #444;
+  border: 1px solid #ccc;
+}
+.face {
+  background-color: #e9ecef;
+  color: #333;
+  border: 1px solid #ccc;
 }
