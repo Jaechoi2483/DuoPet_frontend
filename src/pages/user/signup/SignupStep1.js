@@ -43,7 +43,7 @@ function SignupStep1() {
     const matchPwd = userPwd === confirmPwd;
 
     if (!loginId || !userPwd || !confirmPwd) {
-      setError('모든 필드를 입력해주세요.');
+      setError('필수 항목을 입력해주세요.');
       return;
     }
 
@@ -107,13 +107,13 @@ function SignupStep1() {
 
         {/* 메시지 영역 */}
         {loginId === '' && error === '아이디를 입력해주세요.' && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>❗ {error}</div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>{error}</div>
         )}
         {loginId && idAvailable === false && (
-          <div className={`${styles.statusMessage} ${styles.statusError}`}>❌ 이미 사용 중인 아이디입니다.</div>
+          <div className={`${styles.statusMessage} ${styles.statusError}`}>이미 사용 중인 아이디입니다.</div>
         )}
         {loginId && idAvailable === true && (
-          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>✅ 사용 가능한 아이디입니다.</div>
+          <div className={`${styles.statusMessage} ${styles.statusSuccess}`}>사용 가능한 아이디입니다.</div>
         )}
       </div>
 
