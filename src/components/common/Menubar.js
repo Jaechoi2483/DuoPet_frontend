@@ -105,7 +105,7 @@ function Menubar({
       } catch (err) {
         console.error('세션 체크 실패', err);
       }
-    }, 1000);
+    }, 30000); // 1초에서 30초로 변경
 
     return () => clearInterval(intervalRef.current);
   }, [isLoggedIn]);
