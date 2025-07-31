@@ -131,7 +131,7 @@ const AiDiagnosis = ({ pet }) => {
           explanation: results.explanation || '제공된 정보가 부족하여 상세 설명을 생성할 수 없습니다.',
           recommendations: results.recommendations || [],
           requires_vet_visit: results.requires_vet_visit || false,
-          confidence: NaN, // 신뢰도 필드 추가 (AI 응답에 직접 없으면 NaN 또는 0)
+          // confidence: NaN, // 신뢰도 필드 추가 (AI 응답에 직접 없으면 NaN 또는 0) - GPT API 사용 시 주석 처리
           diagnosis: '결과 확인 필요', // 이 부분은 AI 응답의 potential_conditions 기반으로 생성해야 함
           nextSteps: results.recommendations ? results.recommendations.slice(0, 3) : [], // recommendations 기반으로 nextSteps 생성
         };
@@ -373,7 +373,9 @@ const AiDiagnosis = ({ pet }) => {
                       ? diagnosisResult.potential_conditions.join(', ')
                       : diagnosisResult.diagnosis || '정상'}
                   </h4>
-                  <div className={styles.confidenceBar}>
+                  {/* 신뢰도 표시 - GPT API 사용 시 신뢰도 정보 없어서 주석 처리 */}
+                  {/* 추후 자체 AI 모델 사용 시 주석 해제 */}
+                  {/* <div className={styles.confidenceBar}>
                     <div className={styles.confidenceLabel}>
                       신뢰도: {isNaN(diagnosisResult.confidence) ? '정보 없음' : `${diagnosisResult.confidence}%`}
                       {diagnosisResult.confidence < 50 && !isNaN(diagnosisResult.confidence) && ' (낮음)'}
@@ -398,12 +400,16 @@ const AiDiagnosis = ({ pet }) => {
                         }}
                       />
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className={`${styles.severityBadge} ${styles[diagnosisResult.severity]}`}>
-                    {diagnosisResult.severity === 'mild' && '경미'}
-                    {diagnosisResult.severity === 'moderate' && '보통'}
-                    {diagnosisResult.severity === 'severe' && '심각'}
+                    진단 결과: {
+                      diagnosisResult.diagnosis === '정상' ? '정상' :
+                      diagnosisResult.severity === 'mild' ? '경미한 증상' :
+                      diagnosisResult.severity === 'moderate' ? '중간 정도 증상' :
+                      diagnosisResult.severity === 'severe' ? '심각한 증상' :
+                      '확인 필요'
+                    }
                   </div>
 
                   <p className={styles.resultDescription}>{diagnosisResult.explanation}</p>
