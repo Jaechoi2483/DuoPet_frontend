@@ -1,41 +1,42 @@
 import React, { useState } from 'react';
+import apiClient from '../../../../utils/axios';
 import styles from './PasswordChange.module.css';
 
 const PasswordChange = ({ onBack }) => {
   const [passwords, setPasswords] = useState({
     currentPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
-    confirm: false
+    confirm: false,
   });
 
   const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setPasswords(prev => ({
+    setPasswords((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // 입력 시 해당 필드의 에러 메시지 제거
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
     }
   };
 
   const togglePasswordVisibility = (field) => {
-    setShowPassword(prev => ({
+    setShowPassword((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
@@ -70,28 +71,32 @@ const PasswordChange = ({ onBack }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
+
+    if (!validateForm()) return;
+
+    try {
+      await apiClient.post('/mypage/change-password', {
+        currentPassword: passwords.currentPassword,
+        newPassword: passwords.newPassword,
+      });
+
+      alert('비밀번호가 성공적으로 변경되었습니다.');
+
+      setPasswords({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+
+      onBack();
+    } catch (error) {
+      console.error('❌ 비밀번호 변경 실패:', error);
+      if (error.response && error.response.status === 400) {
+        alert('현재 비밀번호가 일치하지 않습니다.');
+      } else {
+        alert('비밀번호 변경 중 오류가 발생했습니다.');
+      }
     }
-
-    // 실제로는 API 호출
-    console.log('비밀번호 변경:', {
-      currentPassword: passwords.currentPassword,
-      newPassword: passwords.newPassword
-    });
-
-    alert('비밀번호가 성공적으로 변경되었습니다.');
-    
-    // 폼 초기화
-    setPasswords({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
-    
-    // 이전 페이지로 돌아가기
-    onBack();
   };
 
   return (
@@ -105,9 +110,7 @@ const PasswordChange = ({ onBack }) => {
 
       <div className={styles.passwordContent}>
         <div className={styles.infoBox}>
-          <p className={styles.infoText}>
-            안전한 계정 관리를 위해 정기적으로 비밀번호를 변경해주세요.
-          </p>
+          <p className={styles.infoText}>안전한 계정 관리를 위해 정기적으로 비밀번호를 변경해주세요.</p>
         </div>
 
         <form className={styles.passwordForm} onSubmit={handleSubmit}>
@@ -125,17 +128,11 @@ const PasswordChange = ({ onBack }) => {
                 className={`${styles.input} ${errors.currentPassword ? styles.error : ''}`}
                 placeholder="현재 비밀번호를 입력하세요"
               />
-              <button
-                type="button"
-                className={styles.eyeButton}
-                onClick={() => togglePasswordVisibility('current')}
-              >
+              <button type="button" className={styles.eyeButton} onClick={() => togglePasswordVisibility('current')}>
                 {showPassword.current ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
-            {errors.currentPassword && (
-              <span className={styles.errorMessage}>{errors.currentPassword}</span>
-            )}
+            {errors.currentPassword && <span className={styles.errorMessage}>{errors.currentPassword}</span>}
           </div>
 
           <div className={styles.formGroup}>
@@ -152,17 +149,11 @@ const PasswordChange = ({ onBack }) => {
                 className={`${styles.input} ${errors.newPassword ? styles.error : ''}`}
                 placeholder="새 비밀번호를 입력하세요"
               />
-              <button
-                type="button"
-                className={styles.eyeButton}
-                onClick={() => togglePasswordVisibility('new')}
-              >
+              <button type="button" className={styles.eyeButton} onClick={() => togglePasswordVisibility('new')}>
                 {showPassword.new ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
-            {errors.newPassword && (
-              <span className={styles.errorMessage}>{errors.newPassword}</span>
-            )}
+            {errors.newPassword && <span className={styles.errorMessage}>{errors.newPassword}</span>}
           </div>
 
           <div className={styles.formGroup}>
@@ -179,17 +170,11 @@ const PasswordChange = ({ onBack }) => {
                 className={`${styles.input} ${errors.confirmPassword ? styles.error : ''}`}
                 placeholder="새 비밀번호를 다시 입력하세요"
               />
-              <button
-                type="button"
-                className={styles.eyeButton}
-                onClick={() => togglePasswordVisibility('confirm')}
-              >
+              <button type="button" className={styles.eyeButton} onClick={() => togglePasswordVisibility('confirm')}>
                 {showPassword.confirm ? '👁️' : '👁️‍🗨️'}
               </button>
             </div>
-            {errors.confirmPassword && (
-              <span className={styles.errorMessage}>{errors.confirmPassword}</span>
-            )}
+            {errors.confirmPassword && <span className={styles.errorMessage}>{errors.confirmPassword}</span>}
           </div>
 
           <div className={styles.passwordRules}>
