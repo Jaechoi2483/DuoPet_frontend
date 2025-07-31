@@ -17,12 +17,14 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${mm}.${dd}`;
 };
 
+// 게시글 목록 리스트
 function FreeBoardList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { isLoggedIn } = useContext(AuthContext);
   const location = useLocation();
 
+  // 상태 선언
   const [postList, setPostList] = useState([]);
   const [topLikedPosts, setTopLikedPosts] = useState([]);
   const [topViewedPosts, setTopViewedPosts] = useState([]);
@@ -60,6 +62,7 @@ function FreeBoardList() {
     setCurrentPage(1); // 페이지 초기화
   };
 
+  // 정렬 방식 변경
   const handleSortChange = (e) => {
     const newSort = e.target.value;
     const query = new URLSearchParams();
@@ -77,6 +80,7 @@ function FreeBoardList() {
     setCurrentPage(1);
   };
 
+  // 글쓰기 버튼 클릭시
   const handleWriteClick = () => {
     if (!isLoggedIn) {
       alert('로그인이 필요한 기능입니다.');
