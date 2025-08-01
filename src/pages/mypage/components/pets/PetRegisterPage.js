@@ -257,25 +257,26 @@ const PetRegisterPage = () => {
                     <option value="N">아니오</option>
                   </select>
                 </div>
+
               </div>
             </div>
 
             <div className={styles.formSection}>
-              <h2 className={styles.sectionTitle}>추가 정보</h2>
-              
               <div className={styles.formGroup}>
                 <label htmlFor="description" className={styles.label}>
                   특이사항
                 </label>
-                <textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  className={styles.textarea}
-                  rows="4"
-                  placeholder="반려동물의 성격, 습관, 건강 상태 등을 입력해주세요"
-                />
+                <div className={styles.descriptionField}>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className={styles.textarea}
+                    rows="4"
+                    placeholder="반려동물의 성격, 습관, 건강 상태 등을 입력해주세요"
+                  />
+                </div>
               </div>
             </div>
 
