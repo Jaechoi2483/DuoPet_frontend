@@ -136,6 +136,11 @@
   margin-left: 2px;
 }
 
+.descriptionField {
+  max-width: 768px; /* 특이사항 필드의 최대 너비 제한 */
+  width: 100%;
+}
+
 .input,
 .select,
 .textarea {
@@ -157,7 +162,7 @@
 .select:focus,
 .textarea:focus {
   outline: none;
-  border-color: #4A9FF3;
+  border-color: #4a9ff3;
 }
 
 .textarea {
@@ -194,7 +199,7 @@
 }
 
 .submitButton {
-  background-color: #4A9FF3;
+  background-color: #4a9ff3;
   color: white;
 }
 
@@ -207,25 +212,25 @@
   .contentWrapper {
     padding: 20px 16px;
   }
-  
+
   .registerContainer {
     padding: 24px 20px;
   }
-  
+
   .pageTitle {
     font-size: 1.5rem;
     margin-bottom: 24px;
   }
-  
+
   .formGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .buttonGroup {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .cancelButton,
   .submitButton {
     width: 100%;
