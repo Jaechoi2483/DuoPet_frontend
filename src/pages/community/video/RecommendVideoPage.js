@@ -4,17 +4,20 @@ import React, { useEffect, useState, useContext } from 'react';
 import { getRecommendedVideos } from '../../../api/videoRecommendApi';
 import { AuthContext } from '../../../AuthProvider';
 
+// 게시글 없이 태그 기반 추천 영상을 조회하는 테스트 페이지
 const RecommendVideoPage = () => {
   const [videos, setVideos] = useState([]);
   const { userid } = useContext(AuthContext);
   const sampleTags = ['산책', '짖음', '훈련']; // 테스트용 태그
 
+  // 컴포넌트 마운트 시 추천 영상 요청
   useEffect(() => {
     const fetchVideos = async () => {
       try {
         const result = await getRecommendedVideos(userid, sampleTags);
         console.log('추천 영상 API 응답:', result);
 
+        // 영상 리스트 상태에 저장
         setVideos(result?.videos || []);
       } catch (error) {
         console.error('추천 영상 불러오기 실패:', error);

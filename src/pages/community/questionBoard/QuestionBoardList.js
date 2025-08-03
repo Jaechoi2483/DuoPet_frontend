@@ -17,6 +17,7 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${mm}.${dd}`;
 };
 
+// 질문 게시판 목록 페이지
 function QuestionBoardList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -60,6 +61,7 @@ function QuestionBoardList() {
     setCurrentPage(1); // 페이지 초기화
   };
 
+  // 정렬 방식 변경
   const handleSortChange = (e) => {
     const newSort = e.target.value;
     const query = new URLSearchParams();
@@ -77,6 +79,7 @@ function QuestionBoardList() {
     setCurrentPage(1);
   };
 
+  // 글쓰기 버튼
   const handleWriteClick = () => {
     if (!isLoggedIn) {
       alert('로그인이 필요한 기능입니다.');
@@ -85,6 +88,7 @@ function QuestionBoardList() {
     navigate('/community/questionBoard/write');
   };
 
+  // 게시글 클릭 시 상세보기로 이동
   const handleClick = (id) => {
     navigate(`/community/questionBoard/${id}`);
   };
