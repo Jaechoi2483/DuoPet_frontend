@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../AuthProvider';
 import styles from './BoardWrite.module.css';
 
+// 게시글 작성 페이지
 function BoardWrite({ category = 'free', route = 'freeBoard' }) {
   const navigate = useNavigate();
   const { userNo, isLoggedIn, secureApiRequest } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
 
+  // 폼 입력 상태
   const [formData, setFormData] = useState({
     userId: userNo,
     category: '',
@@ -20,6 +22,7 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
     files: [],
   });
 
+  // 로그인 확인 후 진입 가능
   useEffect(() => {
     if (!isLoggedIn) {
       const token = localStorage.getItem('accessToken');
@@ -31,15 +34,18 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
     setLoading(false);
   }, [isLoggedIn]);
 
+  // userNo 변경 시 formData에 반영
   useEffect(() => {
     setFormData((prev) => ({ ...prev, userId: userNo }));
   }, [userNo]);
 
+  // 입력 필드 변경 핸들러
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // 파일 선택 시 파일 리스트에 저장
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 5) {
@@ -49,11 +55,13 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
     setFormData((prev) => ({ ...prev, files }));
   };
 
+  // 목록으로 이동하는 핸들러
   const handleGoBack = () => {
     const confirmed = window.confirm('작성 중인 내용이 사라집니다. 정말 목록으로 이동할까요?');
     if (confirmed) navigate(`/community/${route}`);
   };
 
+  // 게시물 등록
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { title, contentBody, category, tags } = formData;
@@ -81,6 +89,7 @@ function BoardWrite({ category = 'free', route = 'freeBoard' }) {
     data.append('tags', tags);
     data.append('contentType', formData.contentType);
 
+    // 파일이 있으면 1개만 업로드
     if (formData.files.length > 0) {
       data.append('ofile', formData.files[0]);
     }

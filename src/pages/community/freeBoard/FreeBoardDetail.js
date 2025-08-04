@@ -42,7 +42,7 @@ function FreeBoardDetail() {
     return isNaN(date.getTime()) ? '날짜 없음' : date.toLocaleDateString();
   };
 
-  // 게시글 수정/삭제/목록 이동
+  // 게시글 수정/목록 이동
   const handleEdit = () => navigate(`/community/freeBoard/edit/${id}`);
   const handleBackToList = () => navigate('/community/freeBoard');
 

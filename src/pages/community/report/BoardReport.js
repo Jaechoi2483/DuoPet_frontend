@@ -5,10 +5,13 @@ import apiClient from '../../../utils/axios';
 import Modal from '../../../components/common/Modal';
 import modalStyles from '../../../components/common/Modal.module.css';
 
+// 게시글/댓글 신고 모달 컴포넌트
 const BoardReport = ({ isOpen, targetId, targetType, onClose }) => {
+  // 신고 사유 및 상세 설명 상태
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
 
+  // 모달이 열릴 때 입력값 초기화
   useEffect(() => {
     if (isOpen) {
       setReason('');
@@ -18,6 +21,7 @@ const BoardReport = ({ isOpen, targetId, targetType, onClose }) => {
 
   if (!isOpen) return null;
 
+  // 신고 요청 처리
   const handleReport = async () => {
     if (!reason) {
       alert('신고 사유를 선택해주세요.');

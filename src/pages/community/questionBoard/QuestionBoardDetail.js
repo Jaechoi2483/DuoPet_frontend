@@ -16,27 +16,37 @@ function QuestionBoardDetail() {
   const { secureApiRequest, isLoggedIn, userNo } = useContext(AuthContext);
   const contentId = Number(id);
 
+  // 게시글/좋아요/북마크 상태
   const [post, setPost] = useState(null);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
   const [bookmarkCount, setBookmarkCount] = useState(0);
+
+  // 토스트 메세지 & 신고 모달
   const [toastMessage, setToastMessage] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [reportProps, setReportProps] = useState({ targetId: null, targetType: '' });
+
+  // AI 추천 영상
   const [videos, setVideos] = useState([]);
   const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const hasFetchedVideo = useRef(false);
+
   const BACKEND_URL = 'http://localhost:8080';
 
+  // 날짜 포맷 함수
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return isNaN(date.getTime()) ? '날짜 없음' : date.toLocaleDateString();
   };
 
+  // 게시글 수정/목록 이동
   const handleEdit = () => navigate(`/community/questionBoard/edit/${id}`);
   const handleBackToList = () => navigate('/community/questionBoard');
 
+  // 게시글 삭제
   const handleDelete = async () => {
     if (!window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) return;
     try {
@@ -53,6 +63,7 @@ function QuestionBoardDetail() {
     }
   };
 
+  // 게시글 좋아요
   const handleLike = async () => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
@@ -81,6 +92,7 @@ function QuestionBoardDetail() {
     }
   };
 
+  // 게시글 북마크
   const handleBookmark = async () => {
     const accessToken = localStorage.getItem('accessToken');
     const refreshToken = localStorage.getItem('refreshToken');
@@ -104,12 +116,14 @@ function QuestionBoardDetail() {
     }
   };
 
+  // 토스트 메세지 표시
   const triggerToast = (msg) => {
     setToastMessage(msg);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000);
   };
 
+  // 신고 모달 열기
   const openReportModal = () => {
     if (!isLoggedIn) {
       alert('로그인 후 이용 가능합니다.');
@@ -119,6 +133,7 @@ function QuestionBoardDetail() {
     setIsReportOpen(true);
   };
 
+  // 게시글 및 좋아요/북마크 상태 불러오기
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -146,7 +161,7 @@ function QuestionBoardDetail() {
                 RefreshToken: `Bearer ${validRefreshToken}`,
               },
             });
-            console.log('✅ 좋아요 상태 응답:', likeRes.data);
+            console.log('좋아요 상태 응답:', likeRes.data);
             setLiked(likeRes.data.liked);
           } catch (err) {
             console.error('좋아요 상태 확인 실패:', err);
@@ -160,7 +175,7 @@ function QuestionBoardDetail() {
                 RefreshToken: `Bearer ${validRefreshToken}`,
               },
             });
-            console.log('✅ 북마크 상태 응답:', bookmarkRes.data);
+            console.log('북마크 상태 응답:', bookmarkRes.data);
             setBookmarked(bookmarkRes.data.bookmarked);
           } catch (err) {
             console.error('북마크 상태 확인 실패:', err);
@@ -172,15 +187,14 @@ function QuestionBoardDetail() {
           setBookmarked(false);
         }
       } catch (err) {
-        console.error('❌ 상세글 조회 실패', err);
+        console.error('상세글 조회 실패', err);
       }
     };
 
     fetchPost();
   }, [id]);
 
-  const hasFetchedVideo = useRef(false);
-
+  // 유튜브 추천 영상 API 호출
   useEffect(() => {
     if (!post || !post.tags) return;
     if (hasFetchedVideo.current) return;

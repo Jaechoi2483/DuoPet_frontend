@@ -17,6 +17,7 @@ const formatDate = (dateStr) => {
   return `${yyyy}.${mm}.${dd}`;
 };
 
+// 후기 게시판 목록 페이지
 function ReviewBoardList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -60,6 +61,7 @@ function ReviewBoardList() {
     setCurrentPage(1); // 페이지 초기화
   };
 
+  // 정렬 방식 변경
   const handleSortChange = (e) => {
     const newSort = e.target.value;
     const query = new URLSearchParams();
@@ -77,6 +79,7 @@ function ReviewBoardList() {
     setCurrentPage(1);
   };
 
+  // 글쓰기 버튼 클릭 시
   const handleWriteClick = () => {
     if (!isLoggedIn) {
       alert('로그인이 필요한 기능입니다.');
